@@ -1,11 +1,11 @@
 # Bongkar Canvas Builder (HTML-First Visual Page Builder)
 
-**Version 1.2.3 (Production Release)**  
+**Version 1.2.2 (Production Release)**  
 Plugin WordPress modern, ultra-ringan, dan *zero-bloat* yang dirancang khusus untuk mengimpor desain AI (HTML/CSS/JS dari Claude, v0, ChatGPT, atau Figma Export) dan mengeditnya secara visual di atas **Standalone Canvas Editor** (seperti Elementor tapi jauh lebih bersih, responsif, dan cepat).
 
 ---
 
-## Fitur Baru Versi 1.2.3: Hover Pop-up Trigger & Topbar Ramping Presisi
+## Fitur Baru Versi 1.2.2: Hover Pop-up Trigger & Topbar Ramping Presisi
 
 1. **Badge Hover Edit Pop-up di Kanvas (Topbar Bebas Sesak):**  
    - Menghapus tombol Pop-up dari topbar studio agar topbar tetap lapang, bersih, dan bebas tumpang-tindih (bebas bentrok skor SEO vs mode switcher) di semua resolusi layar laptop (1366px, 1280px, dll).
