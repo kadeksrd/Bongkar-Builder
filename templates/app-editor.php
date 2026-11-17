@@ -1331,6 +1331,10 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <i class="fa-solid fa-grip"></i>
                                 <span>4 Kolom (25%)</span>
                             </div>
+                            <div class="element-card btn-trigger-custom-html-section" title="Sisipkan Section Desain HTML Sendiri / AI" style="cursor: pointer;">
+                                <i class="fa-solid fa-code" style="color: #10b981;"></i>
+                                <span>HTML Sendiri</span>
+                            </div>
                         </div>
                     </div>
 
@@ -2040,6 +2044,36 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <button type="button" class="btn-studio-action" data-close-modal="exporter">Tutup</button>
                     <button type="button" id="btn-export-download" class="btn-studio-action btn-save-publish" style="background: #4f46e5; border-color: #4338ca;">
                         <i class="fa-solid fa-download"></i> Download File .html
+                    </button>
+                </div>
+            </div>
+        </div>
+    <!-- Modal: Sisipkan Section Desain HTML Sendiri -->
+    <div id="modal-section-html" class="studio-modal-backdrop">
+        <div class="studio-modal" style="max-width: 680px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-code" style="color: #10b981;"></i>
+                    <span>Sisipkan Section Desain HTML Sendiri</span>
+                </div>
+                <button type="button" class="modal-close" data-close-modal="section-html">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                    Tempelkan kode HTML custom, komponen Tailwind/Bootstrap, atau output dari AI (Claude, v0, ChatGPT). Kode akan disisipkan sebagai section baru di kanvas.
+                </p>
+                <div class="form-row" style="margin-bottom: 16px;">
+                    <textarea id="section-html-textarea" class="form-input" style="height: 220px; font-family: monospace; font-size: 12px; resize: vertical; line-height: 1.4;" placeholder="<section class=&quot;py-16 bg-white&quot;>&#10;  <div class=&quot;max-w-6xl mx-auto px-4&quot;>&#10;    <h2>Judul Section Saya</h2>&#10;  </div>&#10;</section>"></textarea>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
+                    <i class="fa-solid fa-circle-info" style="color: #6366f1;"></i> <span>Jika kode yang Anda masukkan belum memiliki tag <code>&lt;section&gt;</code>, sistem akan otomatis membungkusnya ke dalam section semantik rapi.</span>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn-studio-action" data-close-modal="section-html">Batal</button>
+                    <button type="button" id="btn-submit-section-html" class="btn-studio-action btn-save-publish" style="background: #059669; border-color: #047857;">
+                        <i class="fa-solid fa-plus"></i> <span>Sisipkan ke Kanvas</span>
                     </button>
                 </div>
             </div>
