@@ -1326,6 +1326,115 @@
     }
 
     /**
+     * Modal & Pop-up Detection and Dedicated Editing Engine
+     */
+    let isModalEditActive = false;
+    let activeModalElements = [];
+
+    function findModalsInCanvas() {
+        const root = document.getElementById('bongkar-canvas-root') || document.body;
+        const allCandidates = root.querySelectorAll(
+            'dialog, .modal-backdrop, .modal, .popup, .lightbox, ' +
+            'div[id*="modal" i], div[id*="popup" i], section[id*="modal" i], aside[id*="modal" i], ' +
+            'div[class*="modal" i], div[class*="popup" i]'
+        );
+        const modals = [];
+        allCandidates.forEach(el => {
+            if (el.closest('#bongkar-floating-toolbar') || el.closest('#bongkar-context-menu') || el.closest('#bongkar-modal-edit-banner')) return;
+            
+            // Exclude non-modal containers (buttons, close icons, titles, inputs, etc.)
+            const tag = el.tagName.toUpperCase();
+            if (['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA', 'SPAN', 'P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'LABEL', 'IMG', 'SVG', 'PATH'].includes(tag)) {
+                return;
+            }
+
+            const idClassStr = ((el.id || '') + ' ' + (el.className || '')).toLowerCase();
+            if (/\b(?:btn|button|trigger|close|icon|title|sub|desc|body|footer|header)\b/.test(idClassStr) && !idClassStr.includes('backdrop') && !idClassStr.includes('wrapper') && !idClassStr.includes('container') && !idClassStr.includes('dialog')) {
+                return;
+            }
+
+            // Only top-level modal containers (if parent modal is already in list, skip child)
+            if (!modals.some(m => m.contains(el))) {
+                modals.push(el);
+            }
+        });
+        return modals;
+    }
+
+    function toggleModalEditMode(forceState) {
+        const root = document.getElementById('bongkar-canvas-root') || document.body;
+        const nextState = (typeof forceState === 'boolean') ? forceState : !isModalEditActive;
+        isModalEditActive = nextState;
+
+        const modals = findModalsInCanvas();
+
+        if (isModalEditActive) {
+            if (modals.length === 0) {
+                showCanvasToast('Tidak ditemukan elemen Pop-up / Modal di halaman ini', 'info');
+                isModalEditActive = false;
+                window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: false }, '*');
+                return;
+            }
+
+            activeModalElements = modals;
+            modals.forEach(m => {
+                m.classList.add('bongkar-modal-edit-active');
+                m.classList.add('active'); // in case modal styling uses .active
+                m.setAttribute('aria-hidden', 'false');
+                m.querySelectorAll('.modal-container, .modal-dialog, .modal-content, [class*="modal-dialog"], [class*="modal-content"]').forEach(child => {
+                    child.classList.add('bongkar-modal-dialog-active');
+                });
+            });
+
+            // Inject floating banner at top of canvas
+            let banner = document.getElementById('bongkar-modal-edit-banner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'bongkar-modal-edit-banner';
+                banner.className = 'bongkar-modal-edit-banner';
+                banner.innerHTML = `
+                    <div class="modal-banner-pill">
+                        <i class="fa-solid fa-window-restore"></i>
+                        <span>Mode Edit Pop-up / Modal Aktif (Klik elemen di dalam pop-up untuk diedit)</span>
+                        <button type="button" id="btn-exit-modal-edit" class="btn-exit-modal-banner">
+                            <i class="fa-solid fa-circle-check"></i> Selesai Edit Pop-up
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(banner);
+                banner.querySelector('#btn-exit-modal-edit').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleModalEditMode(false);
+                });
+            }
+
+            // Auto-select first editable element in modal
+            const firstEditable = modals[0].querySelector('h1, h2, h3, h4, img, p, button') || modals[0];
+            selectElement(firstEditable);
+
+            showCanvasToast('Mode Edit Pop-up Aktif: Klik elemen apa saja di dalam pop-up untuk mengedit', 'success');
+            window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: true }, '*');
+        } else {
+            activeModalElements.forEach(m => {
+                m.classList.remove('bongkar-modal-edit-active');
+                m.classList.remove('active');
+                m.setAttribute('aria-hidden', 'true');
+                m.querySelectorAll('.bongkar-modal-edit-active, .bongkar-modal-dialog-active').forEach(child => {
+                    child.classList.remove('bongkar-modal-edit-active', 'bongkar-modal-dialog-active');
+                });
+            });
+            activeModalElements = [];
+
+            const banner = document.getElementById('bongkar-modal-edit-banner');
+            if (banner) banner.remove();
+
+            deselectElement();
+            showCanvasToast('Mode Edit Pop-up ditutup', 'info');
+            window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: false }, '*');
+        }
+    }
+
+    /**
      * Attach canvas event listeners
      */
     function attachEventListeners() {
@@ -1391,19 +1500,32 @@
             }
         });
 
-        // Click to Select or Interact
-        root.addEventListener('click', (e) => {
-            hideContextMenu();
-
+        // Click to Select or Interact (Captured on document to prevent inline onclick scripts from hijacking in Design Mode)
+        document.addEventListener('click', (e) => {
             // In Interactive Mode, allow all native clicks (buttons, sliders, tabs, accordions, modals)!
             if (isInteractiveMode) {
                 return;
             }
 
-            // Check if clicking inside toolbar or insertion bar
-            if (e.target.closest('#bongkar-floating-toolbar') || e.target.closest('.bongkar-section-insert-bar')) {
+            // Allow clicks inside editor helper UI elements
+            if (e.target.closest('#bongkar-floating-toolbar') || 
+                e.target.closest('#bongkar-context-menu') || 
+                e.target.closest('.bongkar-section-insert-bar') ||
+                e.target.closest('.bongkar-modal-edit-banner') ||
+                e.target.closest('#bongkar-canvas-toast')) {
                 return;
             }
+
+            // Quick interaction bypass in Design Mode: hold Alt, Ctrl, or Cmd to trigger interactive click directly!
+            if (e.altKey || e.ctrlKey || e.metaKey) {
+                return;
+            }
+
+            // PREVENT inline onclick, link navigation, form submission, and modal auto-closing in Design Mode!
+            e.preventDefault();
+            e.stopPropagation();
+
+            hideContextMenu();
 
             // Close any open inline section pickers when clicking elsewhere on canvas
             root.querySelectorAll('.bongkar-section-insert-bar.is-expanded').forEach(b => {
@@ -1411,23 +1533,14 @@
                 b.querySelectorAll('.bongkar-inline-section-picker').forEach(p => p.remove());
             });
 
-            // Quick interaction bypass in Design Mode: hold Alt, Ctrl, or Cmd to trigger interactive click directly!
-            if (e.altKey || e.ctrlKey || e.metaKey) {
-                return;
-            }
-
-            const target = e.target.closest('#bongkar-canvas-root *');
-            if (target) {
-                const isFormInput = ['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName);
-                if (!isFormInput) {
-                    e.preventDefault();
-                }
-                e.stopPropagation();
+            // If clicking inside canvas or active modal, select the target!
+            const target = e.target.closest('#bongkar-canvas-root *') || (e.target.closest('.bongkar-modal-edit-active') ? e.target : null);
+            if (target && target !== root && target !== document.body) {
                 selectElement(target);
             } else {
                 deselectElement();
             }
-        });
+        }, true); // useCapture = true ensures events are caught before element inline onclick!
 
         // Right-click context menu (Elementor Style)
         document.addEventListener('contextmenu', (e) => {
@@ -1699,6 +1812,28 @@
         const tag = el.tagName.toLowerCase();
         const textContent = el.innerText || '';
         const isImg = tag === 'img';
+        const childImg = !isImg ? el.querySelector('img') : null;
+        const effectiveImg = isImg ? el : childImg;
+        const isImage = isImg || !!childImg;
+
+        // Background image detection
+        const hasBgImg = computed.backgroundImage && computed.backgroundImage !== 'none' && computed.backgroundImage.includes('url');
+        let bgImgUrl = '';
+        if (hasBgImg) {
+            const bgMatch = computed.backgroundImage.match(/url\(['"]?(.*?)['"]?\)/i);
+            if (bgMatch && bgMatch[1]) bgImgUrl = bgMatch[1];
+        }
+
+        const imgSrc = effectiveImg ? (effectiveImg.getAttribute('src') || effectiveImg.src || '') : (hasBgImg ? bgImgUrl : '');
+        const imgAlt = effectiveImg ? (effectiveImg.getAttribute('alt') || '') : '';
+        const imgFit = effectiveImg ? (effectiveImg.style.objectFit || window.getComputedStyle(effectiveImg).objectFit || '') : (hasBgImg ? (el.style.backgroundSize || 'cover') : '');
+
+        // Modal triggers & container detection
+        const closestClickable = el.closest('[onclick], button, a, [data-modal-target], [data-target]');
+        const clickCode = closestClickable ? (closestClickable.getAttribute('onclick') || '').toLowerCase() : '';
+        const dataTarget = closestClickable ? (closestClickable.getAttribute('data-target') || closestClickable.getAttribute('data-modal-target') || '').toLowerCase() : '';
+        const triggersModal = clickCode.includes('modal') || clickCode.includes('popup') || dataTarget.includes('modal') || dataTarget.includes('popup');
+        const isInsideModal = !!el.closest('.modal-backdrop, .modal, .popup, .lightbox, dialog, [id*="modal" i], [class*="modal" i]');
         const isLink = tag === 'a' || el.tagName === 'BUTTON';
 
         // Video detection
@@ -1992,11 +2127,15 @@
             postCount: postCount,
             postCols: postCols,
             postIds: postIds,
-            isImage: isImg,
+            isImage: isImage || hasBgImg,
+            hasChildImg: !!childImg,
+            hasBgImg: hasBgImg,
+            triggersModal: triggersModal,
+            isInsideModal: isInsideModal,
             isLink: isLink,
-            imgSrc: isImg ? el.getAttribute('src') || '' : '',
-            imgAlt: isImg ? el.getAttribute('alt') || '' : '',
-            imgFit: isImg ? computed.objectFit || '' : '',
+            imgSrc: imgSrc,
+            imgAlt: imgAlt,
+            imgFit: imgFit,
             linkHref: isLink ? el.getAttribute('href') || '' : '',
             linkTarget: isLink ? el.getAttribute('target') || '_self' : '_self',
             isVideo: isVideo,
@@ -2694,24 +2833,41 @@
 
             case 'BONGKAR_UPDATE_IMAGE':
                 if (selectedElement) {
-                    if (selectedElement.tagName === 'IMG') {
-                        if (data.src) {
-                            selectedElement.setAttribute('src', data.src);
-                            // Clear responsive srcset/sizes so browser immediately renders new src
-                            selectedElement.removeAttribute('srcset');
-                            selectedElement.removeAttribute('sizes');
-                            selectedElement.removeAttribute('data-src');
-                            selectedElement.removeAttribute('data-srcset');
+                    let imgEl = selectedElement.tagName === 'IMG' ? selectedElement : selectedElement.querySelector('img');
+                    if (imgEl) {
+                        if (typeof data.src === 'string') {
+                            imgEl.setAttribute('src', data.src);
+                            imgEl.src = data.src; // Direct assignment forces immediate browser image reload
+                            imgEl.removeAttribute('srcset');
+                            imgEl.removeAttribute('sizes');
+                            imgEl.removeAttribute('data-src');
+                            imgEl.removeAttribute('data-srcset');
+                            const pictureParent = imgEl.closest('picture');
+                            if (pictureParent) {
+                                pictureParent.querySelectorAll('source').forEach(s => s.remove());
+                            }
                         }
-                        if (data.alt !== undefined) selectedElement.setAttribute('alt', data.alt);
-                        if (data.fit) selectedElement.style.objectFit = data.fit;
+                        if (data.alt !== undefined) imgEl.setAttribute('alt', data.alt);
+                        if (data.fit) imgEl.style.objectFit = data.fit;
                     } else {
-                        // Background image
-                        if (data.src) selectedElement.style.backgroundImage = `url('${data.src}')`;
+                        // Background image on container / div / section
+                        if (typeof data.src === 'string') {
+                            if (data.src) {
+                                selectedElement.style.backgroundImage = `url('${data.src}')`;
+                                selectedElement.style.backgroundSize = data.fit || 'cover';
+                                selectedElement.style.backgroundPosition = 'center';
+                            } else {
+                                selectedElement.style.backgroundImage = '';
+                            }
+                        }
                     }
                     updateFloatingPositions(selectedElement);
                     notifyContentChanged();
                 }
+                break;
+
+            case 'BONGKAR_TOGGLE_MODAL_EDIT':
+                toggleModalEditMode(data.forceState);
                 break;
 
             case 'BONGKAR_UPDATE_LINK':

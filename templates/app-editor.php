@@ -188,6 +188,12 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                 </button>
             </div>
 
+            <!-- Modal / Pop-up Editing Mode -->
+            <button type="button" id="btn-toggle-modal-edit" class="btn-topbar-tool" title="Buka Pop-up / Modal agar elemen di dalamnya bisa diklik dan diedit langsung">
+                <i class="fa-solid fa-window-restore"></i>
+                <span>Edit Pop-up</span>
+            </button>
+
             <div class="topbar-subdivider"></div>
 
             <!-- Responsive Device Switcher -->
@@ -447,6 +453,22 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                     <label class="form-label">Buka di Tab Baru:</label>
                                     <input type="checkbox" id="ctrl-link-blank" style="accent-color: var(--primary); width: 18px; height: 18px;">
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- 1.3B Modal / Pop-up Quick Trigger Control -->
+                        <div class="control-group" id="group-modal-trigger-controls" style="display: none;">
+                            <div class="control-group-header">
+                                <span><i class="fa-solid fa-window-restore" style="color: #818cf8;"></i> Pop-up / Modal Terhubung</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <div class="control-group-body">
+                                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+                                    Tombol ini membuka kotak pop-up/modal. Klik tombol di bawah untuk membuka dan mengedit isi pop-up secara langsung:
+                                </p>
+                                <button type="button" id="btn-quick-open-modal-edit" class="btn-studio-action" style="width: 100%; justify-content: center; height: 38px; background: #312e81; border: 1px solid #4f46e5; color: #e0e7ff; font-weight: 700;">
+                                    <i class="fa-solid fa-window-restore"></i> Buka & Edit Isi Pop-up
+                                </button>
                             </div>
                         </div>
 

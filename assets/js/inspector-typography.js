@@ -219,9 +219,9 @@ window.BongkarInspector = (function () {
             textInput.value = data.textContent || '';
         }
 
-        // Image Controls
+        // Image Controls (Direct IMG, wrapped IMG, or CSS background-image)
         const imgGroup = document.getElementById('group-image-controls');
-        if (data.isImage || (data.styles.backgroundColor && data.styles.backgroundColor.includes('url'))) {
+        if (data.isImage || data.hasBgImg || (data.styles && data.styles.backgroundImage && data.styles.backgroundImage.includes('url'))) {
             imgGroup.style.display = 'block';
             document.getElementById('ctrl-img-src').value = data.imgSrc || '';
             document.getElementById('ctrl-img-alt').value = data.imgAlt || '';
@@ -238,6 +238,12 @@ window.BongkarInspector = (function () {
             document.getElementById('ctrl-link-blank').checked = data.linkTarget === '_blank';
         } else {
             linkGroup.style.display = 'none';
+        }
+
+        // Modal / Pop-up Quick Trigger Control
+        const modalTriggerGroup = document.getElementById('group-modal-trigger-controls');
+        if (modalTriggerGroup) {
+            modalTriggerGroup.style.display = data.triggersModal ? 'block' : 'none';
         }
 
         // Video Controls
@@ -1336,77 +1342,106 @@ window.BongkarInspector = (function () {
         const srcInput = document.getElementById('ctrl-img-src');
         const altInput = document.getElementById('ctrl-img-alt');
         const fitSelect = document.getElementById('ctrl-img-fit');
+        const btnQuickOpenModal = document.getElementById('btn-quick-open-modal-edit');
 
-        btnMedia.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            // If the media frame already exists, reopen it.
-            if (wpMediaFrame) {
-                if (wpMediaFrame.state() && wpMediaFrame.state().get('selection')) {
-                    wpMediaFrame.state().get('selection').reset();
+        if (btnQuickOpenModal) {
+            btnQuickOpenModal.addEventListener('click', (e) => {
+                e.preventDefault();
+                const iframe = document.getElementById('bongkar-iframe-canvas');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_TOGGLE_MODAL_EDIT',
+                        forceState: true
+                    }, '*');
                 }
-                wpMediaFrame.open();
-                return;
-            }
-
-            // Create a new media frame
-            wpMediaFrame = wp.media({
-                title: 'Pilih atau Upload Gambar',
-                button: { text: 'Gunakan Gambar Ini' },
-                multiple: false
             });
+        }
 
-            // When an image is selected in the media frame...
-            wpMediaFrame.on('select', () => {
-                const attachment = wpMediaFrame.state().get('selection').first().toJSON();
-                srcInput.value = attachment.url;
-                if (attachment.alt) {
-                    altInput.value = attachment.alt;
+        if (btnMedia) {
+            btnMedia.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                if (typeof wp === 'undefined' || !wp.media) {
+                    console.warn('[Bongkar] wp.media is not available.');
+                    return;
                 }
 
-                // Send to canvas
+                // If media frame already exists, dispose to avoid stale closures
+                if (wpMediaFrame) {
+                    try {
+                        wpMediaFrame.dispose();
+                    } catch (err) {}
+                    wpMediaFrame = null;
+                }
+
+                // Create a fresh media frame
+                wpMediaFrame = wp.media({
+                    title: 'Pilih atau Upload Gambar',
+                    button: { text: 'Gunakan Gambar Ini' },
+                    multiple: false
+                });
+
+                // When an image is selected in the media frame...
+                wpMediaFrame.on('select', () => {
+                    const attachment = wpMediaFrame.state().get('selection').first().toJSON();
+                    if (!attachment || !attachment.url) return;
+
+                    if (srcInput) {
+                        srcInput.value = attachment.url;
+                        srcInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                    if (altInput && attachment.alt) {
+                        altInput.value = attachment.alt;
+                        altInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+
+                    // Send to canvas
+                    const iframe = document.getElementById('bongkar-iframe-canvas');
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({
+                            type: 'BONGKAR_UPDATE_IMAGE',
+                            src: attachment.url,
+                            alt: altInput ? altInput.value : ''
+                        }, '*');
+                    }
+                });
+
+                wpMediaFrame.open();
+            });
+        }
+
+        const sendImageUpdate = () => {
+            const iframe = document.getElementById('bongkar-iframe-canvas');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({
+                    type: 'BONGKAR_UPDATE_IMAGE',
+                    src: srcInput ? srcInput.value : '',
+                    alt: altInput ? altInput.value : ''
+                }, '*');
+            }
+        };
+
+        if (srcInput) {
+            srcInput.addEventListener('input', sendImageUpdate);
+            srcInput.addEventListener('change', sendImageUpdate);
+        }
+
+        if (altInput) {
+            altInput.addEventListener('input', sendImageUpdate);
+            altInput.addEventListener('change', sendImageUpdate);
+        }
+
+        if (fitSelect) {
+            fitSelect.addEventListener('change', () => {
                 const iframe = document.getElementById('bongkar-iframe-canvas');
                 if (iframe && iframe.contentWindow) {
                     iframe.contentWindow.postMessage({
                         type: 'BONGKAR_UPDATE_IMAGE',
-                        src: attachment.url,
-                        alt: altInput.value
+                        fit: fitSelect.value
                     }, '*');
                 }
             });
-
-            wpMediaFrame.open();
-        });
-
-        srcInput.addEventListener('input', () => {
-            const iframe = document.getElementById('bongkar-iframe-canvas');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({
-                    type: 'BONGKAR_UPDATE_IMAGE',
-                    src: srcInput.value
-                }, '*');
-            }
-        });
-
-        altInput.addEventListener('input', () => {
-            const iframe = document.getElementById('bongkar-iframe-canvas');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({
-                    type: 'BONGKAR_UPDATE_IMAGE',
-                    alt: altInput.value
-                }, '*');
-            }
-        });
-
-        fitSelect.addEventListener('change', () => {
-            const iframe = document.getElementById('bongkar-iframe-canvas');
-            if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({
-                    type: 'BONGKAR_UPDATE_IMAGE',
-                    fit: fitSelect.value
-                }, '*');
-            }
-        });
+        }
     }
 
     /**
@@ -1919,6 +1954,7 @@ window.BongkarInspector = (function () {
         init: init,
         onElementSelected: onElementSelected,
         onElementDeselected: onElementDeselected,
+        switchSubTab: switchSubTab,
         focusField: focusField,
         getCurrentElementData: () => currentElementData,
         getActiveGoogleFonts: () => Array.from(activeGoogleFonts),
@@ -1927,3 +1963,4 @@ window.BongkarInspector = (function () {
         }
     };
 })();
+window.BongkarInspectorTypography = window.BongkarInspector;

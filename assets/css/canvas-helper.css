@@ -952,4 +952,93 @@ body.bongkar-interactive-mode-active .bongkar-column-dropzone {
     outline-offset: 2px !important;
 }
 
+/* ============================================================
+   MODAL & POP-UP EDITING MODE STYLES
+   ============================================================ */
+.bongkar-modal-edit-active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 999990 !important;
+}
+
+.bongkar-modal-edit-active .modal-dialog,
+.bongkar-modal-edit-active .modal-content,
+.bongkar-modal-edit-active .modal-container,
+.bongkar-modal-edit-active .patrol-modal-dialog,
+.bongkar-modal-edit-active [class*="modal-dialog"],
+.bongkar-modal-edit-active [class*="modal-content"],
+.bongkar-modal-dialog-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    pointer-events: auto !important;
+}
+
+#bongkar-modal-edit-banner {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2147483647;
+    animation: slideDownModalBanner 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: auto;
+}
+
+@keyframes slideDownModalBanner {
+    from { opacity: 0; transform: translate(-50%, -12px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.modal-banner-pill {
+    background: #0f172a;
+    color: #ffffff;
+    border: 1px solid #6366f1;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.65), 0 0 20px rgba(99, 102, 241, 0.4);
+    padding: 8px 18px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.modal-banner-pill i {
+    color: #818cf8;
+    font-size: 15px;
+}
+
+.btn-exit-modal-banner {
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-exit-modal-banner:hover {
+    background: #4338ca;
+    transform: scale(1.04);
+}
+
+/* Ensure floating toolbar & canvas badge stay on top of modal backdrops */
+#bongkar-floating-toolbar {
+    z-index: 2147483646 !important;
+}
+
+#bongkar-canvas-badge {
+    z-index: 2147483645 !important;
+}
+
+
 

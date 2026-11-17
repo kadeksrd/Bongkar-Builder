@@ -114,6 +114,18 @@
             btnExitToast.addEventListener('click', () => setMode('design'));
         }
 
+        // Toggle Modal / Pop-up Editing Mode
+        const btnToggleModal = document.getElementById('btn-toggle-modal-edit');
+        if (btnToggleModal) {
+            btnToggleModal.addEventListener('click', () => {
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_TOGGLE_MODAL_EDIT'
+                    }, '*');
+                }
+            });
+        }
+
         // Keyboard Shortcut: Ctrl + I or Alt + I to toggle interactive mode
         window.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i' && !e.shiftKey) {
@@ -513,12 +525,23 @@
                     if (inspectorTabMedia && !inspectorTabMedia.classList.contains('active')) {
                         inspectorTabMedia.click();
                     }
+                    if (window.BongkarInspector && typeof window.BongkarInspector.switchSubTab === 'function') {
+                        window.BongkarInspector.switchSubTab('content');
+                    }
                     // Trigger WP Media Library picker button
                     const btnWpMedia = document.getElementById('btn-wp-media-picker');
                     if (btnWpMedia) {
                         btnWpMedia.click();
                     }
                     break;
+
+                case 'BONGKAR_MODAL_EDIT_STATE': {
+                    const btnModalToggle = document.getElementById('btn-toggle-modal-edit');
+                    if (btnModalToggle) {
+                        btnModalToggle.classList.toggle('active', !!data.active);
+                    }
+                    break;
+                }
             }
         });
     }

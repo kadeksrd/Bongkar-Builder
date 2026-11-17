@@ -1,7 +1,20 @@
 # Bongkar Canvas Builder (HTML-First Visual Page Builder)
 
-**Version 1.2.1 (Production Release)**  
+**Version 1.2.2 (Production Release)**  
 Plugin WordPress modern, ultra-ringan, dan *zero-bloat* yang dirancang khusus untuk mengimpor desain AI (HTML/CSS/JS dari Claude, v0, ChatGPT, atau Figma Export) dan mengeditnya secara visual di atas **Standalone Canvas Editor** (seperti Elementor tapi jauh lebih bersih, responsif, dan cepat).
+
+---
+
+## Fitur Baru Versi 1.2.2: Mode Edit Pop-up & Presisi Gambar
+
+1. **Mode Edit Pop-up / Modal Khusus:**  
+   - Menambahkan tombol dedicated **"Edit Pop-up"** di topbar studio dan banner kontrol kanvas.
+   - Mengunci pop-up/modal agar tetap terbuka dan stabil selama proses desain, sehingga gambar avatar tim, judul modal, dan formulir konsultasi dapat diedit dengan mudah tanpa risiko pop-up menutup sendiri.
+2. **Event Interception pada Tombol Pemicu Pop-up:**  
+   - Menggunakan event capturing pada mode desain agar tombol pembuka modal (seperti tombol WhatsApp atau Konsultasi) dapat diklik untuk diubah teks, ukuran, atau warnanya tanpa terpental membuka pop-up.
+3. **Perbaikan Penggantian Gambar & Logo Komprehensif:**  
+   - Mendeteksi elemen gambar baik yang berdiri sendiri (`<img>`), terbungkus tautan logo (`<a>`), maupun pembungkus kontainer (`<div>`).
+   - Menyuntikkan pembaruan URL langsung ke properti DOM browser untuk menjamin reload gambar seketika, serta otomatis membersihkan atribut `srcset` dan elemen `<picture><source>` lama agar tidak menimpa gambar baru.
 
 ---
 

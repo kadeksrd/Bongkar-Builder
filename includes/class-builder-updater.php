@@ -57,7 +57,7 @@ class Bongkar_Builder_Updater {
         $this->file            = BONGKAR_BUILDER_FILE;
         $this->plugin_slug     = 'bongkar-builder';
         $this->plugin_basename = plugin_basename($this->file);
-        $this->version         = defined('BONGKAR_BUILDER_VERSION') ? BONGKAR_BUILDER_VERSION : '1.2.1';
+        $this->version         = defined('BONGKAR_BUILDER_VERSION') ? BONGKAR_BUILDER_VERSION : '1.2.2';
 
         // Check for updates
         add_filter('pre_set_site_transient_update_plugins', [$this, 'check_update']);
