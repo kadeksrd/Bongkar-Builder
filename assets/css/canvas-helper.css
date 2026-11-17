@@ -978,32 +978,35 @@ body.bongkar-interactive-mode-active .bongkar-column-dropzone {
 
 #bongkar-modal-edit-banner {
     position: fixed;
-    top: 18px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 2147483647;
-    animation: slideDownModalBanner 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUpModalBanner 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: auto;
 }
 
-@keyframes slideDownModalBanner {
-    from { opacity: 0; transform: translate(-50%, -12px); }
+@keyframes slideUpModalBanner {
+    from { opacity: 0; transform: translate(-50%, 14px); }
     to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 .modal-banner-pill {
-    background: #0f172a;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: #ffffff;
-    border: 1px solid #6366f1;
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.65), 0 0 20px rgba(99, 102, 241, 0.4);
-    padding: 8px 18px;
+    border: 1px solid rgba(99, 102, 241, 0.6);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.75), 0 0 20px rgba(99, 102, 241, 0.4);
+    padding: 6px 14px 6px 16px;
     border-radius: 40px;
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    white-space: nowrap;
 }
 
 .modal-banner-pill i {

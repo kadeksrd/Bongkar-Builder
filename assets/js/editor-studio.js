@@ -77,6 +77,7 @@
      */
     function initInteractionModeSwitcher() {
         const btnDesign = document.getElementById('btn-mode-design');
+        const btnToggleModal = document.getElementById('btn-toggle-modal-edit');
         const btnInteractive = document.getElementById('btn-mode-interactive');
         const toast = document.getElementById('canvas-interactive-toast');
         const btnExitToast = document.getElementById('btn-exit-interactive-mode');
@@ -84,20 +85,37 @@
 
         function setMode(mode) {
             const isInteractive = (mode === 'interactive');
-            if (btnDesign) btnDesign.classList.toggle('active', !isInteractive);
+            const isPopup = (mode === 'popup');
+            const isDesign = (mode === 'design');
+
+            if (btnDesign) btnDesign.classList.toggle('active', isDesign);
+            if (btnToggleModal) btnToggleModal.classList.toggle('active', isPopup);
             if (btnInteractive) btnInteractive.classList.toggle('active', isInteractive);
             if (toast) toast.style.display = isInteractive ? 'flex' : 'none';
 
             if (iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({
-                    type: 'BONGKAR_SET_INTERACTION_MODE',
-                    mode: mode
-                }, '*');
+                if (isPopup) {
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_TOGGLE_MODAL_EDIT',
+                        forceState: true
+                    }, '*');
+                } else {
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_TOGGLE_MODAL_EDIT',
+                        forceState: false
+                    }, '*');
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_SET_INTERACTION_MODE',
+                        mode: isInteractive ? 'interactive' : 'design'
+                    }, '*');
+                }
             }
 
             if (window.BongkarScriptManager && typeof window.BongkarScriptManager.logToConsole === 'function') {
                 if (isInteractive) {
                     window.BongkarScriptManager.logToConsole('[Mode Interaktif] Live Testing aktif: Slider, kalkulator, accordion, popup & form berjalan 100% seperti website asli.');
+                } else if (isPopup) {
+                    window.BongkarScriptManager.logToConsole('[Mode Edit Pop-up] Pop-up aktif: Klik elemen di dalam pop-up untuk mengedit avatar, teks, dan tombol.');
                 } else {
                     window.BongkarScriptManager.logToConsole('[Mode Desain] Edit aktif: Klik elemen untuk mengedit style dan script.');
                 }
@@ -107,23 +125,17 @@
         if (btnDesign) {
             btnDesign.addEventListener('click', () => setMode('design'));
         }
+        if (btnToggleModal) {
+            btnToggleModal.addEventListener('click', () => {
+                const isCurrentlyActive = btnToggleModal.classList.contains('active');
+                setMode(isCurrentlyActive ? 'design' : 'popup');
+            });
+        }
         if (btnInteractive) {
             btnInteractive.addEventListener('click', () => setMode('interactive'));
         }
         if (btnExitToast) {
             btnExitToast.addEventListener('click', () => setMode('design'));
-        }
-
-        // Toggle Modal / Pop-up Editing Mode
-        const btnToggleModal = document.getElementById('btn-toggle-modal-edit');
-        if (btnToggleModal) {
-            btnToggleModal.addEventListener('click', () => {
-                if (iframe && iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({
-                        type: 'BONGKAR_TOGGLE_MODAL_EDIT'
-                    }, '*');
-                }
-            });
         }
 
         // Keyboard Shortcut: Ctrl + I or Alt + I to toggle interactive mode
@@ -537,8 +549,12 @@
 
                 case 'BONGKAR_MODAL_EDIT_STATE': {
                     const btnModalToggle = document.getElementById('btn-toggle-modal-edit');
+                    const btnDesign = document.getElementById('btn-mode-design');
                     if (btnModalToggle) {
                         btnModalToggle.classList.toggle('active', !!data.active);
+                    }
+                    if (btnDesign) {
+                        btnDesign.classList.toggle('active', !data.active);
                     }
                     break;
                 }

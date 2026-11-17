@@ -1386,7 +1386,7 @@
                 });
             });
 
-            // Inject floating banner at top of canvas
+            // Inject floating banner at bottom of canvas
             let banner = document.getElementById('bongkar-modal-edit-banner');
             if (!banner) {
                 banner = document.createElement('div');
@@ -1395,9 +1395,9 @@
                 banner.innerHTML = `
                     <div class="modal-banner-pill">
                         <i class="fa-solid fa-window-restore"></i>
-                        <span>Mode Edit Pop-up / Modal Aktif (Klik elemen di dalam pop-up untuk diedit)</span>
+                        <span>Mode Edit Pop-up Aktif (Klik elemen untuk mengedit)</span>
                         <button type="button" id="btn-exit-modal-edit" class="btn-exit-modal-banner">
-                            <i class="fa-solid fa-circle-check"></i> Selesai Edit Pop-up
+                            <i class="fa-solid fa-circle-check"></i> Selesai
                         </button>
                     </div>
                 `;
@@ -1408,9 +1408,8 @@
                 });
             }
 
-            // Auto-select first editable element in modal
-            const firstEditable = modals[0].querySelector('h1, h2, h3, h4, img, p, button') || modals[0];
-            selectElement(firstEditable);
+            // Open clean without auto-selecting to avoid floating toolbar covering content
+            deselectElement();
 
             showCanvasToast('Mode Edit Pop-up Aktif: Klik elemen apa saja di dalam pop-up untuk mengedit', 'success');
             window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: true }, '*');
@@ -1774,6 +1773,39 @@
         const maxToolbarLeft = Math.max(4, viewportWidth - toolbarWidth - 8);
         const safeToolbarLeft = Math.max(4, Math.min(rect.left + scrollX, maxToolbarLeft));
         floatingToolbar.style.left = `${safeToolbarLeft}px`;
+
+        // Modal protection: if element is inside a modal / pop-up, dock toolbar safely ABOVE the modal dialog
+        // so it never covers modal avatar, titles, or form fields inside the popup dialog
+        const modalBox = el.closest('.modal-container, .modal-dialog, .modal-content, .patrol-modal-dialog, [class*="modal-dialog"], [class*="modal-content"], [class*="modal-container"]') || (isModalEditActive ? el.closest('.bongkar-modal-edit-active') : null);
+
+        if (modalBox && modalBox !== document.body) {
+            // Hide bulky layout tools when inside modal to keep toolbar super compact
+            if (wrapContainerBtn) wrapContainerBtn.style.display = 'none';
+            if (toggleFlexBtn) toggleFlexBtn.style.display = 'none';
+            const addWidgetBtn = document.getElementById('act-add-widget');
+            if (addWidgetBtn) addWidgetBtn.style.display = 'none';
+            const moveUpBtn = document.getElementById('act-move-up');
+            if (moveUpBtn) moveUpBtn.style.display = 'none';
+            const moveDownBtn = document.getElementById('act-move-down');
+            if (moveDownBtn) moveDownBtn.style.display = 'none';
+
+            const mRect = modalBox.getBoundingClientRect();
+            const mTop = mRect.top + scrollY - toolbarHeight - 8;
+            if (mTop >= scrollY + 4) {
+                floatingToolbar.style.top = `${mTop}px`;
+            } else {
+                floatingToolbar.style.top = `${Math.max(scrollY + 4, mRect.top + scrollY + 4)}px`;
+            }
+            floatingToolbar.style.left = `${Math.max(8, Math.min(mRect.left + scrollX, maxToolbarLeft))}px`;
+            return;
+        } else {
+            const addWidgetBtn = document.getElementById('act-add-widget');
+            if (addWidgetBtn) addWidgetBtn.style.display = 'inline-flex';
+            const moveUpBtn = document.getElementById('act-move-up');
+            if (moveUpBtn) moveUpBtn.style.display = 'inline-flex';
+            const moveDownBtn = document.getElementById('act-move-down');
+            if (moveDownBtn) moveDownBtn.style.display = 'inline-flex';
+        }
 
         // Smart Vertical Positioning:
         // Priority 1: Place ABOVE if there is room and element is not tiny

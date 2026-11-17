@@ -61,17 +61,24 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 14px;
+    padding: 0 12px;
     z-index: 50;
     user-select: none;
-    gap: 10px;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.studio-topbar button,
+.studio-topbar a,
+.studio-topbar span {
+    white-space: nowrap !important;
 }
 
 .topbar-left {
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex-shrink: 1;
+    gap: 8px;
+    flex-shrink: 0;
     min-width: 0;
 }
 
@@ -187,7 +194,8 @@ body, html {
 .topbar-center {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .mode-switcher-pill {
@@ -198,13 +206,14 @@ body, html {
     border-radius: var(--radius-md);
     border: 1px solid var(--border-light);
     gap: 2px;
+    flex-shrink: 0;
 }
 
 .mode-btn {
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    padding: 6px 12px;
+    padding: 6px 11px;
     border-radius: var(--radius-sm);
     font-size: 11px;
     font-weight: 700;
@@ -212,6 +221,8 @@ body, html {
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap !important;
+    flex-shrink: 0;
     transition: all 0.15s ease;
 }
 
@@ -223,6 +234,12 @@ body, html {
     background: var(--primary);
     color: #ffffff;
     box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+}
+
+.mode-btn#btn-toggle-modal-edit.active {
+    background: #6366f1;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.45);
 }
 
 .mode-btn#btn-mode-interactive.active {
@@ -360,6 +377,31 @@ body, html {
 .btn-save-publish:hover {
     background: #16a34a;
     color: #ffffff;
+}
+
+@media (max-width: 1440px) {
+    .device-res-badge {
+        display: none !important;
+    }
+    .device-btn {
+        padding: 6px 10px !important;
+    }
+    .btn-studio-action {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+    }
+    .doc-info {
+        max-width: 110px !important;
+    }
+}
+
+@media (max-width: 1280px) {
+    .btn-studio-action span:not(#btn-save-page-label) {
+        display: none !important;
+    }
+    .doc-info {
+        display: none !important;
+    }
 }
 
 .btn-save-publish.has-unsaved {
