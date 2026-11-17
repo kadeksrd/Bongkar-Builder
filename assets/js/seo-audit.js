@@ -21,6 +21,18 @@ window.BongkarSEOAudit = (function () {
     let serpTitle = null;
     let serpDesc = null;
 
+    function __t(key, fallback = '', replacements = {}) {
+        let str = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function') 
+            ? window.BongkarI18n.t(key, fallback) 
+            : fallback;
+        if (replacements && typeof replacements === 'object') {
+            for (const [k, v] of Object.entries(replacements)) {
+                str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
+            }
+        }
+        return str;
+    }
+
     function init() {
         cacheDom();
         bindEvents();
@@ -87,6 +99,11 @@ window.BongkarSEOAudit = (function () {
                 if (seoTab) seoTab.click();
             });
         }
+
+        // Live re-audit when studio language is switched
+        window.addEventListener('bongkar_lang_changed', () => {
+            runAudit();
+        });
     }
 
     /**
@@ -125,10 +142,10 @@ window.BongkarSEOAudit = (function () {
             const h1Snippet = truncateText(h1Elements[0].innerText, 45);
             auditItems.push({
                 status: 'pass',
-                title: 'Heading 1 (H1) Ideal',
-                desc: `Tepat 1 tag H1 ditemukan: "<strong>${escapeHtml(h1Snippet)}</strong>". Memenuhi standar struktur Google 2026.`,
+                title: __t('seo.item_h1_pass_title', 'Heading 1 (H1) Ideal'),
+                desc: __t('seo.item_h1_pass_desc', 'Tepat 1 tag H1 ditemukan: "<strong>{h1}</strong>". Memenuhi standar struktur Google 2026.', { h1: escapeHtml(h1Snippet) }),
                 action: {
-                    label: 'Sorot H1',
+                    label: __t('seo.item_h1_action_highlight', 'Sorot H1'),
                     icon: 'fa-solid fa-crosshairs',
                     handler: () => jumpToElement(getElementSelector(h1Elements[0]))
                 }
@@ -136,10 +153,10 @@ window.BongkarSEOAudit = (function () {
         } else if (h1Elements.length === 0) {
             auditItems.push({
                 status: 'fail',
-                title: 'Heading 1 (H1) Tidak Ditemukan',
-                desc: 'Google 2026 mewajibkan tepat 1 tag &lt;h1&gt; sebagai topik utama halaman. Gunakan tombol di samping untuk menetapkan judul utama.',
+                title: __t('seo.item_h1_fail_title', 'Heading 1 (H1) Tidak Ditemukan'),
+                desc: __t('seo.item_h1_fail_desc', 'Google 2026 mewajibkan tepat 1 tag &lt;h1&gt; sebagai topik utama halaman. Gunakan tombol di samping untuk menetapkan judul utama.'),
                 action: {
-                    label: 'Perbaiki & Jadikan H1',
+                    label: __t('seo.item_h1_action_fix', 'Perbaiki & Jadikan H1'),
                     icon: 'fa-solid fa-wand-magic-sparkles',
                     handler: () => {
                         const firstHeading = root.querySelector('h2, h3, .hero-title, [class*="title"]') || root.querySelector('p');
@@ -153,10 +170,10 @@ window.BongkarSEOAudit = (function () {
             totalScore += 10;
             auditItems.push({
                 status: 'warn',
-                title: `Terlalu Banyak Tag H1 (${h1Elements.length} H1 Ditemukan)`,
-                desc: 'Ditemukan lebih dari 1 tag H1. Disarankan hanya 1 H1 per halaman, turunkan judul lainnya menjadi H2.',
+                title: __t('seo.item_h1_warn_title', `Terlalu Banyak Tag H1 (${h1Elements.length} H1 Ditemukan)`, { count: h1Elements.length }),
+                desc: __t('seo.item_h1_warn_desc', 'Ditemukan lebih dari 1 tag H1. Disarankan hanya 1 H1 per halaman, turunkan judul lainnya menjadi H2.'),
                 action: {
-                    label: 'Periksa H1 Tambahan',
+                    label: __t('seo.item_h1_action_inspect', 'Periksa H1 Tambahan'),
                     icon: 'fa-solid fa-crosshairs',
                     handler: () => jumpToElement(getElementSelector(h1Elements[1]), 'tag')
                 }
@@ -169,17 +186,17 @@ window.BongkarSEOAudit = (function () {
             totalScore += 15;
             auditItems.push({
                 status: 'pass',
-                title: 'Panjang Meta Title Ideal',
-                desc: `${titleLen} karakter (Ideal Google: 40–60 karakter). Tidak akan terpotong pada hasil pencarian desktop & mobile.`
+                title: __t('seo.item_title_pass_title', 'Panjang Meta Title Ideal'),
+                desc: __t('seo.item_title_pass_desc', `${titleLen} karakter (Ideal Google: 40–60 karakter). Tidak akan terpotong pada hasil pencarian desktop & mobile.`, { len: titleLen })
             });
         } else if (titleLen > 0) {
             totalScore += 8;
             auditItems.push({
                 status: 'warn',
-                title: titleLen < 40 ? 'Meta Title Terlalu Pendek' : 'Meta Title Terlalu Panjang',
-                desc: `${titleLen} karakter. Disarankan antara 40–60 karakter agar relevan dan tidak terpotong di Google.`,
+                title: titleLen < 40 ? __t('seo.item_title_short', 'Meta Title Terlalu Pendek') : __t('seo.item_title_long', 'Meta Title Terlalu Panjang'),
+                desc: __t('seo.item_title_warn_desc', `${titleLen} karakter. Disarankan antara 40–60 karakter agar relevan dan tidak terpotong di Google.`, { len: titleLen }),
                 action: {
-                    label: 'Edit Judul',
+                    label: __t('seo.item_title_action_edit', 'Edit Judul'),
                     icon: 'fa-solid fa-pen',
                     handler: () => focusInputField(metaTitleInput)
                 }
@@ -187,10 +204,10 @@ window.BongkarSEOAudit = (function () {
         } else {
             auditItems.push({
                 status: 'fail',
-                title: 'Meta Title Masih Kosong',
-                desc: 'Meta title adalah faktor penentu peringkat tertinggi di Google Search.',
+                title: __t('seo.item_title_empty_title', 'Meta Title Masih Kosong'),
+                desc: __t('seo.item_title_empty_desc', 'Meta title adalah faktor penentu peringkat tertinggi di Google Search.'),
                 action: {
-                    label: 'Tulis Judul',
+                    label: __t('seo.item_title_action_write', 'Tulis Judul'),
                     icon: 'fa-solid fa-pen',
                     handler: () => focusInputField(metaTitleInput)
                 }
@@ -203,17 +220,17 @@ window.BongkarSEOAudit = (function () {
             totalScore += 15;
             auditItems.push({
                 status: 'pass',
-                title: 'Panjang Meta Description Sempurna',
-                desc: `${descLen} karakter (Ideal Google: 120–160 karakter). Memberikan ringkasan yang menarik klik (CTR).`
+                title: __t('seo.item_desc_pass_title', 'Panjang Meta Description Sempurna'),
+                desc: __t('seo.item_desc_pass_desc', `${descLen} karakter (Ideal Google: 120–160 karakter). Memberikan ringkasan yang menarik klik (CTR).`, { len: descLen })
             });
         } else if (descLen > 0) {
             totalScore += 8;
             auditItems.push({
                 status: 'warn',
-                title: descLen < 120 ? 'Meta Description Terlalu Pendek' : 'Meta Description Terlalu Panjang',
-                desc: `${descLen} karakter. Disarankan 120–160 karakter agar informatif dan tidak terpotong di Google.`,
+                title: descLen < 120 ? __t('seo.item_desc_short', 'Meta Description Terlalu Pendek') : __t('seo.item_desc_long', 'Meta Description Terlalu Panjang'),
+                desc: __t('seo.item_desc_warn_desc', `${descLen} karakter. Disarankan 120–160 karakter agar informatif dan tidak terpotong di Google.`, { len: descLen }),
                 action: {
-                    label: 'Edit Deskripsi',
+                    label: __t('seo.item_desc_action_edit', 'Edit Deskripsi'),
                     icon: 'fa-solid fa-pen',
                     handler: () => focusInputField(metaDescInput)
                 }
@@ -221,10 +238,10 @@ window.BongkarSEOAudit = (function () {
         } else {
             auditItems.push({
                 status: 'fail',
-                title: 'Meta Description Masih Kosong',
-                desc: 'Tambahkan ringkasan menarik agar Google tidak menampilkan cuplikan teks acak.',
+                title: __t('seo.item_desc_empty_title', 'Meta Description Masih Kosong'),
+                desc: __t('seo.item_desc_empty_desc', 'Tambahkan ringkasan menarik agar Google tidak menampilkan cuplikan teks acak.'),
                 action: {
-                    label: 'Tulis Deskripsi',
+                    label: __t('seo.item_desc_action_write', 'Tulis Deskripsi'),
                     icon: 'fa-solid fa-pen',
                     handler: () => focusInputField(metaDescInput)
                 }
@@ -247,25 +264,25 @@ window.BongkarSEOAudit = (function () {
             totalScore += kwScore;
 
             const kwBadges = [
-                inTitle ? '<span style="color:#4ade80;"><i class="fa-solid fa-check"></i> Judul</span>' : '<span style="color:#f87171;"><i class="fa-solid fa-xmark"></i> Judul</span>',
-                inDesc ? '<span style="color:#4ade80;"><i class="fa-solid fa-check"></i> Deskripsi</span>' : '<span style="color:#f87171;"><i class="fa-solid fa-xmark"></i> Deskripsi</span>',
+                inTitle ? '<span style="color:#4ade80;"><i class="fa-solid fa-check"></i> ' + __t('seo.preview_title_tag', 'Judul') + '</span>' : '<span style="color:#f87171;"><i class="fa-solid fa-xmark"></i> ' + __t('seo.preview_title_tag', 'Judul') + '</span>',
+                inDesc ? '<span style="color:#4ade80;"><i class="fa-solid fa-check"></i> ' + __t('seo.preview_desc_tag', 'Deskripsi') + '</span>' : '<span style="color:#f87171;"><i class="fa-solid fa-xmark"></i> ' + __t('seo.preview_desc_tag', 'Deskripsi') + '</span>',
                 inH1 ? '<span style="color:#4ade80;"><i class="fa-solid fa-check"></i> H1</span>' : '<span style="color:#f87171;"><i class="fa-solid fa-xmark"></i> H1</span>',
-                inBody ? '<span style="color:#4ade80;"><i class="fa-solid fa-check"></i> Konten</span>' : '<span style="color:#f87171;"><i class="fa-solid fa-xmark"></i> Konten</span>'
+                inBody ? '<span style="color:#4ade80;"><i class="fa-solid fa-check"></i> ' + __t('seo.preview_content_tag', 'Konten') + '</span>' : '<span style="color:#f87171;"><i class="fa-solid fa-xmark"></i> ' + __t('seo.preview_content_tag', 'Konten') + '</span>'
             ].join(' | ');
 
             auditItems.push({
                 status: kwScore >= 15 ? 'pass' : (kwScore >= 10 ? 'warn' : 'fail'),
-                title: `Kehadiran Keyword: "${escapeHtml(keyword)}"`,
-                desc: `Sebaran kata kunci target: [ ${kwBadges} ]. Membantu Google mengindeks topik utama landing page Anda.`
+                title: __t('seo.item_kw_found_title', `Kehadiran Keyword: "${escapeHtml(keyword)}"`, { kw: escapeHtml(keyword) }),
+                desc: __t('seo.item_kw_found_desc', `Sebaran kata kunci target: [ {badges} ]. Membantu Google mengindeks topik utama landing page Anda.`, { badges: kwBadges })
             });
         } else {
             totalScore += 12; // neutral default
             auditItems.push({
                 status: 'warn',
-                title: 'Belum Menentukan Kata Kunci Target',
-                desc: 'Tuliskan kata kunci target di kotak atas (misal: "Jasa Website Murah") untuk audit akurasi keyword Google.',
+                title: __t('seo.item_kw_empty_title', 'Belum Menentukan Kata Kunci Target'),
+                desc: __t('seo.item_kw_empty_desc', 'Tuliskan kata kunci target di kotak atas (misal: "Jasa Website Murah") untuk audit akurasi keyword Google.'),
                 action: {
-                    label: 'Isi Keyword',
+                    label: __t('seo.item_kw_action_set', 'Isi Keyword'),
                     icon: 'fa-solid fa-key',
                     handler: () => focusInputField(focusKeywordInput)
                 }
@@ -289,25 +306,25 @@ window.BongkarSEOAudit = (function () {
             totalScore += 15;
             auditItems.push({
                 status: 'pass',
-                title: 'Audit Gambar Bersih',
-                desc: 'Halaman tidak memiliki gambar atau semua aset berbentuk vektor murni (Font Awesome).'
+                title: __t('seo.item_img_none_title', 'Audit Gambar Bersih'),
+                desc: __t('seo.item_img_none_desc', 'Halaman tidak memiliki gambar atau semua aset berbentuk vektor murni (Font Awesome).')
             });
         } else if (missingAltImages.length === 0) {
             totalScore += 15;
             auditItems.push({
                 status: 'pass',
-                title: 'Semua Gambar Memiliki Alt Text',
-                desc: `${imgElements.length} gambar memiliki deskripsi teks (Alt) yang siap terindeks di Google Images & ramah aksesibilitas.`
+                title: __t('seo.item_img_pass_title', 'Semua Gambar Memiliki Alt Text'),
+                desc: __t('seo.item_img_pass_desc', `${imgElements.length} gambar memiliki deskripsi teks (Alt) yang siap terindeks di Google Images & ramah aksesibilitas.`, { count: imgElements.length })
             });
         } else {
             const deduction = Math.min(15, missingAltImages.length * 4);
             totalScore += (15 - deduction);
             auditItems.push({
                 status: 'fail',
-                title: `${missingAltImages.length} Gambar Tidak Memiliki Alt Text`,
-                desc: 'Google tidak dapat memahami isi gambar tanpa atribut Alt. Klik tombol di bawah untuk langsung menuju gambar dan mengisinya di Inspector:',
+                title: __t('seo.item_img_fail_title', `${missingAltImages.length} Gambar Tidak Memiliki Alt Text`, { count: missingAltImages.length }),
+                desc: __t('seo.item_img_fail_desc', 'Google tidak dapat memahami isi gambar tanpa atribut Alt. Klik tombol di bawah untuk langsung menuju gambar dan mengisinya di Inspector:'),
                 subItems: missingAltImages.map((m, i) => ({
-                    label: `Gambar #${i + 1}`,
+                    label: __t('seo.item_img_chip', `Gambar #${i + 1}`, { num: i + 1 }),
                     icon: 'fa-solid fa-image',
                     handler: () => jumpToElement(m.selector, 'alt')
                 }))
@@ -331,15 +348,15 @@ window.BongkarSEOAudit = (function () {
             totalScore += 10;
             auditItems.push({
                 status: 'pass',
-                title: 'Semua Tautan Mengarah ke URL Valid',
-                desc: `${linkElements.length} link anchor memiliki target href yang valid (Tidak ada tautan kosong/mati).`
+                title: __t('seo.item_links_pass_title', 'Semua Tautan Mengarah ke URL Valid'),
+                desc: __t('seo.item_links_pass_desc', `${linkElements.length} link anchor memiliki target href yang valid (Tidak ada tautan kosong/mati).`, { count: linkElements.length })
             });
         } else {
             totalScore += Math.max(3, 10 - (placeholderLinks.length * 2));
             auditItems.push({
                 status: 'warn',
-                title: `${placeholderLinks.length} Tautan Placeholder (href='#')`,
-                desc: 'Ditemukan tombol atau link yang belum diisi URL target. Klik tautan untuk melengkapi URL di Inspector:',
+                title: __t('seo.item_links_warn_title', `${placeholderLinks.length} Tautan Placeholder (href='#')`, { count: placeholderLinks.length }),
+                desc: __t('seo.item_links_warn_desc', 'Ditemukan tombol atau link yang belum diisi URL target. Klik tautan untuk melengkapi URL di Inspector:'),
                 subItems: placeholderLinks.map(p => ({
                     label: `Link: "${p.text}"`,
                     icon: 'fa-solid fa-link',
@@ -353,22 +370,22 @@ window.BongkarSEOAudit = (function () {
             totalScore += 5;
             auditItems.push({
                 status: 'pass',
-                title: `Kedalaman Konten Ideal (${wordCount} Kata)`,
-                desc: 'Memenuhi standar Google 2026 untuk landing page yang berbobot dan bernilai tinggi bagi pengunjung.'
+                title: __t('seo.item_words_ideal_title', `Kedalaman Konten Ideal (${wordCount} Kata)`, { count: wordCount }),
+                desc: __t('seo.item_words_ideal_desc', 'Memenuhi standar Google 2026 untuk landing page yang berbobot dan bernilai tinggi bagi pengunjung.')
             });
         } else if (wordCount >= 150) {
             totalScore += 3;
             auditItems.push({
                 status: 'warn',
-                title: `Panjang Konten Cukup (${wordCount} Kata)`,
-                desc: 'Disarankan minimal 300 kata (misal dengan menambahkan section FAQ atau penjelasan fitur) untuk meningkatkan otoritas SEO.'
+                title: __t('seo.item_words_ok_title', `Panjang Konten Cukup (${wordCount} Kata)`, { count: wordCount }),
+                desc: __t('seo.item_words_ok_desc', 'Disarankan minimal 300 kata (misal dengan menambahkan section FAQ atau penjelasan fitur) untuk meningkatkan otoritas SEO.')
             });
         } else {
             totalScore += 1;
             auditItems.push({
                 status: 'warn',
-                title: `Konten Terlalu Singkat (${wordCount} Kata)`,
-                desc: 'Google cenderung memprioritaskan halaman dengan konten informatif lengkap di atas 300 kata.'
+                title: __t('seo.item_words_short_title', `Konten Terlalu Singkat (${wordCount} Kata)`, { count: wordCount }),
+                desc: __t('seo.item_words_short_desc', 'Google cenderung memprioritaskan halaman dengan konten informatif lengkap di atas 300 kata.')
             });
         }
 
@@ -378,16 +395,16 @@ window.BongkarSEOAudit = (function () {
         if (hasOgImage) {
             auditItems.push({
                 status: 'pass',
-                title: 'Thumbnail Share WhatsApp & Medsos Siap',
-                desc: 'Tautan Anda akan menampilkan kartu visual saat dibagikan ke WhatsApp, Telegram, Facebook, dan Twitter.'
+                title: __t('seo.item_og_pass_title', 'Thumbnail Share WhatsApp & Medsos Siap'),
+                desc: __t('seo.item_og_pass_desc', 'Tautan Anda akan menampilkan kartu visual saat dibagikan ke WhatsApp, Telegram, Facebook, dan Twitter.')
             });
         } else {
             auditItems.push({
                 status: 'warn',
-                title: 'Belum Ada Thumbnail Share WhatsApp',
-                desc: 'Sebaiknya pasang thumbnail share (1200x630 px) agar link yang dibagikan memiliki preview kartu gambar di WhatsApp.',
+                title: __t('seo.item_og_warn_title', 'Belum Ada Thumbnail Share WhatsApp'),
+                desc: __t('seo.item_og_warn_desc', 'Sebaiknya pasang thumbnail share (1200x630 px) agar link yang dibagikan memiliki preview kartu gambar di WhatsApp.'),
                 action: {
-                    label: 'Pilih Gambar',
+                    label: __t('seo.choose_image', 'Pilih Gambar'),
                     icon: 'fa-brands fa-whatsapp',
                     handler: () => {
                         const btnUpload = document.getElementById('btn-upload-og-image');
@@ -411,19 +428,19 @@ window.BongkarSEOAudit = (function () {
         // Color coding
         let scoreColor = '#22c55e';
         let badgeClass = 'badge-good';
-        let verdict = 'Optimal (Siap Peringkat Google 2026)';
-        let desc = 'Halaman telah memenuhi standar teknis SEO Google 2026. Lolos uji semantik dan relevansi.';
+        let verdict = __t('seo.verdict_good', 'Optimal (Siap Peringkat Google 2026)');
+        let desc = __t('seo.verdict_good_desc', 'Halaman telah memenuhi standar teknis SEO Google 2026. Lolos uji semantik dan relevansi.');
 
         if (score < 50) {
             scoreColor = '#ef4444';
             badgeClass = 'badge-danger';
-            verdict = 'Kritis (Perlu Perbaikan Segera)';
-            desc = 'Ditemukan masalah mendasar seperti Heading H1 kosong atau Meta Tag yang belum diisi.';
+            verdict = __t('seo.verdict_danger', 'Kritis (Perlu Perbaikan Segera)');
+            desc = __t('seo.verdict_danger_desc', 'Ditemukan masalah mendasar seperti Heading H1 kosong atau Meta Tag yang belum diisi.');
         } else if (score < 80) {
             scoreColor = '#f59e0b';
             badgeClass = 'badge-warning';
-            verdict = 'Cukup Baik (Ada Rekomendasi)';
-            desc = 'Struktur halaman cukup baik, namun masih ada ruang peningkatan seperti Alt gambar atau panjang teks.';
+            verdict = __t('seo.verdict_warn', 'Cukup Baik (Ada Rekomendasi)');
+            desc = __t('seo.verdict_warn_desc', 'Struktur halaman cukup baik, namun masih ada ruang peningkatan seperti Alt gambar atau panjang teks.');
         }
 
         if (scoreGauge) {

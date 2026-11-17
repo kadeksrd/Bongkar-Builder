@@ -511,6 +511,26 @@
     transform: translateY(-1px);
 }
 
+.btn-inline-custom-html {
+    background: #059669;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-inline-custom-html:hover {
+    background: #047857;
+    transform: translateY(-1px);
+}
+
 .btn-inline-paste {
     background: #0f172a;
     color: #ffffff;
@@ -688,6 +708,16 @@
 .picker-col-preview.col-2-asym-left span:nth-child(2) { flex: 1; }
 .picker-col-preview.col-3 span { flex: 1; }
 .picker-col-preview.col-4 span { flex: 1; }
+.picker-col-preview.col-custom-html {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #059669;
+    font-size: 13px;
+}
+.btn-picker-layout:hover .picker-col-preview.col-custom-html {
+    color: #10b981;
+}
 
 .picker-col-label {
     font-size: 11px;
@@ -728,7 +758,29 @@
     font-size: 16px;
 }
 
-/* Bottom Paste Action Button */
+/* Bottom Paste & Custom HTML Action Buttons */
+.bongkar-bottom-add-zone button.btn-bottom-custom-html {
+    background: #059669;
+    color: #ffffff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+}
+
+.bongkar-bottom-add-zone button.btn-bottom-custom-html:hover {
+    transform: translateY(-2px);
+    background: #047857;
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.38);
+}
+
 .bongkar-bottom-add-zone button.btn-bottom-paste {
     background: #0284c7;
     color: #ffffff;
@@ -963,6 +1015,10 @@ body.bongkar-interactive-mode-active .bongkar-column-dropzone {
     z-index: 999990 !important;
 }
 
+.bongkar-modal-edit-active.hidden {
+    display: flex !important;
+}
+
 .bongkar-modal-edit-active .modal-dialog,
 .bongkar-modal-edit-active .modal-content,
 .bongkar-modal-edit-active .modal-container,
@@ -974,6 +1030,12 @@ body.bongkar-interactive-mode-active .bongkar-column-dropzone {
     visibility: visible !important;
     transform: none !important;
     pointer-events: auto !important;
+    max-height: none !important;
+}
+
+.bongkar-modal-dialog-active.hidden,
+.bongkar-modal-edit-active [class*="modal-dialog"].hidden {
+    display: block !important;
 }
 
 #bongkar-modal-edit-banner {

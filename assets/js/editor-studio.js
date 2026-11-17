@@ -139,6 +139,7 @@
         if (window.BongkarScriptManager) window.BongkarScriptManager.init();
         if (window.BongkarSEOAudit) window.BongkarSEOAudit.init();
         if (window.BongkarImporter) window.BongkarImporter.init();
+        initSectionHtmlModal();
 
         // Bind quick navigation buttons from Inspector to Elements (Widgets) panel
         document.querySelectorAll('.btn-go-widgets, #btn-back-to-widgets').forEach(btn => {
@@ -497,6 +498,20 @@
                     break;
                 }
 
+                case 'BONGKAR_OPEN_CUSTOM_HTML_MODAL': {
+                    pendingCustomHtmlInsertIndex = (typeof data.insertIndex === 'number') ? data.insertIndex : -1;
+                    const modal = document.getElementById('modal-section-html');
+                    if (modal) {
+                        modal.classList.add('active');
+                        const textarea = document.getElementById('section-html-textarea');
+                        if (textarea) {
+                            textarea.value = '';
+                            setTimeout(() => textarea.focus(), 80);
+                        }
+                    }
+                    break;
+                }
+
                 case 'BONGKAR_OPEN_IMPORTER':
                     if (window.BongkarImporter && typeof window.BongkarImporter.openModal === 'function') {
                         window.BongkarImporter.openModal();
@@ -537,6 +552,70 @@
                 }
             }
         });
+    }
+
+    let pendingCustomHtmlInsertIndex = -1;
+
+    /**
+     * Modal handler: Sisipkan Section Desain HTML Sendiri
+     */
+    function initSectionHtmlModal() {
+        const modal = document.getElementById('modal-section-html');
+        if (!modal) return;
+
+        modal.querySelectorAll('[data-close-modal="section-html"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+        });
+
+        // Trigger buttons from sidebar panel or other studio locations
+        document.querySelectorAll('.btn-trigger-custom-html-section').forEach(btn => {
+            btn.addEventListener('click', () => {
+                pendingCustomHtmlInsertIndex = -1;
+                modal.classList.add('active');
+                const textarea = document.getElementById('section-html-textarea');
+                if (textarea) setTimeout(() => textarea.focus(), 100);
+            });
+        });
+
+        const btnSubmit = document.getElementById('btn-submit-section-html');
+        const textarea = document.getElementById('section-html-textarea');
+
+        if (btnSubmit && textarea) {
+            btnSubmit.addEventListener('click', () => {
+                const rawHtml = textarea.value.trim();
+                if (!rawHtml) {
+                    const alertMsg = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
+                        ? window.BongkarI18n.t('modal_html.empty_alert')
+                        : 'Silakan masukkan kode HTML terlebih dahulu.';
+                    alert(alertMsg);
+                    return;
+                }
+
+                // Wrap in section if raw snippet isn't already a section or container
+                let finalHtml = rawHtml;
+                const temp = document.createElement('div');
+                temp.innerHTML = rawHtml;
+                const first = temp.firstElementChild;
+                if (!first || (first.tagName !== 'SECTION' && !first.classList.contains('bongkar-section'))) {
+                    finalHtml = `<section class="bongkar-section py-16 px-4" style="position:relative;">\n${rawHtml}\n</section>`;
+                }
+
+                const iframe = document.getElementById('bongkar-iframe-canvas');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_INSERT_HTML',
+                        html: finalHtml,
+                        insertIndex: pendingCustomHtmlInsertIndex
+                    }, '*');
+                }
+
+                modal.classList.remove('active');
+                textarea.value = '';
+                pendingCustomHtmlInsertIndex = -1;
+            });
+        }
     }
 
     /**

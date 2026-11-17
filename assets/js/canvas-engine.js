@@ -61,7 +61,15 @@
             'badge.hover_modal': 'Edit Pop-up',
             'badge.hover_modal_title': 'Klik untuk membuka dan mengedit pop-up/modal ini',
             'banner.active': 'Mode Edit Pop-up Aktif (Klik elemen untuk mengedit)',
-            'banner.finish': 'Selesai'
+            'banner.finish': 'Selesai',
+            'picker.custom_html': 'HTML Sendiri',
+            'picker.custom_html_btn': 'Desain HTML Sendiri',
+            'picker.custom_html_title': 'Sisipkan Section Desain HTML Sendiri / AI',
+            'picker.title': 'Pilih Struktur Kolom Section',
+            'picker.open_widgets': 'Buka Panel Widget',
+            'picker.paste': 'Tempel Elemen',
+            'picker.add_section': 'Tambah Section',
+            'toast.section_html_success': 'Section HTML berhasil disisipkan!'
         },
         en: {
             'role.element': 'Element',
@@ -99,7 +107,15 @@
             'badge.hover_modal': 'Edit Pop-up',
             'badge.hover_modal_title': 'Click to open and edit this pop-up/modal',
             'banner.active': 'Pop-up Edit Mode Active (Click elements to edit)',
-            'banner.finish': 'Done'
+            'banner.finish': 'Done',
+            'picker.custom_html': 'Custom HTML',
+            'picker.custom_html_btn': 'Custom HTML Design',
+            'picker.custom_html_title': 'Insert Custom HTML / AI Section',
+            'picker.title': 'Select Section Column Structure',
+            'picker.open_widgets': 'Open Widgets Panel',
+            'picker.paste': 'Paste Element',
+            'picker.add_section': 'Add Section',
+            'toast.section_html_success': 'Custom HTML section successfully inserted!'
         }
     };
 
@@ -1532,16 +1548,23 @@
         return false;
     }
 
+    let modalMutationObserver = null;
+
     function findModalsInCanvas() {
         const root = document.getElementById('bongkar-canvas-root') || document.body;
-        const allCandidates = root.querySelectorAll(
+        // Search across the entire document body to catch modals at root or outside canvas root
+        const allCandidates = document.querySelectorAll(
             'dialog, .modal-backdrop, .modal, .popup, .lightbox, ' +
             'div[id*="modal" i], div[id*="popup" i], section[id*="modal" i], aside[id*="modal" i], ' +
             'div[class*="modal" i], div[class*="popup" i]'
         );
         const modals = [];
         allCandidates.forEach(el => {
-            if (el.closest('#bongkar-floating-toolbar') || el.closest('#bongkar-context-menu') || el.closest('#bongkar-modal-edit-banner')) return;
+            if (el.closest('#bongkar-floating-toolbar') || 
+                el.closest('#bongkar-context-menu') || 
+                el.closest('#bongkar-modal-edit-banner') ||
+                el.closest('#bongkar-hover-modal-badge') ||
+                el.closest('#bongkar-canvas-toast')) return;
             
             // Exclude non-modal containers (buttons, close icons, titles, inputs, etc.)
             const tag = el.tagName.toUpperCase();
@@ -1571,7 +1594,7 @@
 
         if (isModalEditActive) {
             if (modals.length === 0) {
-                showCanvasToast('Tidak ditemukan elemen Pop-up / Modal di halaman ini', 'info');
+                showCanvasToast(canvasT('toast.modal_not_found', 'Tidak ditemukan elemen Pop-up / Modal di halaman ini'), 'info');
                 isModalEditActive = false;
                 window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: false }, '*');
                 return;
@@ -1579,13 +1602,41 @@
 
             activeModalElements = modals;
             modals.forEach(m => {
-                m.classList.add('bongkar-modal-edit-active');
-                m.classList.add('active'); // in case modal styling uses .active
+                m.classList.add('bongkar-modal-edit-active', 'active', 'show', 'open', 'is-open');
                 m.setAttribute('aria-hidden', 'false');
-                m.querySelectorAll('.modal-container, .modal-dialog, .modal-content, [class*="modal-dialog"], [class*="modal-content"]').forEach(child => {
+                m.style.setProperty('display', 'flex', 'important');
+                m.style.setProperty('opacity', '1', 'important');
+                m.style.setProperty('visibility', 'visible', 'important');
+                m.style.setProperty('pointer-events', 'auto', 'important');
+                m.querySelectorAll('.modal-container, .modal-dialog, .modal-content, .patrol-modal-dialog, [class*="modal-dialog"], [class*="modal-content"]').forEach(child => {
                     child.classList.add('bongkar-modal-dialog-active');
+                    child.style.setProperty('opacity', '1', 'important');
+                    child.style.setProperty('visibility', 'visible', 'important');
+                    child.style.setProperty('transform', 'none', 'important');
+                    child.style.setProperty('pointer-events', 'auto', 'important');
                 });
             });
+
+            // Shield active modal from external scripts auto-closing it
+            if (!modalMutationObserver && window.MutationObserver) {
+                modalMutationObserver = new MutationObserver(() => {
+                    if (isModalEditActive && activeModalElements.length > 0) {
+                        activeModalElements.forEach(m => {
+                            if (m.style.display === 'none' || m.style.visibility === 'hidden' || m.style.opacity === '0') {
+                                m.style.setProperty('display', 'flex', 'important');
+                                m.style.setProperty('opacity', '1', 'important');
+                                m.style.setProperty('visibility', 'visible', 'important');
+                            }
+                            if (!m.classList.contains('bongkar-modal-edit-active')) {
+                                m.classList.add('bongkar-modal-edit-active');
+                            }
+                        });
+                    }
+                });
+                activeModalElements.forEach(m => {
+                    modalMutationObserver.observe(m, { attributes: true, attributeFilter: ['style', 'class', 'aria-hidden'] });
+                });
+            }
 
             // Inject floating banner at bottom of canvas
             let banner = document.getElementById('bongkar-modal-edit-banner');
@@ -1596,9 +1647,9 @@
                 banner.innerHTML = `
                     <div class="modal-banner-pill">
                         <i class="fa-solid fa-window-restore"></i>
-                        <span>Mode Edit Pop-up Aktif (Klik elemen untuk mengedit)</span>
+                        <span>${canvasT('banner.active', 'Mode Edit Pop-up Aktif (Klik elemen untuk mengedit)')}</span>
                         <button type="button" id="btn-exit-modal-edit" class="btn-exit-modal-banner">
-                            <i class="fa-solid fa-circle-check"></i> Selesai
+                            <i class="fa-solid fa-circle-check"></i> ${canvasT('banner.finish', 'Selesai')}
                         </button>
                     </div>
                 `;
@@ -1613,15 +1664,26 @@
             deselectElement();
             if (hoverModalBadge) hoverModalBadge.style.display = 'none';
 
-            showCanvasToast('Mode Edit Pop-up Aktif: Klik elemen apa saja di dalam pop-up untuk mengedit', 'success');
+            showCanvasToast(canvasT('toast.modal_active', 'Mode Edit Pop-up Aktif: Klik elemen apa saja di dalam pop-up untuk mengedit'), 'success');
             window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: true }, '*');
         } else {
+            if (modalMutationObserver) {
+                modalMutationObserver.disconnect();
+                modalMutationObserver = null;
+            }
             activeModalElements.forEach(m => {
-                m.classList.remove('bongkar-modal-edit-active');
-                m.classList.remove('active');
+                m.classList.remove('bongkar-modal-edit-active', 'active', 'show', 'open', 'is-open');
+                m.style.removeProperty('display');
+                m.style.removeProperty('opacity');
+                m.style.removeProperty('visibility');
+                m.style.removeProperty('pointer-events');
                 m.setAttribute('aria-hidden', 'true');
                 m.querySelectorAll('.bongkar-modal-edit-active, .bongkar-modal-dialog-active').forEach(child => {
                     child.classList.remove('bongkar-modal-edit-active', 'bongkar-modal-dialog-active');
+                    child.style.removeProperty('opacity');
+                    child.style.removeProperty('visibility');
+                    child.style.removeProperty('transform');
+                    child.style.removeProperty('pointer-events');
                 });
             });
             activeModalElements = [];
@@ -1631,7 +1693,7 @@
 
             deselectElement();
             if (hoverModalBadge) hoverModalBadge.style.display = 'none';
-            showCanvasToast('Mode Edit Pop-up ditutup', 'info');
+            showCanvasToast(canvasT('toast.modal_closed', 'Mode Edit Pop-up ditutup'), 'info');
             window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: false }, '*');
         }
     }
@@ -1758,6 +1820,17 @@
             }
         });
 
+        // Intercept mousedown on window in capture phase to prevent external backdrop-close scripts
+        window.addEventListener('mousedown', (e) => {
+            if (isInteractiveMode) return;
+            if (isModalEditActive) {
+                // If user clicks anywhere inside or around active modal, stop external scripts from closing it
+                if (e.target.closest('.bongkar-modal-edit-active') || e.target.classList.contains('bongkar-modal-edit-active')) {
+                    e.stopPropagation();
+                }
+            }
+        }, true);
+
         // Click to Select or Interact (Captured on document to prevent inline onclick scripts from hijacking in Design Mode)
         document.addEventListener('click', (e) => {
             // In Interactive Mode, allow all native clicks (buttons, sliders, tabs, accordions, modals)!
@@ -1783,6 +1856,7 @@
             // PREVENT inline onclick, link navigation, form submission, and modal auto-closing in Design Mode!
             e.preventDefault();
             e.stopPropagation();
+            e.stopImmediatePropagation();
 
             hideContextMenu();
 
@@ -1792,7 +1866,27 @@
                 b.querySelectorAll('.bongkar-inline-section-picker').forEach(p => p.remove());
             });
 
-            // If clicking inside canvas or active modal, select the target!
+            // If Modal Edit Mode is active, clicks inside modal select target element
+            if (isModalEditActive) {
+                const target = e.target.closest('.bongkar-modal-edit-active *') || (e.target.classList.contains('bongkar-modal-edit-active') ? e.target : null);
+                if (target && target !== root && target !== document.body) {
+                    selectElement(target);
+                } else {
+                    deselectElement();
+                }
+                return;
+            }
+
+            // Check if clicking directly on a modal trigger (e.g. "Tanya Pak Patrol" pill)
+            const modalTrigger = checkElementTriggersModal(e.target);
+            if (modalTrigger) {
+                selectElement(modalTrigger);
+                // Promptly activate modal edit mode so user directly sees and edits the popup!
+                toggleModalEditMode(true);
+                return;
+            }
+
+            // If clicking inside canvas, select the target!
             const target = e.target.closest('#bongkar-canvas-root *') || (e.target.closest('.bongkar-modal-edit-active') ? e.target : null);
             if (target && target !== root && target !== document.body) {
                 selectElement(target);
@@ -1822,16 +1916,29 @@
             }
         }, true);
 
-        // Double click: image opens media picker, text enables inline edit
-        root.addEventListener('dblclick', (e) => {
-            const target = e.target.closest('#bongkar-canvas-root *') || (e.target.closest('.bongkar-modal-edit-active') ? e.target : null);
+        // Double click: image opens media picker, text enables inline edit (Document-level capture)
+        document.addEventListener('dblclick', (e) => {
+            if (isInteractiveMode) return;
+
+            // Allow clicks inside editor helper UI elements
+            if (e.target.closest('#bongkar-floating-toolbar') || 
+                e.target.closest('#bongkar-context-menu') || 
+                e.target.closest('.bongkar-modal-edit-banner') ||
+                e.target.closest('#bongkar-hover-modal-badge') ||
+                e.target.closest('#bongkar-canvas-toast')) {
+                return;
+            }
+
+            const target = e.target.closest('#bongkar-canvas-root *') || (isModalEditActive && e.target.closest('.bongkar-modal-edit-active') ? e.target : null);
             if (!target) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
             const imgTarget = target.tagName === 'IMG' ? target : target.querySelector('img');
             const hasBg = (window.getComputedStyle(target).backgroundImage || '').includes('url');
             if (imgTarget || hasBg) {
-                e.preventDefault();
-                e.stopPropagation();
                 selectElement(imgTarget || target);
                 window.parent.postMessage({
                     type: 'BONGKAR_OPEN_MEDIA_PICKER',
@@ -1841,11 +1948,9 @@
             }
 
             if (isTextEditable(target)) {
-                e.preventDefault();
-                e.stopPropagation();
                 enableInlineEdit(target);
             }
-        });
+        }, true);
 
         // Reposition toolbar on scroll or resize (capture: true catches scroll in modals/overflow containers)
         window.addEventListener('scroll', () => {
@@ -2061,13 +2166,36 @@
             if (moveDownBtn) moveDownBtn.style.display = 'none';
 
             const mRect = modalBox.getBoundingClientRect();
-            const mTop = mRect.top + scrollY - toolbarHeight - 8;
-            if (mTop >= scrollY + 4) {
-                floatingToolbar.style.top = `${mTop}px`;
-            } else {
-                floatingToolbar.style.top = `${Math.max(scrollY + 4, mRect.top + scrollY + 4)}px`;
+            const modalTopOnCanvas = mRect.top + scrollY;
+            const modalBottomOnCanvas = mRect.bottom + scrollY;
+
+            // Strategy 1: If there is comfortable room ABOVE the modal dialog
+            if (mRect.top >= toolbarHeight + 12) {
+                floatingToolbar.style.top = `${modalTopOnCanvas - toolbarHeight - 8}px`;
+                floatingToolbar.style.left = `${Math.max(8, Math.min(rect.left + scrollX, maxToolbarLeft))}px`;
+                return;
             }
-            floatingToolbar.style.left = `${Math.max(8, Math.min(mRect.left + scrollX, maxToolbarLeft))}px`;
+
+            // Strategy 2: Modal dialog is near top of viewport (anti-covering header/avatar)
+            // NEVER dock at modalTop! Instead, place BELOW the selected element:
+            const belowEl = rect.bottom + scrollY + 8;
+            if (rect.bottom + toolbarHeight + 16 <= viewportHeight) {
+                floatingToolbar.style.top = `${belowEl}px`;
+                floatingToolbar.style.left = `${Math.max(8, Math.min(rect.left + scrollX, maxToolbarLeft))}px`;
+                return;
+            }
+
+            // Strategy 3: Place above element but below header (keep at least 70px below modal top)
+            const aboveEl = rect.top + scrollY - toolbarHeight - 8;
+            if (rect.top - toolbarHeight - 8 >= mRect.top + 70) {
+                floatingToolbar.style.top = `${aboveEl}px`;
+                floatingToolbar.style.left = `${Math.max(8, Math.min(rect.left + scrollX, maxToolbarLeft))}px`;
+                return;
+            }
+
+            // Strategy 4: Fallback - dock right BELOW the modal dialog
+            floatingToolbar.style.top = `${modalBottomOnCanvas + 8}px`;
+            floatingToolbar.style.left = `${Math.max(8, Math.min(rect.left + scrollX, maxToolbarLeft))}px`;
             return;
         } else {
             const addWidgetBtn = document.getElementById('act-add-widget');
@@ -2623,13 +2751,20 @@
                     <div class="picker-col-preview col-4"><span></span><span></span><span></span><span></span></div>
                     <span class="picker-col-label">4 Kolom</span>
                 </button>
+                <button type="button" class="btn-picker-layout btn-picker-custom-html" data-layout="custom-html" title="${canvasT('picker.custom_html_title')}">
+                    <div class="picker-col-preview col-custom-html"><i class="fa-solid fa-code"></i></div>
+                    <span class="picker-col-label">${canvasT('picker.custom_html')}</span>
+                </button>
             </div>
             <div class="bongkar-inline-picker-actions">
                 <button type="button" class="btn-inline-open-widgets" title="Buka Panel Widget & Section Lengkap">
-                    <i class="fa-solid fa-shapes"></i> Buka Panel Widget
+                    <i class="fa-solid fa-shapes"></i> <span class="btn-lbl-widgets">${canvasT('picker.open_widgets')}</span>
+                </button>
+                <button type="button" class="btn-inline-custom-html" title="${canvasT('picker.custom_html_title')}">
+                    <i class="fa-solid fa-code"></i> <span class="btn-lbl-custom-html">${canvasT('picker.custom_html_btn')}</span>
                 </button>
                 <button type="button" class="btn-inline-paste" title="Tempel Elemen dari Clipboard (Ctrl+V)">
-                    <i class="fa-solid fa-paste"></i> Tempel Elemen
+                    <i class="fa-solid fa-paste"></i> <span class="btn-lbl-paste">${canvasT('picker.paste')}</span>
                 </button>
             </div>
         `;
@@ -2646,6 +2781,16 @@
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const layout = btn.getAttribute('data-layout');
+                if (layout === 'custom-html') {
+                    deselectElement();
+                    parentBar.classList.remove('is-expanded');
+                    picker.remove();
+                    window.parent.postMessage({
+                        type: 'BONGKAR_OPEN_CUSTOM_HTML_MODAL',
+                        insertIndex: insertIndex
+                    }, '*');
+                    return;
+                }
                 insertDirectLayoutAt(layout, insertIndex, targetChild);
             });
         });
@@ -2659,6 +2804,21 @@
                 insertIndex: insertIndex
             }, '*');
         });
+
+        // Insert Custom HTML Section
+        const customHtmlBtn = picker.querySelector('.btn-inline-custom-html');
+        if (customHtmlBtn) {
+            customHtmlBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deselectElement();
+                parentBar.classList.remove('is-expanded');
+                picker.remove();
+                window.parent.postMessage({
+                    type: 'BONGKAR_OPEN_CUSTOM_HTML_MODAL',
+                    insertIndex: insertIndex
+                }, '*');
+            });
+        }
 
         // Paste element
         picker.querySelector('.btn-inline-paste').addEventListener('click', (e) => {
@@ -2745,18 +2905,25 @@
                         <div class="picker-col-preview col-4"><span></span><span></span><span></span><span></span></div>
                         <span class="picker-col-label">4 Kolom</span>
                     </button>
+                    <button type="button" class="btn-picker-layout btn-picker-custom-html" data-layout="custom-html" title="${canvasT('picker.custom_html_title')}">
+                        <div class="picker-col-preview col-custom-html"><i class="fa-solid fa-code"></i></div>
+                        <span class="picker-col-label">${canvasT('picker.custom_html')}</span>
+                    </button>
                 </div>
             </div>
 
             <div class="bongkar-bottom-actions-row">
-                <button type="button" class="btn-bottom-add" title="Buka Panel Widget & Section Lengkap">
-                    <i class="fa-solid fa-shapes"></i> Buka Panel Widget
+                <button type="button" class="btn-bottom-add" title="${canvasT('picker.open_widgets')}">
+                    <i class="fa-solid fa-shapes"></i> <span class="btn-lbl-widgets">${canvasT('picker.open_widgets')}</span>
                 </button>
-                <button type="button" class="btn-bottom-paste" title="Tempel Elemen dari Clipboard (Ctrl+V)">
-                    <i class="fa-solid fa-paste"></i> Tempel Elemen
+                <button type="button" class="btn-bottom-custom-html" title="${canvasT('picker.custom_html_title')}">
+                    <i class="fa-solid fa-code"></i> <span class="btn-lbl-custom-html">${canvasT('picker.custom_html_btn')}</span>
+                </button>
+                <button type="button" class="btn-bottom-paste" title="${canvasT('picker.paste')}">
+                    <i class="fa-solid fa-paste"></i> <span class="btn-lbl-paste">${canvasT('picker.paste')}</span>
                 </button>
                 <button type="button" class="btn-bottom-import" title="Impor Desain HTML / AI / Figma">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Impor AI / HTML
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Impor AI / HTML</span>
                 </button>
             </div>
         `;
@@ -2768,6 +2935,14 @@
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const layout = btn.getAttribute('data-layout');
+                if (layout === 'custom-html') {
+                    deselectElement();
+                    window.parent.postMessage({
+                        type: 'BONGKAR_OPEN_CUSTOM_HTML_MODAL',
+                        insertIndex: -1
+                    }, '*');
+                    return;
+                }
                 insertDirectLayoutAt(layout, -1, null);
             });
         });
@@ -2779,6 +2954,18 @@
                 window.parent.postMessage({
                     type: 'BONGKAR_REQUEST_ADD_SECTION',
                     insertIndex: -1 // append at end
+                }, '*');
+            });
+        }
+
+        const customHtmlBottomBtn = bottomZone.querySelector('.btn-bottom-custom-html');
+        if (customHtmlBottomBtn) {
+            customHtmlBottomBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deselectElement();
+                window.parent.postMessage({
+                    type: 'BONGKAR_OPEN_CUSTOM_HTML_MODAL',
+                    insertIndex: -1
                 }, '*');
             });
         }

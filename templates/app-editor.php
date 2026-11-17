@@ -1341,6 +1341,10 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <i class="fa-solid fa-grip"></i>
                                 <span data-i18n="add.col_4">4 Kolom (25%)</span>
                             </div>
+                            <div class="element-card btn-trigger-custom-html-section" data-i18n-title="add.custom_html_desc" title="Sisipkan Section Desain HTML Sendiri / AI" style="cursor: pointer;">
+                                <i class="fa-solid fa-code" style="color: #10b981;"></i>
+                                <span data-i18n="add.custom_html">HTML Sendiri</span>
+                            </div>
                         </div>
                     </div>
 
@@ -1547,7 +1551,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- SERP Simulation (Google Search Snippet Preview) -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-brands fa-google"></i> Google SERP Preview 2026</span>
+                            <span><i class="fa-brands fa-google"></i> <span data-i18n="seo.serp_preview">Google SERP Preview 2026</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
@@ -1565,23 +1569,23 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Meta Tags Editor (Title & Description) -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-solid fa-pen-to-square"></i> Meta Title & Description</span>
+                            <span><i class="fa-solid fa-pen-to-square"></i> <span data-i18n="seo.meta_title_desc_header">Meta Title &amp; Description</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
                             <div class="form-row">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                    <label class="form-label" style="margin: 0;">SEO Meta Title:</label>
+                                    <label class="form-label" data-i18n="seo.meta_title_label" style="margin: 0;">SEO Meta Title:</label>
                                     <span id="counter-meta-title" class="char-counter">0/60</span>
                                 </div>
-                                <input type="text" id="setting-meta-title" class="form-input" value="<?php echo esc_attr($meta_title); ?>" placeholder="Judul menarik dan relevan untuk Google">
+                                <input type="text" id="setting-meta-title" class="form-input" data-i18n-placeholder="seo.meta_title_placeholder" value="<?php echo esc_attr($meta_title); ?>" placeholder="Judul menarik dan relevan untuk Google">
                             </div>
                             <div class="form-row">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                    <label class="form-label" style="margin: 0;">SEO Meta Description:</label>
+                                    <label class="form-label" data-i18n="seo.meta_desc_label" style="margin: 0;">SEO Meta Description:</label>
                                     <span id="counter-meta-desc" class="char-counter">0/160</span>
                                 </div>
-                                <textarea id="setting-meta-desc" class="form-input" style="height: 70px; resize: vertical;" placeholder="Deskripsi ringkas yang memikat calon pengunjung..."><?php echo esc_textarea($meta_desc); ?></textarea>
+                                <textarea id="setting-meta-desc" class="form-input" data-i18n-placeholder="seo.meta_desc_placeholder" style="height: 70px; resize: vertical;" placeholder="Deskripsi ringkas yang memikat calon pengunjung..."><?php echo esc_textarea($meta_desc); ?></textarea>
                             </div>
                         </div>
                     </div>
@@ -1589,12 +1593,12 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- WhatsApp & Social Media Sharing Preview & Image (Open Graph) -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> Thumbnail Share WhatsApp & Medsos</span>
+                            <span><i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> <span data-i18n="seo.og_header">Thumbnail Share WhatsApp &amp; Medsos</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
-                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
-                                Tampilan kartu thumbnail visual saat link halaman dibagikan ke WhatsApp, Telegram, Facebook, & Twitter:
+                            <div data-i18n="seo.og_desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+                                Tampilan kartu thumbnail visual saat link halaman dibagikan ke WhatsApp, Telegram, Facebook, &amp; Twitter:
                             </div>
 
                             <!-- WhatsApp Card Live Simulation -->
@@ -1613,24 +1617,24 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                             <div class="image-upload-control-card" style="margin-top: 12px;">
                                 <div class="image-upload-thumb-col">
                                     <div class="image-thumb-preview" id="og-thumb-container">
-                                        <img id="og-image-thumb" src="<?php echo esc_url($og_image_url ?: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"%3E%3Crect width="100%25" height="100%25" fill="%23334155"/%3E%3Ctext x="50%25" y="50%25" font-family="Arial" font-size="20" fill="%2394a3b8" dominant-baseline="middle" text-anchor="middle"%3E%F0%9F%96%BC%3C/text%3E%3C/svg%3E'); ?>" alt="OG Thumbnail">
+                                        <img id="og-image-thumb" src="<?php echo esc_url($og_image_url ?: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"%3E%3Crect width="100%25" height="100%25" fill="%23334155"/%3E%3Ccircle cx="30" cy="30" r="14" fill="%2364748b"/%3E%3C/svg%3E'); ?>" alt="OG Thumbnail">
                                     </div>
                                 </div>
                                 <div class="image-upload-actions-col">
                                     <div style="display: flex; gap: 6px; margin-bottom: 6px;">
                                         <button type="button" id="btn-upload-og-image" class="btn-studio-secondary" style="flex: 1; padding: 6px 10px; font-size: 11px;">
                                             <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Pilih Gambar</span>
+                                            <span data-i18n="seo.choose_image">Pilih Gambar</span>
                                         </button>
-                                        <button type="button" id="btn-remove-og-image" class="btn-studio-secondary btn-icon-only" title="Hapus Gambar" style="color: #f87171; padding: 6px 10px;">
+                                        <button type="button" id="btn-remove-og-image" class="btn-studio-secondary btn-icon-only" data-i18n-title="seo.remove_image_title" title="Hapus Gambar" style="color: #f87171; padding: 6px 10px;">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </div>
-                                    <input type="text" id="setting-og-image-url" class="form-input" style="font-size: 10px; padding: 4px 8px;" placeholder="URL Gambar Share (https://...)" value="<?php echo esc_attr($og_image_url); ?>">
+                                    <input type="text" id="setting-og-image-url" class="form-input" data-i18n-placeholder="seo.og_image_placeholder" style="font-size: 10px; padding: 4px 8px;" placeholder="URL Gambar Share (https://...)" value="<?php echo esc_attr($og_image_url); ?>">
                                 </div>
                             </div>
-                            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">
-                                <i class="fa-solid fa-circle-info" style="color: #25d366;"></i> Ukuran rekomendasi: <strong>1200 x 630 px</strong> (rasio 1.91:1) atau <strong>1:1</strong> kotak agar jernih di WhatsApp & Telegram.
+                            <div data-i18n="seo.og_hint" style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">
+                                <i class="fa-solid fa-circle-info" style="color: #25d366;"></i> Ukuran rekomendasi: <strong>1200 x 630 px</strong> (rasio 1.91:1) atau <strong>1:1</strong> kotak agar jernih di WhatsApp &amp; Telegram.
                             </div>
                         </div>
                     </div>
@@ -1638,12 +1642,12 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Checklist Hasil Audit (Standar Google 2026) -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-solid fa-list-check"></i> Checklist Audit & Panduan Perbaikan</span>
+                            <span><i class="fa-solid fa-list-check"></i> <span data-i18n="seo.checklist_header">Checklist Audit &amp; Panduan Perbaikan</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body" id="seo-audit-checklist" style="padding: 10px;">
                             <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 12px;">
-                                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i> Menganalisis elemen kanvas...
+                                <i class="fa-solid fa-spinner fa-spin" style="margin-right: 6px;"></i> <span data-i18n="seo.analyzing">Menganalisis elemen kanvas...</span>
                             </div>
                         </div>
                     </div>
@@ -1719,30 +1723,30 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Keamanan & Proteksi Konten (Content Shield & Anti-Theft) -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-solid fa-shield-halved" style="color: #10b981;"></i> Keamanan &amp; Proteksi Konten</span>
+                            <span><i class="fa-solid fa-shield-halved" style="color: #10b981;"></i> <span data-i18n="settings.shield_header">Keamanan &amp; Proteksi Konten</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
-                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                            <div data-i18n="settings.shield_desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
                                 Lindungi teks, artikel, dan kode HTML Anda dari pencurian konten atau scraping tanpa merusak kenyamanan pembaca.
                             </div>
 
                             <div class="form-row" style="margin-bottom: 12px;">
                                 <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-primary);">
                                     <input type="checkbox" id="setting-content-shield" style="accent-color: #10b981; width: 16px; height: 16px;" <?php checked(!empty($parsed_settings['content_shield'])); ?>>
-                                    <span>Aktifkan Proteksi Konten (Content Shield)</span>
+                                    <span data-i18n="settings.shield_enable">Aktifkan Proteksi Konten (Content Shield)</span>
                                 </label>
                             </div>
 
                             <div id="setting-shield-options-wrap" style="display: <?php echo !empty($parsed_settings['content_shield']) ? 'block' : 'none'; ?>; padding: 12px; background: var(--bg-surface-elevated); border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label class="form-label" style="font-size: 11px; font-weight: 600;">Mode Proteksi Salin (Copy Protection):</label>
+                                    <label class="form-label" data-i18n="settings.shield_mode_label" style="font-size: 11px; font-weight: 600;">Mode Proteksi Salin (Copy Protection):</label>
                                     <select id="setting-shield-copy-mode" class="form-select" style="font-size: 12px;">
-                                        <option value="smart_watermark" <?php selected(!isset($parsed_settings['shield_copy_mode']) || $parsed_settings['shield_copy_mode'] === 'smart_watermark'); ?>>Smart Watermark (Teks bisa di-copy + atribusi link otomatis)</option>
-                                        <option value="block_copy" <?php selected(isset($parsed_settings['shield_copy_mode']) && $parsed_settings['shield_copy_mode'] === 'block_copy'); ?>>Blokir Clipboard (Bisa seleksi teks, tapi dilarang copy)</option>
-                                        <option value="full_shield" <?php selected(isset($parsed_settings['shield_copy_mode']) && $parsed_settings['shield_copy_mode'] === 'full_shield'); ?>>Proteksi Maksimal (Blokir copy total + anti inspect)</option>
+                                        <option value="smart_watermark" data-i18n="settings.shield_mode_watermark" <?php selected(!isset($parsed_settings['shield_copy_mode']) || $parsed_settings['shield_copy_mode'] === 'smart_watermark'); ?>>Smart Watermark (Teks bisa di-copy + atribusi link otomatis)</option>
+                                        <option value="block_copy" data-i18n="settings.shield_mode_block" <?php selected(isset($parsed_settings['shield_copy_mode']) && $parsed_settings['shield_copy_mode'] === 'block_copy'); ?>>Blokir Clipboard (Bisa seleksi teks, tapi dilarang copy)</option>
+                                        <option value="full_shield" data-i18n="settings.shield_mode_full" <?php selected(isset($parsed_settings['shield_copy_mode']) && $parsed_settings['shield_copy_mode'] === 'full_shield'); ?>>Proteksi Maksimal (Blokir copy total + anti inspect)</option>
                                     </select>
-                                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                                    <div data-i18n="settings.shield_mode_hint" style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
                                         Pengunjung tetap bisa menyeleksi teks dengan nyaman, namun isi salinan dilindungi secara pintar.
                                     </div>
                                 </div>
@@ -1750,14 +1754,14 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <div class="form-row" style="margin-bottom: 12px;">
                                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; color: var(--text-primary);">
                                         <input type="checkbox" id="setting-shield-anti-inspect" style="accent-color: #10b981; width: 15px; height: 15px;" <?php checked(!empty($parsed_settings['shield_anti_inspect'])); ?>>
-                                        <span>Kunci Inspect Element, F12, &amp; View Source (Ctrl+U)</span>
+                                        <span data-i18n="settings.shield_anti_inspect">Kunci Inspect Element, F12, &amp; View Source (Ctrl+U)</span>
                                     </label>
                                 </div>
 
                                 <div class="form-row" style="margin-bottom: 4px;">
-                                    <label class="form-label" style="font-size: 11px;">Teks Atribusi Watermark Kustom (Opsional):</label>
-                                    <input type="text" id="setting-shield-watermark" class="form-input" style="font-size: 12px;" value="<?php echo esc_attr(!empty($parsed_settings['shield_watermark_text']) ? $parsed_settings['shield_watermark_text'] : ''); ?>" placeholder="Contoh: Dikutip dari {title} ({url}) - Hak Cipta Dilindungi.">
-                                    <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                                    <label class="form-label" data-i18n="settings.shield_watermark_label" style="font-size: 11px;">Teks Atribusi Watermark Kustom (Opsional):</label>
+                                    <input type="text" id="setting-shield-watermark" class="form-input" data-i18n-placeholder="settings.shield_watermark_placeholder" style="font-size: 12px;" value="<?php echo esc_attr(!empty($parsed_settings['shield_watermark_text']) ? $parsed_settings['shield_watermark_text'] : ''); ?>" placeholder="Contoh: Dikutip dari {title} ({url}) - Hak Cipta Dilindungi.">
+                                    <div data-i18n="settings.shield_watermark_hint" style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
                                         Variabel yang didukung: <code>{title}</code> (Judul) dan <code>{url}</code> (Tautan Halaman).
                                     </div>
                                 </div>
@@ -1767,11 +1771,11 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Favicon & Site Identity (Elementor-Style Site Settings) -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-solid fa-circle-dot" style="color: #a855f7;"></i> Favicon & Browser Tab Icon</span>
+                            <span><i class="fa-solid fa-circle-dot" style="color: #a855f7;"></i> <span data-i18n="settings.favicon_header">Favicon &amp; Browser Tab Icon</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
-                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+                            <div data-i18n="settings.favicon_desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
                                 Ikon bulat/kotak di tab atas browser, bookmark, dan icon shortcut handphone (seperti di Elementor Site Settings):
                             </div>
 
@@ -1795,16 +1799,16 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                     <div style="display: flex; gap: 6px; margin-bottom: 6px;">
                                         <button type="button" id="btn-upload-favicon" class="btn-studio-secondary" style="flex: 1; padding: 6px 10px; font-size: 11px;">
                                             <i class="fa-solid fa-cloud-arrow-up"></i>
-                                            <span>Pilih Favicon</span>
+                                            <span data-i18n="settings.favicon_choose">Pilih Favicon</span>
                                         </button>
-                                        <button type="button" id="btn-remove-favicon" class="btn-studio-secondary btn-icon-only" title="Reset ke Default WordPress" style="color: #f87171; padding: 6px 10px;">
+                                        <button type="button" id="btn-remove-favicon" class="btn-studio-secondary btn-icon-only" data-i18n-title="settings.favicon_reset_title" title="Reset ke Default WordPress" style="color: #f87171; padding: 6px 10px;">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </button>
                                     </div>
-                                    <input type="text" id="setting-favicon-url" class="form-input" style="font-size: 10px; padding: 4px 8px;" placeholder="URL Favicon (https://...)" value="<?php echo esc_attr($favicon_url); ?>">
+                                    <input type="text" id="setting-favicon-url" class="form-input" data-i18n-placeholder="settings.favicon_placeholder" style="font-size: 10px; padding: 4px 8px;" placeholder="URL Favicon (https://...)" value="<?php echo esc_attr($favicon_url); ?>">
                                 </div>
                             </div>
-                            <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">
+                            <div data-i18n="settings.favicon_hint" style="font-size: 10px; color: var(--text-muted); margin-top: 6px;">
                                 <i class="fa-solid fa-circle-info" style="color: #a855f7;"></i> Format yang didukung: <strong>PNG, ICO, SVG</strong> (persegi 32x32, 64x64, atau 192x192 px).
                             </div>
                         </div>
@@ -1813,41 +1817,41 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Tracking & Analytics Meta Tags -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> Pelacakan & Analytics</span>
+                            <span><i class="fa-solid fa-chart-pie" style="color: #38bdf8;"></i> <span data-i18n="settings.tracking_header">Pelacakan &amp; Analytics</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
-                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+                            <div data-i18n="settings.tracking_desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
                                 Integrasi tracking otomatis Google Tag (GA4/Ads), Meta Pixel (Facebook Ads), dan Microsoft Clarity:
                             </div>
 
                             <!-- Google Tag ID -->
                             <div class="form-row">
-                                <label class="form-label" style="font-size: 11px;">Google Tag ID (GA4 / GTM / Ads):</label>
-                                <input type="text" id="setting-gtag-id" class="form-input" placeholder="Contoh: G-XXXXXXXXXX atau AW-XXXXXXXXXX" value="<?php echo esc_attr($gtag_id); ?>">
+                                <label class="form-label" data-i18n="settings.gtag_label" style="font-size: 11px;">Google Tag ID (GA4 / GTM / Ads):</label>
+                                <input type="text" id="setting-gtag-id" class="form-input" data-i18n-placeholder="settings.gtag_placeholder" placeholder="Contoh: G-XXXXXXXXXX atau AW-XXXXXXXXXX" value="<?php echo esc_attr($gtag_id); ?>">
                             </div>
 
                             <!-- Meta Pixel ID -->
                             <div class="form-row">
-                                <label class="form-label" style="font-size: 11px;">Meta (Facebook) Pixel ID:</label>
-                                <input type="text" id="setting-meta-pixel-id" class="form-input" placeholder="Contoh: 123456789012345" value="<?php echo esc_attr($meta_pixel_id); ?>">
+                                <label class="form-label" data-i18n="settings.pixel_label" style="font-size: 11px;">Meta (Facebook) Pixel ID:</label>
+                                <input type="text" id="setting-meta-pixel-id" class="form-input" data-i18n-placeholder="settings.pixel_placeholder" placeholder="Contoh: 123456789012345" value="<?php echo esc_attr($meta_pixel_id); ?>">
                             </div>
 
                             <!-- Microsoft Clarity ID -->
                             <div class="form-row">
-                                <label class="form-label" style="font-size: 11px;">Microsoft Clarity Project ID:</label>
-                                <input type="text" id="setting-clarity-id" class="form-input" placeholder="Contoh: ab12cd34ef" value="<?php echo esc_attr($clarity_id); ?>">
+                                <label class="form-label" data-i18n="settings.clarity_label" style="font-size: 11px;">Microsoft Clarity Project ID:</label>
+                                <input type="text" id="setting-clarity-id" class="form-input" data-i18n-placeholder="settings.clarity_placeholder" placeholder="Contoh: ab12cd34ef" value="<?php echo esc_attr($clarity_id); ?>">
                             </div>
 
                             <!-- Custom Head Scripts -->
                             <div class="form-row">
-                                <label class="form-label" style="font-size: 11px;">Custom Code &lt;head&gt; (Meta Verifikasi / Pixel Lain):</label>
+                                <label class="form-label" data-i18n="settings.custom_head_label" style="font-size: 11px;">Custom Code &lt;head&gt; (Meta Verifikasi / Pixel Lain):</label>
                                 <textarea id="setting-custom-head" class="form-input" style="height: 75px; font-family: monospace; font-size: 11px; resize: vertical;" placeholder="<meta name='google-site-verification' content='...'>"><?php echo esc_textarea($custom_head); ?></textarea>
                             </div>
 
                             <!-- Custom Footer Scripts -->
                             <div class="form-row">
-                                <label class="form-label" style="font-size: 11px;">Custom Code &lt;body&gt; / Footer (Script Chat / Tracking):</label>
+                                <label class="form-label" data-i18n="settings.custom_footer_label" style="font-size: 11px;">Custom Code &lt;body&gt; / Footer (Script Chat / Tracking):</label>
                                 <textarea id="setting-custom-footer" class="form-input" style="height: 75px; font-family: monospace; font-size: 11px; resize: vertical;" placeholder="<!-- Custom Footer Scripts -->"><?php echo esc_textarea($custom_footer); ?></textarea>
                             </div>
                         </div>
@@ -1856,11 +1860,11 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Custom CSS -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-brands fa-css3"></i> Custom Page CSS</span>
+                            <span><i class="fa-brands fa-css3"></i> <span data-i18n="settings.custom_css_header">Custom Page CSS</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
-                            <textarea id="setting-custom-css" class="form-input" style="height: 180px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="/* Tulis CSS khusus halaman di sini */"><?php echo esc_textarea($current_css); ?></textarea>
+                            <textarea id="setting-custom-css" class="form-input" data-i18n-placeholder="settings.custom_css_placeholder" style="height: 180px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="/* Tulis CSS khusus halaman di sini */"><?php echo esc_textarea($current_css); ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -1874,10 +1878,10 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
             <div id="canvas-interactive-toast" class="canvas-interactive-toast" style="display: none;">
                 <div class="toast-content">
                     <i class="fa-solid fa-bolt toast-icon"></i>
-                    <span><strong>Mode Interaktif Aktif:</strong> Uji kalkulator, geser slider, buka accordion & popup modal seperti website asli.</span>
+                    <span data-i18n="toast.interactive_banner"><strong>Mode Interaktif Aktif:</strong> Uji kalkulator, geser slider, buka accordion &amp; popup modal seperti website asli.</span>
                 </div>
-                <button type="button" id="btn-exit-interactive-mode" class="toast-btn-exit" title="Kembali ke Mode Desain">
-                    <i class="fa-solid fa-paintbrush"></i> Kembali ke Mode Desain
+                <button type="button" id="btn-exit-interactive-mode" class="toast-btn-exit" data-i18n-title="toast.exit_interactive_title" title="Kembali ke Mode Desain">
+                    <i class="fa-solid fa-paintbrush"></i> <span data-i18n="toast.exit_interactive">Kembali ke Mode Desain</span>
                 </button>
             </div>
 
@@ -2052,6 +2056,36 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                         <i class="fa-solid fa-download"></i> Download File .html
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Sisipkan Section Desain HTML Sendiri -->
+    <div id="modal-section-html" class="studio-modal-backdrop">
+        <div class="studio-modal" style="max-width: 640px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-code" style="color: #6366f1;"></i>
+                    <span data-i18n="modal_html.title">Desain HTML Sendiri</span>
+                </div>
+                <button type="button" class="modal-close" data-close-modal="section-html">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p data-i18n="modal_html.desc" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                    Tempel kode HTML atau komponen UI hasil buatan sendiri / AI (Tailwind, Bootstrap, atau HTML murni) untuk disisipkan langsung ke posisi section ini.
+                </p>
+                <div class="form-row">
+                    <label class="form-label" data-i18n="modal_html.code_label">Kode HTML Section:</label>
+                    <textarea id="section-html-textarea" class="form-input" data-i18n-placeholder="modal_html.placeholder" style="height: 220px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="<section class='py-12 px-4'>&#10;  <div class='container mx-auto'>&#10;    <h2>Judul Section Saya</h2>&#10;    <p>Deskripsi konten...</p>&#10;  </div>&#10;</section>"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-studio-action" data-close-modal="section-html" data-i18n="modal_html.cancel">Batal</button>
+                <button type="button" id="btn-submit-section-html" class="btn-studio-action btn-save-publish">
+                    <i class="fa-solid fa-plus"></i> <span data-i18n="modal_html.insert">Sisipkan Section</span>
+                </button>
             </div>
         </div>
     </div>
