@@ -32,6 +32,7 @@ $bongkar_core_includes = [
     'includes/class-builder-admin.php',
     'includes/class-builder-renderer.php',
     'includes/class-builder-post-seo.php',
+    'includes/class-builder-updater.php',
 ];
 
 foreach ($bongkar_core_includes as $include_rel_path) {
@@ -67,6 +68,9 @@ function bongkar_builder_init() {
     }
     if (class_exists('Bongkar_Builder_Post_SEO')) {
         Bongkar_Builder_Post_SEO::get_instance();
+    }
+    if (is_admin() && class_exists('Bongkar_Builder_Updater')) {
+        new Bongkar_Builder_Updater();
     }
 }
 add_action('plugins_loaded', 'bongkar_builder_init');
