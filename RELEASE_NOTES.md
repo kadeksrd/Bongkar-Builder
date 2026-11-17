@@ -1,38 +1,29 @@
-# Release Notes - Bongkar Canvas Builder v1.2.2 (Production Release)
+# Release Notes - Bongkar Canvas Builder v1.2.3-beta (Pre-release / Beta)
 
-Version 1.2.2 is a stable production release introducing custom HTML section insertion, ergonomic non-obtrusive pop-up editing, rock-solid modal stability, canvas hover triggers, precision logo & image replacement, and enhanced private repository auto-updater support.
+Version 1.2.3-beta introduces full dual-language internationalization (Bahasa Indonesia & English) across both the Bongkar Studio interface and the iframe canvas engine, powered by an ultra-compact dropdown switcher that preserves the clean topbar layout, along with enhanced GitHub pre-release auto-updater detection, plus all stability and section additions from v1.2.2.
 
 ---
 
-### Key Enhancements & Additions in v1.2.2:
+### Key Enhancements & Additions in v1.2.3-beta:
 
-1. **Custom HTML Section Insertion ("Desain HTML Sendiri"):**
-   - **Visual Structure Picker Integration:** Added a dedicated `[ Custom HTML / HTML Sendiri ]` option in both the inline in-place section picker and the bottom canvas dropzone.
-   - **Sidebar "Add" Panel Integration:** Added a dedicated quick-insert card under Section Column Structures in the sidebar, allowing one-click custom HTML section insertion.
-   - **Direct HTML / AI Importer Modal:** Users can paste raw HTML snippets or AI-generated components (Claude, v0, ChatGPT) with automatic `<section>` semantic wrapping and instant insertion at any chosen canvas position.
+1. **Studio-Wide Dual-Language Architecture (i18n):**
+   - **Real-Time Client-Side Translation Engine:** Implemented `window.BongkarI18n` in `assets/js/i18n-studio.js`, providing instant translation switching between Indonesian (`id`) and English (`en`) without requiring page reloads.
+   - **Complete Studio Coverage:** All primary interface touchpoints are translated, including the Topbar navigation, Sidebar tabs (Inspector, Add, SEO, Icons, Settings), Inspector subtabs (Content, Style, Layout, Logic), Typography and Spacing controls, Google 2026 SEO audit labels, and Studio action notifications.
+   - **Persistent Preference:** Language selection is automatically saved in `localStorage` (`bongkar_studio_lang`) and persists seamlessly across editor sessions and page loads.
 
-2. **Ergonomic & Non-Obtrusive Pop-up Toolbar Positioning:**
-   - **Zero Header Obstruction:** Engineered smart vertical toolbar docking inside modals. When an element near the top of a modal dialog (such as team avatars or headlines) is selected, the toolbar intelligently anchors below the element instead of overlapping the modal header.
-   - **Smart Vertical Clamping:** Keeps all team member photos, badges, close icons, and input fields 100% visible and accessible during styling.
+2. **Ultra-Compact Topbar Language Dropdown Switcher:**
+   - **Space-Efficient Design:** Engineered as a compact 33px pill dropdown (`[ <i class="fa-solid fa-globe"></i> ID ▾ ]` / `[ EN ▾ ]`) positioned at the far right of the topbar before the exit button.
+   - **Zero Viewport Clutter:** Consumes only ~60px of width, leaving the central design/interactive switcher and device preview pills completely spacious and unhindered on standard laptop screens.
+   - **Zero Keyboard Emojis:** Built strictly with Font Awesome 6 vector icons (`fa-globe`, `fa-chevron-down`) for a clean, professional UI.
 
-3. **Rock-Solid Pop-up / Modal Stability (Anti-Disappearing & Anti-Closing):**
-   - **Capture-Phase Backdrop Protection:** Intercepts backdrop clicks and mousedown events at the window/document level in the capturing phase, completely preventing third-party or native landing page scripts from auto-closing modals during editing.
-   - **MutationObserver Shield:** Active modals are guarded with a MutationObserver while Pop-up Edit Mode is enabled. Any script attempting to set `display: none` or remove visibility classes is immediately overridden to keep the modal securely open.
-   - **Direct Trigger Activation:** Clicking or double-clicking any modal trigger widget on the canvas (such as the "Tanya Pak Patrol" pill) automatically opens and locks Pop-up Edit Mode without conflicts.
+3. **Synchronized Canvas Engine & Floating Toolbar Localization:**
+   - **Cross-Frame Event Synchronization:** Dispatches `BONGKAR_CHANGE_LANG` via `postMessage` from the parent Studio to the canvas iframe.
+   - **Contextual Canvas Translation:** Dynamically updates semantic role tags ("IMAGE", "TEXT", "BUTTON", "COLUMN", "SECTION"), floating toolbar tooltips (Wrap, Select Parent, Copy, Cut, Paste, Duplicate, Delete), the hover pop-up badge (`Edit Pop-up`), and canvas notification toasts.
 
-4. **Smart Canvas Hover Pop-up Trigger (Ergonomic Topbar):**
-   - **Topbar Decluttered:** Removed the dedicated Pop-up mode button from the studio topbar to restore a spacious navigation layout. Eliminates viewport crowding on laptop displays (1366px and 1280px).
-   - **Contextual Hover Pill:** Hovering the mouse cursor over any pop-up trigger element on the canvas immediately surfaces a sleek floating badge: `[ Edit Pop-up ]`.
-   - **Quick Toolbar Action:** Selecting any element configured with modal triggers displays a dedicated `[ Edit Pop-up ]` action on the floating toolbar and Inspector panel.
+4. **GitHub Pre-Release & Beta Auto-Updater Support:**
+   - Enhanced `Bongkar_Builder_Updater` to query `/releases?per_page=5` so that pre-releases (such as `1.2.3-beta`) are detected and eligible for one-click background and manual updates directly within WordPress.
 
-5. **Precision Image & Logo Replacement (Multi-Protocol & Wrapper Support):**
-   - **Automatic HTTPS Normalization:** Automatically converts `http://` media URLs to `https://` on SSL-secured sites, preventing mixed-content blocking in Google Chrome.
-   - **Multi-Wrapper Click Detection:** Enhanced element targeting so that clicking on an image logo opens the WordPress Media Library reliably, whether the image is a standalone `<img>`, wrapped inside an anchor link, or in a styled layout `<div>`.
-   - **Canvas Double-Click Shortcut:** Double-clicking any image on the canvas opens the WordPress Media Library modal.
-
-6. **Design Mode Event Interception:**
-   - Capturing-phase event listeners prevent buttons with inline `onclick` or modal attributes from triggering intrusive navigation while in Design Mode.
-
-7. **Private Repository Auto-Update Support:**
-   - Added support for private GitHub repositories using GitHub Personal Access Tokens (PAT).
-   - Direct binary zip downloads via `Accept: application/octet-stream`.
+5. **All Latest Feature Additions & Fixes from v1.2.2 Included:**
+   - Custom HTML Section Insertion ("Desain HTML Sendiri") in both inline and bottom section pickers.
+   - Ergonomic, non-obtrusive floating toolbar positioning in pop-up/modal edit mode.
+   - Rock-solid pop-up stability preventing dialogs from auto-closing on click or double-click.
