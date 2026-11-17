@@ -24,7 +24,6 @@
         initIdentityMediaPickers();
         initShortcuts();
         initCanvasContextBridge();
-        initCanvasZoom();
     }
 
     /**
@@ -173,7 +172,7 @@
     }
 
     /**
-     * Device switcher (Desktop, Tablet, Mobile)
+     * Device switcher (Desktop, Tablet, Mobile) - Elementor Style
      */
     function initDeviceSwitcher() {
         const deviceButtons = document.querySelectorAll('.device-btn');
@@ -188,195 +187,16 @@
                 viewport.classList.remove('mode-desktop', 'mode-tablet', 'mode-mobile');
                 viewport.classList.add(`mode-${device}`);
 
-                if (window.BongkarCanvasZoom && typeof window.BongkarCanvasZoom.apply === 'function') {
-                    window.BongkarCanvasZoom.apply('fit');
-                }
-            });
-        });
-    }
-
-    /**
-     * Canvas Zoom & Responsive Scale Manager (Auto-Fit & Non-Obtrusive Proportions)
-     */
-    function initCanvasZoom() {
-        const canvasArea = document.getElementById('studio-canvas-area');
-        const scaler = document.getElementById('canvas-scaler');
-        const viewport = document.getElementById('canvas-viewport');
-        const zoomDisplay = document.getElementById('canvas-zoom-display');
-        const desktopBadge = document.getElementById('badge-device-desktop');
-        const btnZoomOut = document.getElementById('btn-zoom-out');
-        const btnZoomIn = document.getElementById('btn-zoom-in');
-        const btnZoomPreset = document.getElementById('btn-zoom-preset');
-        const zoomMenu = document.getElementById('zoom-preset-menu');
-        const zoomMenuItems = document.querySelectorAll('.zoom-menu-item');
-
-        let currentZoomMode = localStorage.getItem('bongkar_canvas_zoom_mode') || 'fit';
-        let currentZoomScale = 1;
-
-        function applyZoom(modeOrScale, save = true) {
-            if (!viewport) return;
-            let scale = 1;
-            let isFit = false;
-
-            const isDesktop = viewport.classList.contains('mode-desktop');
-            const isTablet = viewport.classList.contains('mode-tablet');
-            const isMobile = viewport.classList.contains('mode-mobile');
-
-            if (modeOrScale === 'fit' || modeOrScale === 'auto') {
-                isFit = true;
-                currentZoomMode = 'fit';
-                if (isDesktop) {
-                    // On laptop/desktop, Fit means 100% full fluid fit to the canvas workspace without black side gaps
-                    scale = 1;
-                } else if (isTablet) {
-                    const availableWidth = canvasArea.clientWidth - 28;
-                    scale = availableWidth < 768 ? Math.max(0.4, Math.floor((availableWidth / 768) * 100) / 100) : 1;
-                } else if (isMobile) {
-                    const availableWidth = canvasArea.clientWidth - 28;
-                    scale = availableWidth < 390 ? Math.max(0.4, Math.floor((availableWidth / 390) * 100) / 100) : 1;
-                }
-            } else {
-                isFit = false;
-                scale = parseFloat(modeOrScale);
-                if (isNaN(scale) || scale <= 0) scale = 1;
-                scale = Math.max(0.35, Math.min(1.5, Math.round(scale * 100) / 100));
-                currentZoomMode = scale === 1 ? 'fit' : scale.toString();
-            }
-
-            currentZoomScale = scale;
-            if (save) {
-                localStorage.setItem('bongkar_canvas_zoom_mode', currentZoomMode);
-            }
-
-            if (scale === 1) {
+                // Reset any legacy transform scaling to ensure 100% clean rendering
                 viewport.style.transform = '';
                 viewport.style.transformOrigin = '';
-                if (scaler) {
-                    if (isDesktop) {
-                        scaler.style.width = '100%';
-                    } else if (isTablet) {
-                        scaler.style.width = '768px';
-                    } else if (isMobile) {
-                        scaler.style.width = '390px';
-                    }
-                    scaler.style.height = '';
-                }
-            } else {
-                viewport.style.transform = `scale(${scale})`;
-                viewport.style.transformOrigin = 'top center';
-                if (scaler) {
-                    if (isDesktop) {
-                        scaler.style.width = `${Math.round(100 * scale)}%`;
-                    } else if (isTablet) {
-                        scaler.style.width = `${Math.round(768 * scale)}px`;
-                    } else if (isMobile) {
-                        scaler.style.width = `${Math.round(390 * scale)}px`;
-                    }
-                    const currentHeight = viewport.offsetHeight || (window.innerHeight - 100);
-                    scaler.style.height = `${Math.round(currentHeight * scale)}px`;
-                }
-            }
-
-            // Update labels
-            const pctText = `${Math.round(scale * 100)}%`;
-            const labelText = isFit ? (scale === 1 ? 'Fit (100%)' : `Fit (${pctText})`) : pctText;
-
-            if (zoomDisplay) zoomDisplay.innerText = labelText;
-            if (desktopBadge && isDesktop) {
-                desktopBadge.innerText = isFit ? '100%' : pctText;
-            }
-
-            // Update active class in menu
-            zoomMenuItems.forEach(item => {
-                const zVal = item.getAttribute('data-zoom');
-                if (isFit && zVal === 'fit') {
-                    item.classList.add('active');
-                } else if (!isFit && Math.abs(parseFloat(zVal) - scale) < 0.02) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        }
-
-        // Window resize / Sidebar toggle listener
-        let resizeTimer = null;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                if (currentZoomMode === 'fit') {
-                    applyZoom('fit', false);
-                }
-            }, 80);
-        });
-
-        // Toggle menu
-        if (btnZoomPreset && zoomMenu) {
-            btnZoomPreset.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = zoomMenu.style.display !== 'none';
-                zoomMenu.style.display = isOpen ? 'none' : 'flex';
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!zoomMenu.contains(e.target) && e.target !== btnZoomPreset) {
-                    zoomMenu.style.display = 'none';
-                }
-            });
-        }
-
-        // Menu item clicks
-        zoomMenuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const zVal = item.getAttribute('data-zoom');
-                applyZoom(zVal);
-                if (zoomMenu) zoomMenu.style.display = 'none';
             });
         });
 
-        // Zoom in / Zoom out buttons
-        if (btnZoomOut) {
-            btnZoomOut.addEventListener('click', () => {
-                applyZoom(currentZoomScale - 0.1);
-            });
-        }
-
-        if (btnZoomIn) {
-            btnZoomIn.addEventListener('click', () => {
-                applyZoom(currentZoomScale + 0.1);
-            });
-        }
-
-        // Keyboard shortcuts: Ctrl + Plus, Ctrl + Minus, Ctrl + 0
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey || e.metaKey) {
-                if (e.key === '=' || e.key === '+') {
-                    e.preventDefault();
-                    applyZoom(currentZoomScale + 0.1);
-                } else if (e.key === '-' || e.key === '_') {
-                    e.preventDefault();
-                    applyZoom(currentZoomScale - 0.1);
-                } else if (e.key === '0') {
-                    e.preventDefault();
-                    applyZoom('fit');
-                }
-            }
-        });
-
-        // Initialize zoom on startup
-        applyZoom(currentZoomMode, false);
-
-        // Expose zoom controller
-        window.BongkarCanvasZoom = {
-            apply: applyZoom,
-            recalc: () => {
-                if (currentZoomMode === 'fit') {
-                    applyZoom('fit', false);
-                } else {
-                    applyZoom(currentZoomScale, false);
-                }
-            }
-        };
+        // Clean up legacy zoom preference from localStorage
+        try {
+            localStorage.removeItem('bongkar_canvas_zoom_mode');
+        } catch (e) {}
     }
 
     /**

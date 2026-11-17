@@ -192,10 +192,10 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
             <!-- Responsive Device Switcher -->
             <div class="device-switcher-pill">
-                <button type="button" class="device-btn active" data-device="desktop" title="Desktop View (Fit / Scale)">
+                <button type="button" class="device-btn active" data-device="desktop" title="Desktop View (100% Fit)">
                     <i class="fa-solid fa-desktop"></i>
                     <span data-i18n="topbar.device_desktop">Desktop</span>
-                    <span class="device-res-badge" id="badge-device-desktop">100%</span>
+                    <span class="device-res-badge">100%</span>
                 </button>
                 <button type="button" class="device-btn" data-device="tablet" title="Tablet View (768px)">
                     <i class="fa-solid fa-tablet-screen-button"></i>
@@ -1885,51 +1885,8 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                 </button>
             </div>
 
-            <div id="canvas-scaler" class="canvas-scaler">
-                <div id="canvas-viewport" class="canvas-viewport-wrapper mode-desktop">
-                    <iframe id="bongkar-iframe-canvas" src="<?php echo esc_url($canvas_frame_url); ?>" allow="clipboard-read; clipboard-write"></iframe>
-                </div>
-            </div>
-
-            <!-- Floating Canvas Zoom Bar (Figma / Elementor / Canva Style) -->
-            <div id="canvas-zoom-bar" class="canvas-zoom-bar">
-                <button type="button" id="btn-zoom-out" class="zoom-bar-btn" data-i18n-title="zoom.out" title="Perkecil Kanvas (Ctrl -)">
-                    <i class="fa-solid fa-minus"></i>
-                </button>
-                <div class="zoom-dropdown-wrap">
-                    <button type="button" id="btn-zoom-preset" class="zoom-bar-btn zoom-preset-btn" data-i18n-title="topbar.zoom_title" title="Skala Pratinjau Kanvas">
-                        <span id="canvas-zoom-display">Fit</span>
-                        <i class="fa-solid fa-chevron-up"></i>
-                    </button>
-                    <div id="zoom-preset-menu" class="zoom-preset-menu" style="display: none;">
-                        <button type="button" class="zoom-menu-item active" data-zoom="fit">
-                            <i class="fa-solid fa-expand"></i>
-                            <span data-i18n="zoom.fit">Pas Layar (Otomatis)</span>
-                        </button>
-                        <div class="zoom-menu-divider"></div>
-                        <button type="button" class="zoom-menu-item" data-zoom="1">
-                            <span data-i18n="zoom.original">100% (Ukuran Asli)</span>
-                        </button>
-                        <button type="button" class="zoom-menu-item" data-zoom="0.9">
-                            <span>90%</span>
-                        </button>
-                        <button type="button" class="zoom-menu-item" data-zoom="0.85">
-                            <span data-i18n="zoom.laptop">85% (Rekomendasi Laptop)</span>
-                        </button>
-                        <button type="button" class="zoom-menu-item" data-zoom="0.8">
-                            <span>80%</span>
-                        </button>
-                        <button type="button" class="zoom-menu-item" data-zoom="0.75">
-                            <span data-i18n="zoom.compact">75% (Kompak)</span>
-                        </button>
-                        <button type="button" class="zoom-menu-item" data-zoom="0.5">
-                            <span>50%</span>
-                        </button>
-                    </div>
-                </div>
-                <button type="button" id="btn-zoom-in" class="zoom-bar-btn" data-i18n-title="zoom.in" title="Perbesar Kanvas (Ctrl +)">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
+            <div id="canvas-viewport" class="canvas-viewport-wrapper mode-desktop">
+                <iframe id="bongkar-iframe-canvas" src="<?php echo esc_url($canvas_frame_url); ?>" allow="clipboard-read; clipboard-write"></iframe>
             </div>
         </section>
 
