@@ -73,6 +73,31 @@ class Bongkar_Builder_Updater {
 
         // Support WordPress 5.5+ Native Auto-Updates
         add_filter('auto_update_plugin', [$this, 'maybe_auto_update'], 10, 2);
+
+        // Attach auth header for downloads if token is set (for private repos)
+        add_filter('http_request_args', [$this, 'attach_github_token_to_download'], 10, 2);
+    }
+
+    /**
+     * Attach Authorization header to GitHub API & download requests if token is present
+     *
+     * @param array $args
+     * @param string $url
+     * @return array
+     */
+    public function attach_github_token_to_download($args, $url) {
+        if (strpos($url, 'api.github.com/repos/' . $this->github_repo) !== false || strpos($url, 'github.com/' . $this->github_repo) !== false) {
+            $token = defined('BONGKAR_BUILDER_GITHUB_TOKEN') 
+                ? BONGKAR_BUILDER_GITHUB_TOKEN 
+                : get_option('bongkar_builder_github_token', '');
+            if (!empty($token)) {
+                if (empty($args['headers'])) {
+                    $args['headers'] = [];
+                }
+                $args['headers']['Authorization'] = 'Bearer ' . trim($token);
+            }
+        }
+        return $args;
     }
 
     /**
