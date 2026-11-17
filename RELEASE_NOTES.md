@@ -1,23 +1,56 @@
-# Catatan Rilis Versi 1.2.2 (Release Notes)
+# Release Notes - Bongkar Canvas Builder
 
-Pembaruan v1.2.2 menghadirkan pengalaman visual editing yang lebih lapang, perbaikan penggantian gambar/logo komprehensif, serta integrasi hover pop-up pintar pada kanvas studio.
+## Version 1.2.2 (Production Release)
+
+Version 1.2.2 introduces an improved pop-up editing experience with an intuitive canvas hover trigger, comprehensive logo and image replacement fixes across all element wrappers, automatic HTTPS normalization to prevent mixed-content blocking, and enhanced private repository auto-updater support.
+
+### Key Enhancements & Fixes in v1.2.2:
+
+1. **Smart Canvas Hover Pop-up Trigger (Ergonomic Topbar):**
+   - **Topbar Decluttered:** Removed the dedicated Pop-up mode button from the studio topbar to restore a spacious navigation layout. This completely eliminates viewport crowding, text wrapping, and collisions between the Google 2026 SEO Score pill and the mode switcher on standard laptop displays (1366px and 1280px).
+   - **Contextual Hover Pill:** Hovering the mouse cursor over any pop-up trigger element on the canvas (such as the floating chat pill, WhatsApp CTA buttons, or modal backdrops) immediately surfaces a sleek floating badge: `[ Edit Pop-up ]`.
+   - **Quick Toolbar Action:** Selecting any element configured with modal triggers displays a dedicated `[ Edit Pop-up ]` action on the floating toolbar and the Inspector panel.
+   - **Isolated & Locked Modal Edit Mode:** Activating pop-up edit mode locks the modal open securely, allowing team avatars, headings, and consultation forms to be styled and edited without the dialog prematurely auto-closing.
+
+2. **Precision Image & Logo Replacement (Multi-Protocol & Wrapper Support):**
+   - **Automatic HTTPS Normalization:** Automatically converts `http://` media URLs to `https://` on SSL-secured WordPress sites. This prevents browsers (including Google Chrome) from blocking uploaded logos and avatars as insecure Mixed Content.
+   - **Multi-Wrapper Click Detection:** Enhanced element targeting so that clicking on an image logo opens the WordPress Media Library reliably, whether the image is an standalone `<img>` tag, wrapped inside an anchor link (`<a class="brand-link">`), or enclosed within a styled layout `<div>`.
+   - **Canvas Double-Click Shortcut:** Double-clicking any image on the canvas (including modal avatars) immediately opens the WordPress Media Library modal.
+
+3. **Design Mode Event Interception:**
+   - Applied capturing-phase event listeners to prevent buttons with inline `onclick` or modal attributes from triggering intrusive navigation or opening pop-ups while in Design Mode, allowing uninterrupted typography and color customization.
+
+4. **Private Repository Auto-Update Support:**
+   - Added support for private GitHub repositories using GitHub Personal Access Tokens (PAT).
+   - Injected the `Accept: application/octet-stream` header for `/releases/assets/` endpoints to allow direct binary zip downloads while preventing AWS S3 authentication signature collisions during redirects.
 
 ---
 
-### Ringkasan Pembaruan di Versi 1.2.2:
+## Version 1.2.1 (Production Release)
 
-1. **Badge Hover Edit Pop-up di Kanvas (Topbar Bersih & Ramping):**
-   - Menghapus tombol Pop-up dari topbar studio agar area navigasi atas tetap luas, proporsional, dan bebas tumpang-tindih dengan skor SEO maupun mode switcher pada seluruh resolusi laptop (1366px, 1280px).
-   - Menghadirkan pill melayang pintar **[ Edit Pop-up ]** yang otomatis muncul saat kursor mouse diarahkan (*hover*) ke elemen pemicu pop-up (seperti floating chat Pak Patrol, tombol WhatsApp, CTA form, atau backdrop modal).
-   - Menambahkan tombol aksi cepat pop-up pada floating action toolbar dan inspector ketika elemen pemicu dipilih.
+Version 1.2.1 introduced the native GitHub Auto-Updater system, automated CI/CD release packaging via GitHub Actions, native WordPress 5.5+ automated background update support, and cross-domain portability features.
 
-2. **Perbaikan Penggantian Gambar & Logo Antar Protokol (HTTPS Normalization):**
-   - Mengatasi masalah gambar logo yang rusak (*broken image*) dengan otomatis menormalisasi URL media HTTP ke HTTPS pada situs WordPress ber-SSL agar tidak diblokir browser sebagai *Mixed Content*.
-   - Menyempurnakan deteksi elemen gambar saat diklik: baik klik pada tag `<img>`, tautan pembungkus `<a>`, maupun kontainer `<div>`, sistem langsung membuka Media Library WordPress secara akurat.
-   - Mengaktifkan fitur klik ganda (*double-click*) pada kanvas (termasuk avatar tim di dalam modal) untuk langsung memilih gambar dari Media Library.
+### Key Features & Architectural Additions in v1.2.1:
 
-3. **Event Interception pada Tombol Pemicu Pop-up di Mode Desain:**
-   - Memastikan tombol yang memicu pop-up (seperti tombol Konsultasi WhatsApp) dapat diseleksi dan diubah teks/warnanya di mode desain tanpa terpental memicu aksi klik bawaan website.
+1. **Native GitHub Auto-Updater Engine:**
+   - Implemented `Bongkar_Builder_Updater`, connecting the plugin directly to the official GitHub repository releases API (`https://api.github.com/repos/kadeksrd/Bongkar-Builder/releases/latest`).
+   - Hooked into both `pre_set_site_transient_update_plugins` and `site_transient_update_plugins` to register updates seamlessly within the native WordPress update pipeline.
+   - Intelligent 12-hour transient caching with automatic cache invalidation during manual update checks (`wp-admin/update-core.php`, `force-check`, or manual refresh).
 
-4. **Penyempurnaan Auto-Updater WordPress:**
-   - Deteksi nama folder dan slug plugin secara dinamis untuk menjamin kompatibilitas pembaruan otomatis di latar belakang (*background auto-updates*) pada WordPress 5.5+.
+2. **WordPress 5.5+ Native Auto-Update Integration:**
+   - Filtered `auto_update_plugin` to support WordPress's automated background update cron (`wp_maybe_auto_update`).
+   - Enabled site administrators to toggle and utilize one-click auto-updates directly from the WordPress Plugins screen.
+
+3. **One-Click Manual Update Checker:**
+   - Injected an action link ("Periksa Pembaruan / Check for Updates") into the plugin row within `wp-admin/plugins.php`.
+   - Provides immediate feedback notices indicating whether the plugin is up-to-date or if a newer GitHub release is available.
+
+4. **WordPress Plugins API Modal Integration:**
+   - Implemented the `plugins_api` filter for `plugin_information` queries, displaying the native WordPress "View version details" modal complete with release notes, compatibility requirements (PHP 7.4+, WP 5.8+), and changelogs.
+
+5. **Post-Install Directory Sanitization:**
+   - Leveraged `upgrader_post_install` to automatically ensure the extracted plugin folder matches the active plugin directory name, preventing broken installations caused by custom GitHub archive directory names.
+
+6. **Universal Cross-Domain Clipboard Engine:**
+   - Introduced a self-contained clipboard system utilizing HTML comment encapsulation (`<!-- BONGKAR_BUILDER_CLIPBOARD_V1:... -->`).
+   - Enables users to copy elements, cards, forms, or full sections on Website A and paste them directly into the canvas of Website B across separate domain names and hosting servers without styling degradation.
