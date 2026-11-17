@@ -43,5 +43,7 @@ jobs:
         with:
           files: bongkar-builder.zip
           body_path: RELEASE_NOTES.md
+          name: Bongkar Canvas Builder ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') || contains(github.ref_name, 'alpha') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
