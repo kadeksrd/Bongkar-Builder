@@ -1,10 +1,10 @@
-# Release Notes - Bongkar Canvas Builder v1.2.3-beta (Pre-release / Beta)
+# Release Notes - Bongkar Canvas Builder v1.2.2 (Production Release)
 
-Version 1.2.3-beta introduces full dual-language internationalization (Bahasa Indonesia & English) across both the Bongkar Studio interface and the iframe canvas engine, custom HTML section insertion, ergonomic non-obtrusive pop-up editing, locked pop-up stability, and enhanced GitHub pre-release auto-updater detection.
+Version 1.2.2 is a stable production release introducing custom HTML section insertion, ergonomic non-obtrusive pop-up editing, rock-solid modal stability, canvas hover triggers, precision logo & image replacement, and enhanced private repository auto-updater support.
 
 ---
 
-### Key Enhancements & Additions in v1.2.3-beta:
+### Key Enhancements & Additions in v1.2.2:
 
 1. **Custom HTML Section Insertion ("Desain HTML Sendiri"):**
    - **Visual Structure Picker Integration:** Added a dedicated `[ Custom HTML / HTML Sendiri ]` option in both the inline in-place section picker and the bottom canvas dropzone.
@@ -20,16 +20,19 @@ Version 1.2.3-beta introduces full dual-language internationalization (Bahasa In
    - **MutationObserver Shield:** Active modals are guarded with a MutationObserver while Pop-up Edit Mode is enabled. Any script attempting to set `display: none` or remove visibility classes is immediately overridden to keep the modal securely open.
    - **Direct Trigger Activation:** Clicking or double-clicking any modal trigger widget on the canvas (such as the "Tanya Pak Patrol" pill) automatically opens and locks Pop-up Edit Mode without conflicts.
 
-4. **Exhaustive Dual-Language Internationalization (i18n):**
-   - **Real-Time Client-Side Translation Engine:** Instant language switching between Bahasa Indonesia (`id`) and English (`en`) without page reloads.
-   - **Complete SEO Panel Translation:** 100% of audit checklist items, verdicts, action chips, SERP snippet previews, and social media sharing instructions dynamically localized.
-   - **Settings Panel Translation:** Content Shield copy protection modes, anti-inspect security, custom watermark controls, Google Tag (GA4), Meta Pixel, Microsoft Clarity, and custom head/footer inputs fully translated.
-   - **Canvas Synchronized Localization:** Fixed iframe message communication (`bongkar-iframe-canvas`) ensuring floating action tooltips, semantic badges, and toast notifications react in real time.
+4. **Smart Canvas Hover Pop-up Trigger (Ergonomic Topbar):**
+   - **Topbar Decluttered:** Removed the dedicated Pop-up mode button from the studio topbar to restore a spacious navigation layout. Eliminates viewport crowding on laptop displays (1366px and 1280px).
+   - **Contextual Hover Pill:** Hovering the mouse cursor over any pop-up trigger element on the canvas immediately surfaces a sleek floating badge: `[ Edit Pop-up ]`.
+   - **Quick Toolbar Action:** Selecting any element configured with modal triggers displays a dedicated `[ Edit Pop-up ]` action on the floating toolbar and Inspector panel.
 
-5. **Ultra-Compact Topbar Language Dropdown Switcher:**
-   - Designed as a space-efficient 33px pill dropdown (`[ <i class="fa-solid fa-globe"></i> ID ▾ ]` / `[ EN ▾ ]`) positioned at the topbar right edge.
-   - Consumes only ~60px of width, leaving the design/interactive mode switcher and device preview pills spacious on 1366px and 1280px displays.
-   - Strictly vector icons (Font Awesome 6); zero keyboard emojis.
+5. **Precision Image & Logo Replacement (Multi-Protocol & Wrapper Support):**
+   - **Automatic HTTPS Normalization:** Automatically converts `http://` media URLs to `https://` on SSL-secured sites, preventing mixed-content blocking in Google Chrome.
+   - **Multi-Wrapper Click Detection:** Enhanced element targeting so that clicking on an image logo opens the WordPress Media Library reliably, whether the image is a standalone `<img>`, wrapped inside an anchor link, or in a styled layout `<div>`.
+   - **Canvas Double-Click Shortcut:** Double-clicking any image on the canvas opens the WordPress Media Library modal.
 
-6. **GitHub Pre-Release & Beta Auto-Updater Support:**
-   - Enhanced `Bongkar_Builder_Updater` to query `/releases?per_page=5` so that pre-releases (such as `1.2.3-beta`) are detected and eligible for one-click background and manual updates directly within WordPress.
+6. **Design Mode Event Interception:**
+   - Capturing-phase event listeners prevent buttons with inline `onclick` or modal attributes from triggering intrusive navigation while in Design Mode.
+
+7. **Private Repository Auto-Update Support:**
+   - Added support for private GitHub repositories using GitHub Personal Access Tokens (PAT).
+   - Direct binary zip downloads via `Accept: application/octet-stream`.
