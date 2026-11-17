@@ -59,8 +59,9 @@ class Bongkar_Builder_Updater {
         $this->plugin_basename = plugin_basename($this->file);
         $this->version         = defined('BONGKAR_BUILDER_VERSION') ? BONGKAR_BUILDER_VERSION : '1.2.2';
 
-        // Check for updates
+        // Check for updates when transient is saved or retrieved
         add_filter('pre_set_site_transient_update_plugins', [$this, 'check_update']);
+        add_filter('site_transient_update_plugins', [$this, 'check_update']);
 
         // View version details popup in plugins screen
         add_filter('plugins_api', [$this, 'plugin_popup'], 20, 3);
@@ -76,6 +77,11 @@ class Bongkar_Builder_Updater {
 
         // Attach auth header for downloads if token is set (for private repos)
         add_filter('http_request_args', [$this, 'attach_github_token_to_download'], 10, 2);
+
+        // Quick action links and manual check handler in plugins.php
+        add_filter('plugin_action_links_' . $this->plugin_basename, [$this, 'add_plugin_action_links']);
+        add_action('admin_init', [$this, 'handle_manual_check']);
+        add_action('admin_notices', [$this, 'render_update_check_notice']);
     }
 
     /**
@@ -122,7 +128,14 @@ class Bongkar_Builder_Updater {
      * @return array|false
      */
     public function get_remote_release($force_check = false) {
-        if (!$force_check && !isset($_GET['force-check'])) {
+        global $pagenow;
+        $is_forcing = $force_check || 
+                      isset($_GET['force-check']) || 
+                      (isset($_GET['action']) && $_GET['action'] === 'check-again') ||
+                      isset($_GET['bongkar_check_update']) ||
+                      ($pagenow === 'update-core.php');
+
+        if (!$is_forcing) {
             $cached = get_transient($this->transient_key);
             if (!empty($cached) && is_array($cached)) {
                 return $cached;
@@ -153,6 +166,72 @@ class Bongkar_Builder_Updater {
         set_transient($this->transient_key, $data, 12 * HOUR_IN_SECONDS);
 
         return $data;
+    }
+
+    /**
+     * Add "Periksa Pembaruan" link to plugin row in wp-admin/plugins.php
+     *
+     * @param array $links
+     * @return array
+     */
+    public function add_plugin_action_links($links) {
+        $check_url = wp_nonce_url(admin_url('plugins.php?bongkar_check_update=1'), 'bongkar_check_update_action');
+        $check_link = '<a href="' . esc_url($check_url) . '" style="color: #6366f1; font-weight: 600;">Periksa Pembaruan</a>';
+        array_unshift($links, $check_link);
+        return $links;
+    }
+
+    /**
+     * Handle manual update check when user clicks "Periksa Pembaruan"
+     */
+    public function handle_manual_check() {
+        if (!isset($_GET['bongkar_check_update'])) {
+            return;
+        }
+
+        if (!current_user_can('update_plugins')) {
+            return;
+        }
+
+        check_admin_referer('bongkar_check_update_action');
+
+        // Delete all transients to force fresh check
+        delete_transient($this->transient_key);
+        delete_site_transient('update_plugins');
+
+        // Fetch latest release from GitHub
+        $release = $this->get_remote_release(true);
+
+        // Tell WordPress to re-evaluate plugins
+        wp_update_plugins();
+
+        $remote_version = $release ? ltrim(trim($release['tag_name']), 'vV') : '';
+        if ($remote_version && version_compare($remote_version, $this->version, '>')) {
+            $status = 'new_available';
+        } else {
+            $status = 'up_to_date';
+        }
+
+        wp_safe_redirect(admin_url('plugins.php?bongkar_checked=' . $status . '&remote_ver=' . urlencode($remote_version)));
+        exit;
+    }
+
+    /**
+     * Render feedback notice after manual update check
+     */
+    public function render_update_check_notice() {
+        if (!isset($_GET['bongkar_checked'])) {
+            return;
+        }
+
+        $status = sanitize_text_field($_GET['bongkar_checked']);
+        $ver = isset($_GET['remote_ver']) ? sanitize_text_field($_GET['remote_ver']) : '';
+
+        if ($status === 'new_available') {
+            echo '<div class="notice notice-warning is-dismissible" style="border-left-color: #6366f1;"><p><strong>Bongkar Canvas Builder:</strong> Ditemukan rilis versi baru <strong>v' . esc_html($ver) . '</strong> di GitHub! Silakan klik tautan <em>"update now" (perbarui sekarang)</em> di daftar plugin di bawah.</p></div>';
+        } elseif ($status === 'up_to_date') {
+            echo '<div class="notice notice-success is-dismissible"><p><strong>Bongkar Canvas Builder:</strong> Plugin sudah menggunakan versi paling baru (v' . esc_html($this->version) . '). Belum ada pembaruan baru dari GitHub.</p></div>';
+        }
     }
 
     /**
