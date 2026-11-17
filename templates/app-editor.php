@@ -175,15 +175,11 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
         <!-- Topbar Center: Mode Switcher & Device Switcher -->
         <div class="topbar-center">
-            <!-- Mode Switcher (Desain vs Pop-up vs Interaktif) -->
+            <!-- Mode Switcher (Desain vs Interaktif) -->
             <div class="mode-switcher-pill">
                 <button type="button" id="btn-mode-design" class="mode-btn active" title="Mode Desain: Edit elemen halaman secara visual">
                     <i class="fa-solid fa-paintbrush"></i>
                     <span>Desain</span>
-                </button>
-                <button type="button" id="btn-toggle-modal-edit" class="mode-btn" title="Mode Pop-up: Buka dan edit elemen di dalam pop-up/modal">
-                    <i class="fa-solid fa-window-restore"></i>
-                    <span>Pop-up</span>
                 </button>
                 <button type="button" id="btn-mode-interactive" class="mode-btn" title="Mode Interaktif (Live Testing): Jalankan slider, popup & form seperti web asli (Shortcut: Ctrl+I)">
                     <i class="fa-solid fa-bolt"></i>

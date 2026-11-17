@@ -12,6 +12,7 @@
     let contextMenu = null;
     let canvasToast = null;
     let toastTimeout = null;
+    let hoverModalBadge = null;
     let isInteractiveMode = false;
 
     // Initialize Canvas Engine once DOM is ready
@@ -41,10 +42,11 @@
         getCleanElementHTML: function (el) {
             if (!el) return '';
             const clone = el.cloneNode(true);
-            clone.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(e => e.remove());
-            clone.querySelectorAll('.bongkar-hover-target, .bongkar-selected-target, [class*="bongkar-type-"], [class*="bongkar-hover-"]').forEach(e => {
+            clone.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, #bongkar-hover-modal-badge, #bongkar-modal-edit-banner, .bongkar-modal-edit-banner, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(e => e.remove());
+            clone.querySelectorAll('.bongkar-hover-target, .bongkar-selected-target, [class*="bongkar-type-"], [class*="bongkar-hover-"], .bongkar-modal-edit-active, .bongkar-modal-dialog-active').forEach(e => {
                 e.classList.remove(
                     'bongkar-hover-target', 'bongkar-selected-target',
+                    'bongkar-modal-edit-active', 'bongkar-modal-dialog-active',
                     'bongkar-type-layout-outer', 'bongkar-type-layout-inner', 'bongkar-type-layout', 'bongkar-type-text', 'bongkar-type-action', 'bongkar-type-media', 'bongkar-type-feed',
                     'bongkar-hover-layout-outer', 'bongkar-hover-layout-inner', 'bongkar-hover-layout', 'bongkar-hover-text', 'bongkar-hover-action', 'bongkar-hover-media', 'bongkar-hover-feed'
                 );
@@ -315,6 +317,7 @@
         floatingToolbar.style.display = 'none';
         floatingToolbar.innerHTML = `
             <div class="toolbar-elem-tag" id="toolbar-elem-tag">ELEMEN</div>
+            <button type="button" id="act-open-modal-edit" title="Buka & Edit Pop-up / Modal Ini" style="display: none;"><i class="fa-solid fa-window-restore"></i></button>
             <button type="button" id="act-select-parent" title="Pilih Pembungkus Induk (Parent Container)" style="display: none;"><i class="fa-solid fa-arrow-turn-up"></i></button>
             <button type="button" id="act-wrap-container" title="Bungkus Elemen ke Kontainer Baru"><i class="fa-solid fa-box-archive"></i></button>
             <div class="toolbar-divider"></div>
@@ -334,12 +337,38 @@
         `;
         document.body.appendChild(floatingToolbar);
 
+        // Hover Modal Edit Badge (Floating hover pill for pop-up triggers)
+        hoverModalBadge = document.createElement('div');
+        hoverModalBadge.id = 'bongkar-hover-modal-badge';
+        hoverModalBadge.className = 'bongkar-hover-modal-badge';
+        hoverModalBadge.style.display = 'none';
+        hoverModalBadge.innerHTML = `
+            <button type="button" class="btn-hover-modal-edit" title="Klik untuk membuka dan mengedit pop-up/modal ini">
+                <i class="fa-solid fa-window-restore"></i>
+                <span>Edit Pop-up</span>
+            </button>
+        `;
+        document.body.appendChild(hoverModalBadge);
+
+        hoverModalBadge.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            toggleModalEditMode(true);
+        });
+
         // Helper to get active target element (selected or hovered)
         function getActiveActionTarget() {
             return selectedElement || hoveredElement;
         }
 
         // Toolbar action events
+        const btnOpenModalEdit = document.getElementById('act-open-modal-edit');
+        if (btnOpenModalEdit) {
+            btnOpenModalEdit.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleModalEditMode(true);
+            });
+        }
         document.getElementById('act-copy').addEventListener('click', (e) => {
             e.stopPropagation();
             const target = getActiveActionTarget();
@@ -479,10 +508,12 @@
             const target = getActiveActionTarget();
             if (target) {
                 selectElement(target);
-                if (target.tagName === 'IMG') {
+                const isImg = target.tagName === 'IMG' || !!target.querySelector('img');
+                const hasBg = (window.getComputedStyle(target).backgroundImage || '').includes('url');
+                if (isImg || hasBg) {
                     window.parent.postMessage({
                         type: 'BONGKAR_OPEN_MEDIA_PICKER',
-                        targetTag: 'img'
+                        targetTag: isImg ? 'img' : 'background'
                     }, '*');
                 } else {
                     enableInlineEdit(target);
@@ -1331,6 +1362,39 @@
     let isModalEditActive = false;
     let activeModalElements = [];
 
+    /**
+     * Check if an element or its ancestors triggers or represents a pop-up / modal
+     */
+    function checkElementTriggersModal(el) {
+        if (!el || el === document.body || el.id === 'bongkar-canvas-root') return false;
+        let current = el;
+        let depth = 0;
+        while (current && current !== document.body && depth < 5) {
+            const idClassStr = ((current.id || '') + ' ' + (current.className || '')).toLowerCase();
+            const onClickStr = (current.getAttribute('onclick') || '').toLowerCase();
+            const dataTargetStr = (current.getAttribute('data-target') || current.getAttribute('data-modal-target') || '').toLowerCase();
+            const hrefStr = (current.getAttribute('href') || '').toLowerCase();
+
+            if (onClickStr.includes('modal') || onClickStr.includes('popup') ||
+                dataTargetStr.includes('modal') || dataTargetStr.includes('popup') ||
+                hrefStr.startsWith('#modal') || hrefStr.startsWith('#popup') ||
+                idClassStr.includes('floating-patrol') || idClassStr.includes('patrol-pill') ||
+                idClassStr.includes('modal-trigger') || idClassStr.includes('open-modal') ||
+                idClassStr.includes('btn-modal')) {
+                return current;
+            }
+
+            // Check if element is a modal dialog or container
+            if (/\b(?:modal-container|modal-dialog|modal-backdrop|modal-content|popup-box)\b/.test(idClassStr)) {
+                return current;
+            }
+
+            current = current.parentElement;
+            depth++;
+        }
+        return false;
+    }
+
     function findModalsInCanvas() {
         const root = document.getElementById('bongkar-canvas-root') || document.body;
         const allCandidates = root.querySelectorAll(
@@ -1410,6 +1474,7 @@
 
             // Open clean without auto-selecting to avoid floating toolbar covering content
             deselectElement();
+            if (hoverModalBadge) hoverModalBadge.style.display = 'none';
 
             showCanvasToast('Mode Edit Pop-up Aktif: Klik elemen apa saja di dalam pop-up untuk mengedit', 'success');
             window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: true }, '*');
@@ -1428,6 +1493,7 @@
             if (banner) banner.remove();
 
             deselectElement();
+            if (hoverModalBadge) hoverModalBadge.style.display = 'none';
             showCanvasToast('Mode Edit Pop-up ditutup', 'info');
             window.parent.postMessage({ type: 'BONGKAR_MODAL_EDIT_STATE', active: false }, '*');
         }
@@ -1439,6 +1505,7 @@
     function attachEventListeners() {
         const root = document.getElementById('bongkar-canvas-root') || document.body;
         let hoverHideTimeout = null;
+        let modalBadgeHideTimeout = null;
 
         // Hover effect: highlight hovered element cleanly without blocking cursor
         root.addEventListener('mouseover', (e) => {
@@ -1480,6 +1547,61 @@
             }
         });
 
+        // Smart Hover Detection for Pop-up / Modal Triggers (Pill appears on hover)
+        document.addEventListener('mouseover', (e) => {
+            if (isInteractiveMode || isModalEditActive) {
+                if (hoverModalBadge) hoverModalBadge.style.display = 'none';
+                return;
+            }
+
+            const hit = e.target;
+            if (!hit || hit === floatingToolbar || hit.closest('#bongkar-floating-toolbar') || 
+                hit === tagBadge || hit === contextMenu || hit.closest('#bongkar-context-menu') || 
+                hit === hoverModalBadge || hit.closest('#bongkar-hover-modal-badge') || 
+                hit.closest('.bongkar-modal-edit-banner')) {
+                return;
+            }
+
+            const modalTrigger = checkElementTriggersModal(hit);
+            if (modalTrigger) {
+                if (modalBadgeHideTimeout) {
+                    clearTimeout(modalBadgeHideTimeout);
+                    modalBadgeHideTimeout = null;
+                }
+                const rect = modalTrigger.getBoundingClientRect();
+                const scrollY = window.scrollY || document.documentElement.scrollTop;
+                const scrollX = window.scrollX || document.documentElement.scrollLeft;
+                const badgeTop = (rect.top > 36) ? (rect.top + scrollY - 32) : (rect.bottom + scrollY + 4);
+                const badgeLeft = Math.max(10, rect.left + scrollX + Math.max(0, (rect.width - 120) / 2));
+                if (hoverModalBadge) {
+                    hoverModalBadge.style.top = `${badgeTop}px`;
+                    hoverModalBadge.style.left = `${badgeLeft}px`;
+                    hoverModalBadge.style.display = 'flex';
+                }
+            } else {
+                if (hoverModalBadge && hoverModalBadge.style.display !== 'none') {
+                    if (!modalBadgeHideTimeout) {
+                        modalBadgeHideTimeout = setTimeout(() => {
+                            if (hoverModalBadge) hoverModalBadge.style.display = 'none';
+                            modalBadgeHideTimeout = null;
+                        }, 140);
+                    }
+                }
+            }
+        });
+
+        if (hoverModalBadge) {
+            hoverModalBadge.addEventListener('mouseenter', () => {
+                if (modalBadgeHideTimeout) {
+                    clearTimeout(modalBadgeHideTimeout);
+                    modalBadgeHideTimeout = null;
+                }
+            });
+            hoverModalBadge.addEventListener('mouseleave', () => {
+                hoverModalBadge.style.display = 'none';
+            });
+        }
+
         // Keep toolbar open when mouse is interacting inside toolbar
         floatingToolbar.addEventListener('mouseenter', () => {
             if (hoverHideTimeout) {
@@ -1511,6 +1633,7 @@
                 e.target.closest('#bongkar-context-menu') || 
                 e.target.closest('.bongkar-section-insert-bar') ||
                 e.target.closest('.bongkar-modal-edit-banner') ||
+                e.target.closest('#bongkar-hover-modal-badge') ||
                 e.target.closest('#bongkar-canvas-toast')) {
                 return;
             }
@@ -1564,16 +1687,18 @@
 
         // Double click: image opens media picker, text enables inline edit
         root.addEventListener('dblclick', (e) => {
-            const target = e.target.closest('#bongkar-canvas-root *');
+            const target = e.target.closest('#bongkar-canvas-root *') || (e.target.closest('.bongkar-modal-edit-active') ? e.target : null);
             if (!target) return;
 
-            if (target.tagName === 'IMG') {
+            const imgTarget = target.tagName === 'IMG' ? target : target.querySelector('img');
+            const hasBg = (window.getComputedStyle(target).backgroundImage || '').includes('url');
+            if (imgTarget || hasBg) {
                 e.preventDefault();
                 e.stopPropagation();
-                selectElement(target);
+                selectElement(imgTarget || target);
                 window.parent.postMessage({
                     type: 'BONGKAR_OPEN_MEDIA_PICKER',
-                    targetTag: 'img'
+                    targetTag: imgTarget ? 'img' : 'background'
                 }, '*');
                 return;
             }
@@ -1752,13 +1877,22 @@
         // Adaptive edit button in toolbar (image vs text)
         const editBtn = document.getElementById('act-edit-text');
         if (editBtn) {
-            if (el.tagName === 'IMG') {
+            const hasImg = el.tagName === 'IMG' || !!el.querySelector('img');
+            const hasBg = (window.getComputedStyle(el).backgroundImage || '').includes('url');
+            if (hasImg || hasBg) {
                 editBtn.innerHTML = '<i class="fa-solid fa-image"></i>';
                 editBtn.title = 'Ganti Gambar (Buka Media Library)';
             } else {
                 editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
                 editBtn.title = 'Edit Teks Langsung';
             }
+        }
+
+        // Pop-up / Modal edit trigger button in toolbar
+        const btnOpenModalEdit = document.getElementById('act-open-modal-edit');
+        if (btnOpenModalEdit) {
+            const isTrigger = !isModalEditActive && !!checkElementTriggersModal(el);
+            btnOpenModalEdit.style.display = isTrigger ? 'inline-flex' : 'none';
         }
 
         // Hide standalone badge when toolbar is visible to avoid double overlapping badges
@@ -2600,10 +2734,11 @@
         const clone = root.cloneNode(true);
 
         // Strip helper UI elements
-        clone.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, #bongkar-drop-line-indicator, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(el => el.remove());
-        clone.querySelectorAll('.bongkar-hover-target, .bongkar-selected-target, [class*="bongkar-type-"], [class*="bongkar-hover-"]').forEach(el => {
+        clone.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, #bongkar-drop-line-indicator, #bongkar-hover-modal-badge, #bongkar-modal-edit-banner, .bongkar-modal-edit-banner, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(el => el.remove());
+        clone.querySelectorAll('.bongkar-hover-target, .bongkar-selected-target, [class*="bongkar-type-"], [class*="bongkar-hover-"], .bongkar-modal-edit-active, .bongkar-modal-dialog-active').forEach(el => {
             el.classList.remove(
                 'bongkar-hover-target', 'bongkar-selected-target',
+                'bongkar-modal-edit-active', 'bongkar-modal-dialog-active',
                 'bongkar-type-layout-outer', 'bongkar-type-layout-inner', 'bongkar-type-layout', 'bongkar-type-text', 'bongkar-type-action', 'bongkar-type-media', 'bongkar-type-feed',
                 'bongkar-hover-layout-outer', 'bongkar-hover-layout-inner', 'bongkar-hover-layout', 'bongkar-hover-text', 'bongkar-hover-action', 'bongkar-hover-media', 'bongkar-hover-feed'
             );
@@ -2865,11 +3000,15 @@
 
             case 'BONGKAR_UPDATE_IMAGE':
                 if (selectedElement) {
+                    let rawSrc = typeof data.src === 'string' ? data.src.trim() : null;
+                    if (rawSrc && window.location.protocol === 'https:' && rawSrc.startsWith('http://')) {
+                        rawSrc = rawSrc.replace(/^http:\/\//i, 'https://');
+                    }
                     let imgEl = selectedElement.tagName === 'IMG' ? selectedElement : selectedElement.querySelector('img');
                     if (imgEl) {
-                        if (typeof data.src === 'string') {
-                            imgEl.setAttribute('src', data.src);
-                            imgEl.src = data.src; // Direct assignment forces immediate browser image reload
+                        if (rawSrc !== null) {
+                            imgEl.setAttribute('src', rawSrc);
+                            imgEl.src = rawSrc; // Direct assignment forces immediate browser image reload
                             imgEl.removeAttribute('srcset');
                             imgEl.removeAttribute('sizes');
                             imgEl.removeAttribute('data-src');
@@ -2883,9 +3022,9 @@
                         if (data.fit) imgEl.style.objectFit = data.fit;
                     } else {
                         // Background image on container / div / section
-                        if (typeof data.src === 'string') {
-                            if (data.src) {
-                                selectedElement.style.backgroundImage = `url('${data.src}')`;
+                        if (rawSrc !== null) {
+                            if (rawSrc) {
+                                selectedElement.style.backgroundImage = `url('${rawSrc}')`;
                                 selectedElement.style.backgroundSize = data.fit || 'cover';
                                 selectedElement.style.backgroundPosition = 'center';
                             } else {

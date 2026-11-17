@@ -1043,5 +1043,62 @@ body.bongkar-interactive-mode-active .bongkar-column-dropzone {
     z-index: 2147483645 !important;
 }
 
+/* Floating Hover Modal Badge (Triggered on hover over pop-up triggers) */
+#bongkar-hover-modal-badge {
+    position: absolute;
+    z-index: 2147483640;
+    display: none;
+    align-items: center;
+    pointer-events: auto;
+    animation: fadeInModalBadge 0.16s ease-out;
+}
+
+@keyframes fadeInModalBadge {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#bongkar-hover-modal-badge .btn-hover-modal-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #4f46e5;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.5), 0 0 10px rgba(99, 102, 241, 0.4);
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+#bongkar-hover-modal-badge .btn-hover-modal-edit:hover {
+    background: #4338ca;
+    transform: translateY(-1px) scale(1.04);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.65), 0 0 14px rgba(99, 102, 241, 0.6);
+}
+
+#bongkar-hover-modal-badge .btn-hover-modal-edit i {
+    font-size: 11px;
+    color: #e0e7ff;
+}
+
+/* Toolbar button for Modal Edit */
+#bongkar-floating-toolbar #act-open-modal-edit {
+    background: #4f46e5 !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+#bongkar-floating-toolbar #act-open-modal-edit:hover {
+    background: #4338ca !important;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+}
+
+
 
 

@@ -77,9 +77,9 @@ body, html {
 .topbar-left {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex-shrink: 0;
-    min-width: 0;
+    min-width: max-content;
 }
 
 .brand-badge {
@@ -234,12 +234,6 @@ body, html {
     background: var(--primary);
     color: #ffffff;
     box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
-}
-
-.mode-btn#btn-toggle-modal-edit.active {
-    background: #6366f1;
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.45);
 }
 
 .mode-btn#btn-mode-interactive.active {

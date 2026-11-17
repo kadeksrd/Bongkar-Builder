@@ -1386,13 +1386,16 @@ window.BongkarInspector = (function () {
                     const attachment = wpMediaFrame.state().get('selection').first().toJSON();
                     if (!attachment || !attachment.url) return;
 
+                    let finalUrl = (attachment.url || '').trim();
+                    if (window.location.protocol === 'https:' && finalUrl.startsWith('http://')) {
+                        finalUrl = finalUrl.replace(/^http:\/\//i, 'https://');
+                    }
+
                     if (srcInput) {
-                        srcInput.value = attachment.url;
-                        srcInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        srcInput.value = finalUrl;
                     }
                     if (altInput && attachment.alt) {
                         altInput.value = attachment.alt;
-                        altInput.dispatchEvent(new Event('input', { bubbles: true }));
                     }
 
                     // Send to canvas
@@ -1400,7 +1403,7 @@ window.BongkarInspector = (function () {
                     if (iframe && iframe.contentWindow) {
                         iframe.contentWindow.postMessage({
                             type: 'BONGKAR_UPDATE_IMAGE',
-                            src: attachment.url,
+                            src: finalUrl,
                             alt: altInput ? altInput.value : ''
                         }, '*');
                     }

@@ -55,9 +55,10 @@ class Bongkar_Builder_Updater {
      */
     public function __construct() {
         $this->file            = BONGKAR_BUILDER_FILE;
-        $this->plugin_slug     = 'bongkar-builder';
         $this->plugin_basename = plugin_basename($this->file);
-        $this->version         = defined('BONGKAR_BUILDER_VERSION') ? BONGKAR_BUILDER_VERSION : '1.2.2';
+        $dir                   = dirname($this->plugin_basename);
+        $this->plugin_slug     = ($dir && $dir !== '.') ? $dir : 'bongkar-builder';
+        $this->version         = defined('BONGKAR_BUILDER_VERSION') ? BONGKAR_BUILDER_VERSION : '1.2.3';
 
         // Check for updates when transient is saved or retrieved
         add_filter('pre_set_site_transient_update_plugins', [$this, 'check_update']);
@@ -114,9 +115,9 @@ class Bongkar_Builder_Updater {
      * @return bool|null
      */
     public function maybe_auto_update($update, $item) {
-        if (isset($item->plugin) && $item->plugin === $this->plugin_basename) {
-            // Respect site admin's auto-update preference
-            return $update;
+        if (isset($item->plugin) && ($item->plugin === $this->plugin_basename || strpos($item->plugin, 'bongkar') !== false)) {
+            // Enable auto-update for Bongkar Builder
+            return true;
         }
         return $update;
     }
