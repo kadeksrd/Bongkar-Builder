@@ -1,0 +1,955 @@
+/* Bongkar Builder Canvas Helper Styles */
+
+/* Prevent iframe pointer capture in Design Mode so clicking anywhere on videos/maps selects them */
+#bongkar-canvas-root iframe,
+.bongkar-video-wrapper iframe {
+    pointer-events: none;
+}
+
+/* Default Hover indicator */
+.bongkar-hover-target {
+    outline: 2px dashed #6366f1 !important;
+    outline-offset: -2px !important;
+    cursor: pointer !important;
+}
+
+/* Default Active Selected Element */
+.bongkar-selected-target {
+    outline: 2px solid #4f46e5 !important;
+    outline-offset: -2px !important;
+    position: relative !important;
+}
+
+/* ============================================================
+   ROLE-BASED COLOR-CODED SELECTORS (Elementor / Webflow Pro Hierarchy)
+============================================================ */
+
+/* 1A. Div Luar / Section (Deep Indigo / Purple #6366f1) */
+.bongkar-selected-target.bongkar-type-layout-outer {
+    outline: 2px solid #6366f1 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-layout-outer {
+    outline: 2px dashed #818cf8 !important;
+    outline-offset: -2px !important;
+}
+
+/* 1B. Div Dalam / Kolom / Box (Cyan / Sky Blue #0284c7) */
+.bongkar-selected-target.bongkar-type-layout-inner {
+    outline: 2px solid #0284c7 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-layout-inner {
+    outline: 2px dashed #38bdf8 !important;
+    outline-offset: -2px !important;
+}
+
+/* 1C. Baris Kolom / Multi-Column Grid (Teal / Vibrant Cyan #06b6d4) */
+.bongkar-selected-target.bongkar-type-layout-row {
+    outline: 2px solid #06b6d4 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-layout-row {
+    outline: 2px dashed #22d3ee !important;
+    outline-offset: -2px !important;
+}
+
+/* 1D. Kolom Kiri / Kanan (Violet #8b5cf6) */
+.bongkar-selected-target.bongkar-type-layout-col {
+    outline: 2px solid #8b5cf6 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-layout-col {
+    outline: 2px dashed #a78bfa !important;
+    outline-offset: -2px !important;
+}
+
+/* 1E. Card Formulir (Emerald Green #10b981) */
+.bongkar-selected-target.bongkar-type-layout-form {
+    outline: 2px solid #10b981 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-layout-form {
+    outline: 2px dashed #34d399 !important;
+    outline-offset: -2px !important;
+}
+
+/* 1F. Card / Kotak Konten (Sky Blue #3b82f6) */
+.bongkar-selected-target.bongkar-type-layout-card {
+    outline: 2px solid #3b82f6 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-layout-card {
+    outline: 2px dashed #60a5fa !important;
+    outline-offset: -2px !important;
+}
+
+/* Fallback Generic Layout */
+.bongkar-selected-target.bongkar-type-layout {
+    outline: 2px solid #0284c7 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-layout {
+    outline: 2px dashed #38bdf8 !important;
+    outline-offset: -2px !important;
+}
+
+/* 2. Teks & Konten (Amber / Warm Orange #f59e0b) */
+.bongkar-selected-target.bongkar-type-text {
+    outline: 2px solid #f59e0b !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-text {
+    outline: 2px dashed #fbbf24 !important;
+    outline-offset: -2px !important;
+}
+
+/* 3. Tombol & Aksi Interaktif (Emerald Green #10b981) */
+.bongkar-selected-target.bongkar-type-action {
+    outline: 2px solid #10b981 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-action {
+    outline: 2px dashed #34d399 !important;
+    outline-offset: -2px !important;
+}
+
+/* 4. Media & Gambar (Rose / Pink #ec4899) */
+.bongkar-selected-target.bongkar-type-media {
+    outline: 2px solid #ec4899 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-media {
+    outline: 2px dashed #f472b6 !important;
+    outline-offset: -2px !important;
+}
+
+/* 5. Dynamic Post Grid Feed (Purple #8b5cf6) */
+.bongkar-selected-target.bongkar-type-feed {
+    outline: 2px solid #8b5cf6 !important;
+    outline-offset: -2px !important;
+}
+.bongkar-hover-target.bongkar-hover-feed {
+    outline: 2px dashed #a78bfa !important;
+    outline-offset: -2px !important;
+}
+
+/* Element Floating Tag Badge */
+#bongkar-canvas-badge {
+    position: absolute;
+    top: -24px;
+    left: 0;
+    background: #4f46e5;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 2px 8px;
+    border-radius: 4px 4px 0 0;
+    z-index: 999999;
+    pointer-events: none;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+/* Inline Editing Active State */
+[contenteditable="true"] {
+    outline: 2px solid #22c55e !important;
+    outline-offset: 2px !important;
+    background-color: rgba(34, 197, 94, 0.05) !important;
+    cursor: text !important;
+}
+
+/* Floating Action Toolbar on Hover & Selected Element (Elementor Style) */
+#bongkar-floating-toolbar {
+    position: absolute;
+    display: none;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 3px 5px;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    z-index: 1000000;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    gap: 3px;
+    user-select: none;
+    pointer-events: auto;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+#bongkar-floating-toolbar.is-hover-state {
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(99, 102, 241, 0.25);
+}
+
+.toolbar-elem-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: #a5b4fc;
+    background: rgba(79, 70, 229, 0.3);
+    border: 1px solid rgba(129, 140, 248, 0.4);
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Toolbar Tag Color Themes by Role */
+#bongkar-floating-toolbar.toolbar-type-layout-outer .toolbar-elem-tag {
+    background: rgba(99, 102, 241, 0.35);
+    border-color: rgba(129, 140, 248, 0.6);
+    color: #c7d2fe;
+}
+#bongkar-floating-toolbar.toolbar-type-layout-inner .toolbar-elem-tag {
+    background: rgba(2, 132, 199, 0.35);
+    border-color: rgba(56, 189, 248, 0.6);
+    color: #bae6fd;
+}
+#bongkar-floating-toolbar.toolbar-type-layout-row .toolbar-elem-tag {
+    background: rgba(6, 182, 212, 0.35);
+    border-color: rgba(6, 182, 212, 0.6);
+    color: #a5f3fc;
+}
+#bongkar-floating-toolbar.toolbar-type-layout-col .toolbar-elem-tag {
+    background: rgba(139, 92, 246, 0.35);
+    border-color: rgba(139, 92, 246, 0.6);
+    color: #ddd6fe;
+}
+#bongkar-floating-toolbar.toolbar-type-layout-form .toolbar-elem-tag {
+    background: rgba(16, 185, 129, 0.35);
+    border-color: rgba(16, 185, 129, 0.6);
+    color: #a7f3d0;
+}
+#bongkar-floating-toolbar.toolbar-type-layout-card .toolbar-elem-tag {
+    background: rgba(59, 130, 246, 0.35);
+    border-color: rgba(59, 130, 246, 0.6);
+    color: #bfdbfe;
+}
+#bongkar-floating-toolbar.toolbar-type-layout .toolbar-elem-tag {
+    background: rgba(2, 132, 199, 0.35);
+    border-color: rgba(56, 189, 248, 0.6);
+    color: #bae6fd;
+}
+#bongkar-floating-toolbar.toolbar-type-text .toolbar-elem-tag {
+    background: rgba(217, 119, 6, 0.35);
+    border-color: rgba(251, 191, 36, 0.6);
+    color: #fde68a;
+}
+#bongkar-floating-toolbar.toolbar-type-action .toolbar-elem-tag {
+    background: rgba(5, 150, 105, 0.35);
+    border-color: rgba(52, 211, 153, 0.6);
+    color: #a7f3d0;
+}
+#bongkar-floating-toolbar.toolbar-type-media .toolbar-elem-tag {
+    background: rgba(219, 39, 119, 0.35);
+    border-color: rgba(244, 114, 182, 0.6);
+    color: #fbcfe8;
+}
+#bongkar-floating-toolbar.toolbar-type-feed .toolbar-elem-tag {
+    background: rgba(124, 58, 237, 0.35);
+    border-color: rgba(167, 139, 250, 0.6);
+    color: #ddd6fe;
+}
+
+#bongkar-floating-toolbar button {
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    font-size: 13px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+#bongkar-floating-toolbar button:hover {
+    background: #334155;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+#bongkar-floating-toolbar button#act-add-widget {
+    background: #4f46e5;
+    color: #ffffff;
+}
+#bongkar-floating-toolbar button#act-add-widget:hover {
+    background: #4338ca;
+}
+
+#bongkar-floating-toolbar button#act-select-parent:hover {
+    background: #4f46e5;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-wrap-container:hover {
+    background: #0284c7;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-toggle-flex-dir:hover {
+    background: #0284c7;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-copy:hover {
+    background: #0284c7;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-cut:hover {
+    background: #d97706;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-paste:hover {
+    background: #059669;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-duplicate:hover {
+    background: #7c3aed;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-edit-text:hover {
+    background: #0284c7;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button.btn-danger:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+#bongkar-floating-toolbar button#act-deselect:hover {
+    background: #475569;
+    color: #ffffff;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 16px;
+    background: #334155;
+    margin: 0 1px;
+}
+
+/* Section Add / Dropzone Bars */
+.bongkar-section-insert-bar {
+    position: relative;
+    height: 28px;
+    margin: -14px 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.bongkar-section-insert-bar:hover,
+.bongkar-section-insert-bar.active {
+    opacity: 1;
+}
+
+.bongkar-section-insert-bar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: #6366f1;
+}
+
+.bongkar-section-insert-bar .btn-add-section {
+    position: relative;
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.bongkar-section-insert-bar .btn-add-section:hover {
+    background: #4338ca;
+    transform: scale(1.05);
+}
+
+/* Inline Expandable Section Structure Picker (Elementor Style In-Place Dropzone) */
+.bongkar-section-insert-bar.is-expanded {
+    height: auto;
+    margin: 24px auto;
+    max-width: 840px;
+    opacity: 1;
+    z-index: 99999;
+    display: block;
+}
+
+.bongkar-section-insert-bar.is-expanded::before {
+    display: none !important;
+}
+
+.bongkar-section-insert-bar.is-expanded > .btn-add-section {
+    display: none !important;
+}
+
+.bongkar-inline-section-picker {
+    background: #ffffff;
+    border: 2px dashed #6366f1;
+    border-radius: 12px;
+    padding: 22px 20px;
+    box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.22);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    animation: fadeInPicker 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInPicker {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.bongkar-inline-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.inline-picker-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inline-picker-title i {
+    color: #4f46e5;
+    font-size: 14px;
+}
+
+.btn-close-inline-picker {
+    background: #f1f5f9;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.15s ease;
+}
+
+.btn-close-inline-picker:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.bongkar-inline-picker-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.btn-inline-open-widgets {
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-inline-open-widgets:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+.btn-inline-paste {
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.btn-inline-paste:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+
+/* Bottom Add Section Zone (Elementor-style Dropzone & Importer) */
+.bongkar-bottom-add-zone {
+    padding: 32px 20px;
+    text-align: center;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    margin: 40px 20px;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.bongkar-bottom-add-zone.is-empty-canvas {
+    padding: 64px 24px;
+    margin: 60px auto;
+    max-width: 680px;
+    border-width: 2px;
+    background: #ffffff;
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+}
+
+.bongkar-bottom-add-zone:hover {
+    border-color: #6366f1;
+    background: #f8fafc;
+}
+
+.bongkar-bottom-actions-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.bongkar-bottom-add-zone button.btn-bottom-add {
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+}
+
+.bongkar-bottom-add-zone button.btn-bottom-add:hover {
+    transform: translateY(-2px);
+    background: #4338ca;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.38);
+}
+
+.bongkar-bottom-add-zone button.btn-bottom-import {
+    background: #0f172a;
+    color: #f8fafc;
+    border: 1px solid #334155;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+}
+
+.bongkar-bottom-add-zone button.btn-bottom-import:hover {
+    transform: translateY(-2px);
+    background: #1e293b;
+    border-color: #818cf8;
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
+}
+
+/* Elementor-style Column Structure Picker on Canvas */
+.bongkar-structure-picker-box {
+    margin-bottom: 22px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.bongkar-picker-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bongkar-picker-grids {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn-picker-layout {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.btn-picker-layout:hover {
+    border-color: #6366f1;
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.15);
+}
+
+.picker-col-preview {
+    display: flex;
+    gap: 3px;
+    width: 60px;
+    height: 28px;
+    padding: 3px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.picker-col-preview span {
+    background: #94a3b8;
+    border-radius: 2px;
+    height: 100%;
+    transition: background 0.15s ease;
+}
+
+.btn-picker-layout:hover .picker-col-preview span {
+    background: #6366f1;
+}
+
+.picker-col-preview.col-1 span { flex: 1; }
+.picker-col-preview.col-2 span { flex: 1; }
+.picker-col-preview.col-2-asym-left span:nth-child(1) { flex: 2; }
+.picker-col-preview.col-2-asym-left span:nth-child(2) { flex: 1; }
+.picker-col-preview.col-3 span { flex: 1; }
+.picker-col-preview.col-4 span { flex: 1; }
+
+.picker-col-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+}
+
+/* Empty Column Dropzone (Elementor Style Inner Dropzone) */
+.bongkar-column-dropzone {
+    margin: 12px 0;
+    padding: 24px 14px;
+    border: 2px dashed #a5b4fc;
+    border-radius: 8px;
+    background: rgba(238, 242, 255, 0.6);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.bongkar-column-dropzone:hover {
+    border-color: #4f46e5;
+    background: rgba(224, 231, 255, 0.9);
+    transform: scale(1.01);
+}
+
+.column-dropzone-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #4f46e5;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.column-dropzone-inner i {
+    font-size: 16px;
+}
+
+/* Bottom Paste Action Button */
+.bongkar-bottom-add-zone button.btn-bottom-paste {
+    background: #0284c7;
+    color: #ffffff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.28);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+}
+
+.bongkar-bottom-add-zone button.btn-bottom-paste:hover {
+    transform: translateY(-2px);
+    background: #0369a1;
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.38);
+}
+
+/* Right-Click Elementor-Style Context Menu */
+#bongkar-context-menu {
+    position: fixed;
+    z-index: 10000000;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-width: 220px;
+    flex-direction: column;
+    gap: 2px;
+    user-select: none;
+    animation: cmenuFade 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cmenuFade {
+    from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.cmenu-header {
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #1e293b;
+    margin-bottom: 4px;
+}
+
+.cmenu-item {
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+    transition: all 0.12s ease;
+}
+
+.cmenu-item i {
+    font-size: 14px;
+    width: 16px;
+    color: #818cf8;
+}
+
+.cmenu-item span {
+    flex: 1;
+}
+
+.cmenu-item kbd {
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 600;
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #334155;
+}
+
+.cmenu-item:hover {
+    background: #4f46e5;
+    color: #ffffff;
+}
+
+.cmenu-item:hover i {
+    color: #ffffff;
+}
+
+.cmenu-item:hover kbd {
+    background: rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cmenu-item.btn-danger:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.cmenu-divider {
+    height: 1px;
+    background: #1e293b;
+    margin: 4px 0;
+}
+
+/* Canvas Floating Feedback Toast */
+#bongkar-canvas-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    z-index: 10000000;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid #334155;
+    border-radius: 30px;
+    padding: 10px 20px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(99, 102, 241, 0.25);
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+#bongkar-canvas-toast.bongkar-toast-active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.canvas-toast-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ============================================================
+   BONGKAR INTERACTIVE LIVE TESTING MODE
+   When active, editor overlays are hidden and native web interactions run 100%
+============================================================ */
+body.bongkar-interactive-mode-active .bongkar-hover-target,
+body.bongkar-interactive-mode-active .bongkar-selected-target {
+    outline: none !important;
+    cursor: default !important;
+}
+
+body.bongkar-interactive-mode-active #bongkar-canvas-badge,
+body.bongkar-interactive-mode-active #bongkar-floating-toolbar,
+body.bongkar-interactive-mode-active #bongkar-context-menu,
+body.bongkar-interactive-mode-active #bongkar-canvas-toast,
+body.bongkar-interactive-mode-active .bongkar-section-insert-bar,
+body.bongkar-interactive-mode-active .bongkar-bottom-add-zone,
+body.bongkar-interactive-mode-active .bongkar-column-dropzone {
+    display: none !important;
+}
+
+/* ============================================================
+   DRAG & DROP VISUAL INDICATOR (Elementor Style Drop Indicator)
+============================================================ */
+#bongkar-drop-line-indicator {
+    position: absolute;
+    height: 3px;
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8, 0 0 4px #0284c7;
+    z-index: 999999;
+    pointer-events: none;
+    border-radius: 2px;
+    transition: top 0.08s ease, left 0.08s ease, width 0.08s ease;
+    display: none;
+}
+
+#bongkar-drop-line-indicator::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: -3px;
+    width: 9px;
+    height: 9px;
+    background: #38bdf8;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #38bdf8;
+}
+
+#bongkar-drop-line-indicator::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -3px;
+    width: 9px;
+    height: 9px;
+    background: #38bdf8;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #38bdf8;
+}
+
+.bongkar-drop-target-active {
+    outline: 2px dashed #38bdf8 !important;
+    outline-offset: 2px !important;
+}
+
+
