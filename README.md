@@ -1,36 +1,48 @@
 # Bongkar Canvas Builder (HTML-First Visual Page Builder)
 
-**Version 1.1.0 (Production Release)**  
-Plugin WordPress modern, ultra-ringan, dan *zero-bloat* yang dirancang khusus untuk mengimpor desain AI (HTML/CSS/JS dari Claude, v0, ChatGPT, atau Figma Export) dan mengeditnya secara visual di atas **Standalone Canvas Editor** (seperti Elementor tapi jauh lebih bersih, responsif & cepat).
+**Version 1.2.1 (Production Release)**  
+Plugin WordPress modern, ultra-ringan, dan *zero-bloat* yang dirancang khusus untuk mengimpor desain AI (HTML/CSS/JS dari Claude, v0, ChatGPT, atau Figma Export) dan mengeditnya secara visual di atas **Standalone Canvas Editor** (seperti Elementor tapi jauh lebih bersih, responsif, dan cepat).
 
 ---
 
-## Cara Memasang di Website WordPress Lain (Tahap Produksi)
+## Portabilitas Penuh & Kompatibilitas Antar Website (Cross-Domain Ready)
 
-Plugin ini telah dirancang 100% portabel dan dapat langsung dipasang di website WordPress mana saja (Shared Hosting, VPS, cPanel, Cloudways, dll.):
+Bongkar Canvas Builder dirancang **100% portabel** dan dapat langsung dipasang serta digunakan antar website WordPress mana saja tanpa batasan lisensi domain:
 
-### Metode 1: Upload File ZIP via WordPress Admin (Paling Mudah)
-1. Unduh paket file `bongkar-builder.zip` (tersedia di root plugin atau hasil build produksi).
+1. **Zero Hardcoded URLs & Path Dinamis:**  
+   Seluruh aset, AJAX endpoint, canvas runner, dan font loader menggunakan fungsi dinamis WordPress (`plugin_dir_url`, `plugin_dir_path`, `home_url`). Plugin dapat dipindahkan antar localhost (Laragon/XAMPP), staging server, hingga domain live production tanpa perlu migrasi URL.
+2. **Universal Cross-Site Clipboard (Copy-Paste Antar Website):**  
+   Dilengkapi sistem clipboard mandiri berstandar HTML comment wrapper. Anda dapat menyalin (*Copy*) elemen, tombol, form, maupun seluruh section dari **Website A**, lalu langsung menempelkannya (*Paste*) di kanvas **Website B** tanpa kehilangan styling maupun struktur kolom.
+3. **Standalone Canvas Tanpa Terikat Tema:**  
+   Menghasilkan markup HTML asli yang disimpan ke dalam post meta. Tidak bergantung pada dependensi tema apa pun dan kompatibel penuh dengan Astra, GeneratePress, Hello Elementor, Kadence, Block themes, maupun instalasi WordPress polos.
+4. **Native GitHub Auto-Updater (Pembaruan 1 Klik):**  
+   Setiap website WordPress yang memasang plugin ini terhubung langsung ke rilis resmi GitHub. Ketika rilis versi baru diterbitkan, dashboard WordPress di website mana pun akan otomatis memunculkan notifikasi resmi dan dapat di-update hanya dengan mengklik tombol **"Update Now"**.
+
+---
+
+## Cara Memasang di Website WordPress Lain
+
+### Metode 1: Upload File ZIP via WordPress Admin (Paling Praktis)
+1. Unduh paket rilis file `bongkar-builder.zip` dari [GitHub Releases](https://github.com/kadeksrd/Bongkar-Builder/releases).
 2. Masuk ke **WP Admin** di website target Anda (`namadomain.com/wp-admin`).
 3. Buka menu **Plugins** -> **Add New (Tambah Baru)** -> klik tombol **Upload Plugin**.
 4. Pilih file `bongkar-builder.zip` lalu klik **Install Now**.
 5. Klik **Activate Plugin**.
-6. Menu baru **Bongkar Builder** akan langsung muncul di sidebar dashboard WordPress Anda!
+6. Menu **Bongkar Builder** akan langsung aktif di sidebar dashboard WordPress Anda.
 
-### Metode 2: Upload via FTP / File Manager (cPanel / Hostinger / Niagahoster)
-1. Ekstrak folder `bongkar-builder` ke komputer Anda.
-2. Buka File Manager atau FTP (FileZilla) ke website target.
-3. Masuk ke direktori: `wp-content/plugins/`
-4. Upload folder `bongkar-builder` ke lokasi tersebut.
-5. Masuk ke **WP Admin** -> **Plugins** -> klik **Activate** pada *Bongkar Canvas Builder*.
+### Metode 2: Upload via FTP / File Manager (cPanel / VPS / Cloudways)
+1. Ekstrak file zip sehingga menghasilkan folder `bongkar-builder`.
+2. Masuk ke direktori: `wp-content/plugins/` di hosting tujuan.
+3. Upload folder `bongkar-builder` ke direktori tersebut.
+4. Masuk ke **WP Admin** -> **Plugins** -> klik **Activate** pada *Bongkar Canvas Builder*.
 
 ---
 
 ## Persyaratan Sistem (System Requirements)
-- **WordPress**: Versi 5.8 atau lebih baru (kompatibel penuh dengan WP 6.0 - 6.7+).
+- **WordPress**: Versi 5.8 atau lebih baru (kompatibel penuh dengan WP 6.0 hingga 6.7+).
 - **PHP**: Versi 7.4, 8.0, 8.1, 8.2, atau 8.3+.
 - **Web Server**: Apache, Nginx, LiteSpeed, atau Cloudflare (kompatibel 100%).
-- **SSL / HTTPS**: Sangat direkomendasikan untuk produksi.
+- **Browser**: Chrome, Edge, Safari, Firefox versi modern.
 
 ---
 
@@ -43,59 +55,64 @@ Plugin ini telah dirancang 100% portabel dan dapat langsung dipasang di website 
 | **Workflow Desain AI / Figma** | Sulit, harus dibuat ulang satu per satu widgetnya | **Tinggal paste / upload HTML+CSS+JS, langsung jadi visual canvas** |
 | **Google PageSpeed Score** | Sering turun ke 50-70 jika banyak widget | **Stabil di skor 95-100 (Core Web Vitals Hijau)** |
 | **Script & Logika Interaktif** | Rumit / butuh add-on berbayar | **Smart Script Inspector bawaan (Kalkulator, Slider, Accordion berjalan native)** |
-| **Ikon Vector** | Terkadang berat / bercampur | **Font Awesome 6 Native Picker (Tajam, Vektor Murni, Anti AI-Slop)** |
+| **Organisasi Panel Inspector** | Menumpuk dalam satu scroll panjang | **4 Sub-Tab Rapi (Konten, Gaya, Tata Letak, Logika)** |
+| **Dimensi Universal Elemen** | Terbatas pada kolom/container tertentu | **Kontrol Lebar & Tinggi aktif untuk SEMUA elemen (teks/box/gambar)** |
+| **Ikon Vector** | Terkadang berat / bercampur | **Font Awesome 6 Native Picker (Vektor murni, anti AI-slop)** |
+| **Pembaruan Mandiri** | Terikat ekosistem berbayar | **Native GitHub Auto-Updater bawaan (1 Klik dari GitHub Releases)** |
 
 ---
 
-## Fitur Utama
+## Fitur Unggulan
 
-1. **Dual Canvas Engine (Mode Desain vs Mode Interaktif LIVE)**
-   - **Mode Desain (`Alt + Klik`)**: Klik elemen mana saja untuk mengedit teks, tipografi, warna, spacing, atau script.
-   - **Mode Interaktif (`Ctrl + I`)**: Mengubah kanvas menjadi web hidup murni. Slider Swiper.js, kalkulator biaya, FAQ accordion, popup modal, dan form WhatsApp berfungsi 100% tanpa hambatan selektor editor.
+### 1. Organisasi Panel Inspector 4 Sub-Tab Modern
+- **Sub-Tab Konten (Content):** Penggantian tag HTML (H1-H6, P, DIV, SPAN), edit teks langsung, pengaturan gambar & alt SEO, tujuan link, dan integrasi tombol WhatsApp / webhook Google Sheets.
+- **Sub-Tab Gaya (Style):** Koleksi Google Fonts lengkap, ukuran font slider/PX, ketebalan teks (300-900), perataan teks (kiri, tengah, kanan, justify), warna teks, background color, border radius, dan box shadow.
+- **Sub-Tab Tata Letak (Layout):** Dimensi universal (Width & Height dengan unit %, PX, EM, atau AUTO) untuk semua elemen (termasuk heading dan paragraf), flexbox direction, preset proporsi kolom (50:50, 60:40, 70:30, 40:60, 3 Kolom), serta kontrol padding dan margin.
+- **Sub-Tab Logika & Skrip (Logic & Script):** Editor script JavaScript mandiri per-elemen, preset interaktif siap pakai (Swiper slider, Accordion FAQ, Tab Navigasi, Modal Popup, Timer Countdown), event triggers (`onclick`, `oninput`, `onsubmit`), dan live algorithm status.
 
-2. **Smart Script & Algorithm Inspector (Elementor Advanced Style)**
-   - Terintegrasi di sub-tab Logika & Skrip panel Inspector: mendeteksi otomatis fungsi JavaScript yang mengontrol tombol/slider yang dipilih (misal `pickPlanType()`, `syncAreaSlider()`).
-   - Kode dieksekusi secara native di window global kanvas tanpa tertahan sandbox closure.
+### 2. In-Place Section Structure Picker (Elementor Style Dropzone)
+Menyisipkan section baru langsung di posisi persis insert bar yang diklik (di tengah-tengah antar section maupun di bawah halaman) dengan pilihan struktur kolom instan (1 Kolom, 2 Kolom 50:50, 2 Kolom 66:33, 3 Kolom, 4 Kolom) tanpa melompat ke ujung bawah halaman.
 
-3. **In-Place Structure Picker & Dropzone Impor AI**
-   - Di antara section mana pun dan di area bawah kanvas, tersedia tombol tambah section in-place dengan preset 1-4 kolom serta dropzone impor AI/HTML.
-   - Cukup paste kode mentah dari Claude, v0, ChatGPT, atau Figma, dan landing page langsung ter-render utuh.
+### 3. Dual Canvas Engine (Desain vs Mode Interaktif LIVE)
+- **Mode Desain (`Alt + Klik`)**: Menyeleksi dan mengedit elemen secara visual dengan floating toolbar kontekstual.
+- **Mode Interaktif (`Ctrl + I`)**: Menguji langsung seluruh interaksi web secara nyata (slider berjalan, tombol kalkulator menghitung, form memicu webhook WhatsApp, accordion membuka) tanpa terhalang selektor editor.
 
-4. **Sleek Mobile & Responsive Silhouette (iPhone Flagship 390px)**
-   - Viewport mobile modern 390px (standar iPhone 14/15/16 Pro) dengan bezel titanium tipis 6px, Dynamic Island, dan slim overlay scrollbar. Bebas terpotong dan tidak bulky.
+### 4. Sleek Mobile & Responsive Silhouette (iPhone Flagship 390px)
+Pratinjau viewport mobile proporsional 390px dengan bezel titanium modern 6px, dynamic island, dan slim overlay scrollbar. Bebas terpotong horizontal dan sudah fluid-responsive di semua ukuran layar.
 
-5. **Live SEO Google Audit**
-   - Mengaudit struktur H1 unik, meta title, meta description, Open Graph media sosial, alt text gambar, dan canonical tag secara real-time dengan skor 0-100.
-
-6. **Integrasi Tracking & Analitik Lengkap**
-   - Di tab **Pengaturan**, tersedia field siap pakai untuk Google Analytics (GA4 / GTM), Meta Pixel (Facebook Ads), Microsoft Clarity, serta Custom `<head>` & `<footer>` code.
-
-7. **Zero-Conflict Script Execution Engine (Live & Editor Parity)**
-   - Menjalankan seluruh script custom, logika kalkulator, slider Swiper.js, AOS, accordion FAQ, dan popup modal di scope `window` global murni pada halaman live.
-   - Dilengkapi safe-tracking stubs (`fbq`, `gtag`, `clarity`, `dataLayer`) agar adblocker tidak menghentikan fungsi interaktif web, serta auto-inject Swiper/AOS CDN jika terdeteksi di markup.
+### 5. Live SEO Google Audit
+Audit langsung struktur H1 unik, meta title, meta description, Open Graph sosial media, alt text gambar, serta canonical tag secara real-time dengan indikator skor 0-100.
 
 ---
 
-## Panduan Singkat Pemakaian
+## Panduan Penggunaan Singkat
 
 1. **Membuat Halaman Baru**:
-   - Masuk ke **Bongkar Builder** -> **Buat Kanvas Kosong** atau klik **Import HTML Langsung**.
-   - Masukkan judul halaman lalu klik Simpan. Editor Fullscreen akan langsung terbuka.
-2. **Mengimpor Desain**:
-   - Di kanvas bawah, klik tombol **"Impor AI / HTML"**.
-   - Paste kode HTML lengkap atau upload file `.html` hasil ekspor dari Claude / ChatGPT / Figma.
-   - Klik **"Import ke Canvas"**.
-3. **Mengedit Secara Visual**:
-   - Klik teks langsung di kanvas untuk mengganti tulisan.
-   - Gunakan panel kiri **Inspector** untuk memilih Google Font, ukuran font, margin/padding, dan warna.
-   - Klik gambar untuk menggantinya via Media Library WordPress.
-4. **Menyimpan**:
-   - Tekan `Ctrl + S` atau klik tombol **[ Simpan Draft / Perbarui ]** di sudut kanan atas.
-5. **Melihat Hasil**:
-   - Klik tombol **"Preview"** untuk membuka halaman live di tab baru.
+   - Masuk ke menu **Bongkar Builder** -> **Buat Kanvas Kosong** atau klik **Import HTML Langsung**.
+   - Berikan judul halaman lalu simpan. Editor kanvas layar penuh akan langsung terbuka.
+2. **Mengimpor Desain AI / HTML**:
+   - Klik tombol **"Impor AI / HTML"** di dropzone kanvas.
+   - Tempel kode HTML lengkap atau unggah file `.html` hasil ekspor dari Claude / ChatGPT / Figma / v0.
+   - Klik **"Import ke Canvas"**. Halaman langsung tampil utuh.
+3. **Mengedit Elemen**:
+   - Klik teks atau box di kanvas untuk membuka 4 Sub-Tab di panel Inspector.
+   - Gunakan Sub-Tab **Konten** untuk teks, **Gaya** untuk tipografi/warna, **Tata Letak** untuk lebar/tinggi/kolom, dan **Logika** untuk script interaktif.
+4. **Menyalin Elemen Lintas Website**:
+   - Klik elemen yang ingin disalin -> tekan `Ctrl + C` (atau klik ikon Copy di toolbar).
+   - Buka editor Bongkar Builder di website WordPress lain -> klik target kontainer -> tekan `Ctrl + V`.
+5. **Menyimpan & Mempublikasikan**:
+   - Tekan `Ctrl + S` atau klik tombol hijau **[ Perbarui / Simpan Draft ]**.
+   - Klik tombol **Preview** untuk melihat halaman live di tab baru.
+
+---
+
+## Pembaruan Otomatis (Auto-Update Workflow)
+Plugin ini mendukung sistem pembaruan otomatis dari repositori resmi GitHub:
+1. Ketika ada versi baru yang dirilis di GitHub `kadeksrd/Bongkar-Builder`, WordPress akan otomatis memunculkan pemberitahuan rilis di halaman **Plugins**.
+2. Klik tombol **"View version details"** untuk membaca changelog pembaruan, atau langsung klik **"Update Now"** untuk memperbarui plugin tanpa perlu upload ulang file zip secara manual.
 
 ---
 
 ## Keamanan & Lisensi
-- Berlisensi **GPL-2.0-or-later**. Bebas digunakan, didistribusikan, dan dimodifikasi untuk proyek pribadi maupun klien.
-- Dilengkapi verifikasi keamanan WordPress Nonce (`wp_verify_nonce`) dan sanitasi hak akses (`current_user_can('edit_pages')`).
+- Berlisensi **GPL-2.0-or-later**. Bebas digunakan, didistribusikan, dan dimodifikasi untuk proyek pribadi maupun klien komersial.
+- Dilengkapi verifikasi keamanan WordPress Nonce (`wp_verify_nonce`), sanitasi hak akses (`current_user_can('edit_pages')`), dan perlindungan Content Shield.
