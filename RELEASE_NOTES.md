@@ -32,3 +32,10 @@ Version 1.2.3-beta introduces full dual-language internationalization (Bahasa In
    - **100% Fluid Desktop Workspace:** Desktop preview mode now fills 100% of the available workspace edge-to-edge naturally (identical to Elementor's canvas), completely eliminating artificial shrinking and dark empty side bars.
    - **Zero Horizontal Overflow:** Enforced strict `overflow-x: hidden` and `min-width: 0` on `.studio-canvas-area`, guaranteeing that horizontal scrollbars never appear on laptop screens.
    - **Clean Elementor Device Frames:** Sized cleanly to standard Elementor breakpoints: Tablet (768px) and Mobile (360px), without obtrusive bezels, fake notches, or blocking home bars.
+
+7. **Elementor-Grade Responsive Layout Engine & Device-Aware Inspector:**
+   - **Per-Device Scoped Overrides:** Adjustments made in Mobile (360px) or Tablet (768px) modes (font size, column width, flex direction, text alignment, padding, and margin) are automatically saved per-device via dynamic responsive stylesheet compilation (`<style id="bongkar-responsive-styles">`), ensuring mobile refinements never break the desktop layout.
+   - **Auto-Stacking & Zero-Overflow Layouts:** Multi-column grids and flex containers automatically collapse into clean 100% width vertical stacks on mobile screens (`<= 767px`), with outer section padding constrained to prevent excessive desktop padding from squishing content.
+   - **Fluid & Proportional Typography:** Headings automatically scale with fluid clamp formulas on mobile screens, eliminating oversized headlines and awkward word wraps.
+   - **Anti-Blocking Canvas Interaction:** Floating toolbar adapts into an ultra-compact mode on narrow screens with edge clamping, while inline text editing (`contenteditable`) temporarily dims the toolbar so text selection and cursor placement are 100% free and unhindered.
+   - **Live Device Sync Badges:** Interactive device indicator badges across Inspector controls provide instant visual feedback on which device mode is active and highlight customized property overrides.

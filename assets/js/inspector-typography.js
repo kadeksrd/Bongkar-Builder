@@ -10,6 +10,36 @@ window.BongkarInspector = (function () {
     let wpMediaFrame = null;
 
     let currentActiveSubTab = 'content';
+    let currentDevice = 'desktop'; // 'desktop' | 'tablet' | 'mobile'
+
+    function setDeviceMode(device) {
+        currentDevice = device || 'desktop';
+        updateDeviceSyncBadges();
+        if (currentElementData) {
+            onElementSelected(currentElementData);
+        }
+    }
+
+    function updateDeviceSyncBadges() {
+        const iconClass = (currentDevice === 'mobile') 
+            ? 'fa-mobile-screen' 
+            : ((currentDevice === 'tablet') ? 'fa-tablet-screen-button' : 'fa-desktop');
+
+        document.querySelectorAll('.device-sync-badge').forEach(badge => {
+            badge.className = `device-sync-badge mode-${currentDevice}`;
+            badge.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+            badge.title = `Sedang mengatur untuk tampilan ${currentDevice.toUpperCase()}`;
+
+            if (currentElementData && currentElementData.responsiveOverrides && currentElementData.responsiveOverrides[currentDevice]) {
+                const overrides = currentElementData.responsiveOverrides[currentDevice];
+                const prop = badge.getAttribute('data-sync-prop');
+                if (prop && overrides[prop] !== undefined && overrides[prop] !== '') {
+                    badge.classList.add('has-override');
+                    badge.title = `Pengaturan ${currentDevice.toUpperCase()} Kustom Aktif (${overrides[prop]})`;
+                }
+            }
+        });
+    }
 
     function init() {
         bindSubTabs();
@@ -386,6 +416,8 @@ window.BongkarInspector = (function () {
             }
         }
 
+        const devOverrides = (data.responsiveOverrides && data.responsiveOverrides[currentDevice]) ? data.responsiveOverrides[currentDevice] : {};
+
         // Flexbox Container Controls (Elementor Style: Saling Samping / Atas-Bawah)
         const flexGroup = document.getElementById('group-flex-direction-controls');
         if (flexGroup) {
@@ -394,7 +426,7 @@ window.BongkarInspector = (function () {
                 flexGroup.style.display = 'block';
 
                 // Direction toggle active state
-                const isRow = (data.flexDirection === 'row');
+                const isRow = devOverrides.flexDirection ? (devOverrides.flexDirection === 'row') : (data.flexDirection === 'row');
                 const btnRow = document.getElementById('btn-flex-dir-row');
                 const btnCol = document.getElementById('btn-flex-dir-col');
                 if (btnRow && btnCol) {
@@ -403,7 +435,7 @@ window.BongkarInspector = (function () {
                 }
 
                 // Gap slider & number input
-                const gapVal = (data.flexGap !== undefined) ? parseInt(data.flexGap) : 16;
+                const gapVal = devOverrides.gap !== undefined ? parseInt(devOverrides.gap) : ((data.flexGap !== undefined) ? parseInt(data.flexGap) : 16);
                 const gapSlider = document.getElementById('ctrl-flex-gap-slider');
                 const gapNum = document.getElementById('ctrl-flex-gap-num');
                 if (gapSlider) gapSlider.value = gapVal;
@@ -416,13 +448,13 @@ window.BongkarInspector = (function () {
                 });
 
                 // Align items
-                const currentAlign = data.flexAlignItems || 'stretch';
+                const currentAlign = devOverrides.alignItems || data.flexAlignItems || 'stretch';
                 document.querySelectorAll('.btn-align-item').forEach(btn => {
                     btn.classList.toggle('active', btn.getAttribute('data-align') === currentAlign);
                 });
 
                 // Justify content
-                const currentJustify = data.flexJustifyContent || 'flex-start';
+                const currentJustify = devOverrides.justifyContent || data.flexJustifyContent || 'flex-start';
                 document.querySelectorAll('.btn-justify-item').forEach(btn => {
                     btn.classList.toggle('active', btn.getAttribute('data-justify') === currentJustify);
                 });
@@ -430,7 +462,7 @@ window.BongkarInspector = (function () {
                 // Wrap checkbox
                 const wrapCheck = document.getElementById('ctrl-flex-wrap');
                 if (wrapCheck) {
-                    wrapCheck.checked = (data.flexWrap !== 'nowrap');
+                    wrapCheck.checked = devOverrides.flexWrap ? (devOverrides.flexWrap !== 'nowrap') : (data.flexWrap !== 'nowrap');
                 }
 
                 // Master Child Proportions row
@@ -490,8 +522,9 @@ window.BongkarInspector = (function () {
         // Font Size
         const fontSizeSlider = document.getElementById('ctrl-font-size-slider');
         const fontSizeNum = document.getElementById('ctrl-font-size-num');
-        fontSizeSlider.value = data.styles.fontSize || 16;
-        fontSizeNum.value = data.styles.fontSize || 16;
+        const activeFontSize = devOverrides.fontSize ? parseInt(devOverrides.fontSize) : (data.styles.fontSize || 16);
+        fontSizeSlider.value = activeFontSize;
+        fontSizeNum.value = activeFontSize;
 
         // Font Weight
         document.getElementById('ctrl-font-weight').value = data.styles.fontWeight || '400';
@@ -505,12 +538,13 @@ window.BongkarInspector = (function () {
         }
 
         // Alignment active state
+        const activeAlign = devOverrides.textAlign || data.styles.textAlign;
         document.querySelectorAll('.btn-align').forEach(btn => {
-            btn.classList.toggle('active', btn.getAttribute('data-align') === data.styles.textAlign);
+            btn.classList.toggle('active', btn.getAttribute('data-align') === activeAlign);
         });
 
         // Dimensions & Column Width
-        const widthVal = data.width || data.styles.width || '';
+        const widthVal = devOverrides.width || data.width || data.styles.width || '';
         let detectedWidthUnit = '%';
         if (widthVal === 'auto') {
             detectedWidthUnit = 'auto';
@@ -530,8 +564,8 @@ window.BongkarInspector = (function () {
         if (widthNum) widthNum.value = rawWidthNum;
 
         // Dimensions & Element Height (Universal)
-        const heightVal = data.height || (data.styles && data.styles.height) || '';
-        const minHeightVal = data.minHeight || (data.styles && data.styles.minHeight) || '';
+        const heightVal = devOverrides.height || data.height || (data.styles && data.styles.height) || '';
+        const minHeightVal = devOverrides.minHeight || data.minHeight || (data.styles && data.styles.minHeight) || '';
         const isMinHeight = !heightVal && !!minHeightVal;
         const effectiveHeightVal = heightVal || minHeightVal || '';
 
@@ -564,10 +598,10 @@ window.BongkarInspector = (function () {
         }
         setPadUnit(detectedPadUnit);
 
-        document.getElementById('ctrl-pad-top').value = extractUnitValue(data.inlinePadding && data.inlinePadding.top) || data.styles.paddingTop || '';
-        document.getElementById('ctrl-pad-right').value = extractUnitValue(data.inlinePadding && data.inlinePadding.right) || data.styles.paddingRight || '';
-        document.getElementById('ctrl-pad-bottom').value = extractUnitValue(data.inlinePadding && data.inlinePadding.bottom) || data.styles.paddingBottom || '';
-        document.getElementById('ctrl-pad-left').value = extractUnitValue(data.inlinePadding && data.inlinePadding.left) || data.styles.paddingLeft || '';
+        document.getElementById('ctrl-pad-top').value = (devOverrides.paddingTop !== undefined) ? extractUnitValue(devOverrides.paddingTop) : (extractUnitValue(data.inlinePadding && data.inlinePadding.top) || data.styles.paddingTop || '');
+        document.getElementById('ctrl-pad-right').value = (devOverrides.paddingRight !== undefined) ? extractUnitValue(devOverrides.paddingRight) : (extractUnitValue(data.inlinePadding && data.inlinePadding.right) || data.styles.paddingRight || '');
+        document.getElementById('ctrl-pad-bottom').value = (devOverrides.paddingBottom !== undefined) ? extractUnitValue(devOverrides.paddingBottom) : (extractUnitValue(data.inlinePadding && data.inlinePadding.bottom) || data.styles.paddingBottom || '');
+        document.getElementById('ctrl-pad-left').value = (devOverrides.paddingLeft !== undefined) ? extractUnitValue(devOverrides.paddingLeft) : (extractUnitValue(data.inlinePadding && data.inlinePadding.left) || data.styles.paddingLeft || '');
 
         let detectedMarUnit = 'px';
         if (data.inlineMargin) {
@@ -577,10 +611,10 @@ window.BongkarInspector = (function () {
         }
         setMarUnit(detectedMarUnit);
 
-        document.getElementById('ctrl-mar-top').value = extractUnitValue(data.inlineMargin && data.inlineMargin.top) || data.styles.marginTop || '';
-        document.getElementById('ctrl-mar-right').value = extractUnitValue(data.inlineMargin && data.inlineMargin.right) || data.styles.marginRight || '';
-        document.getElementById('ctrl-mar-bottom').value = extractUnitValue(data.inlineMargin && data.inlineMargin.bottom) || data.styles.marginBottom || '';
-        document.getElementById('ctrl-mar-left').value = extractUnitValue(data.inlineMargin && data.inlineMargin.left) || data.styles.marginLeft || '';
+        document.getElementById('ctrl-mar-top').value = (devOverrides.marginTop !== undefined) ? extractUnitValue(devOverrides.marginTop) : (extractUnitValue(data.inlineMargin && data.inlineMargin.top) || data.styles.marginTop || '');
+        document.getElementById('ctrl-mar-right').value = (devOverrides.marginRight !== undefined) ? extractUnitValue(devOverrides.marginRight) : (extractUnitValue(data.inlineMargin && data.inlineMargin.right) || data.styles.marginRight || '');
+        document.getElementById('ctrl-mar-bottom').value = (devOverrides.marginBottom !== undefined) ? extractUnitValue(devOverrides.marginBottom) : (extractUnitValue(data.inlineMargin && data.inlineMargin.bottom) || data.styles.marginBottom || '');
+        document.getElementById('ctrl-mar-left').value = (devOverrides.marginLeft !== undefined) ? extractUnitValue(devOverrides.marginLeft) : (extractUnitValue(data.inlineMargin && data.inlineMargin.left) || data.styles.marginLeft || '');
 
         // Background & Border
         const bgColorHex = document.getElementById('ctrl-bg-color-hex');
@@ -605,6 +639,9 @@ window.BongkarInspector = (function () {
         if (data.focusField) {
             focusField(data.focusField);
         }
+
+        // Synchronize Responsive Device Badges
+        updateDeviceSyncBadges();
     }
 
     /**
@@ -629,9 +666,17 @@ window.BongkarInspector = (function () {
 
         iframe.contentWindow.postMessage({
             type: 'BONGKAR_APPLY_STYLE',
+            device: currentDevice,
             property: property,
             value: value
         }, '*');
+
+        if (currentElementData && currentDevice !== 'desktop') {
+            if (!currentElementData.responsiveOverrides) currentElementData.responsiveOverrides = { mobile: {}, tablet: {} };
+            if (!currentElementData.responsiveOverrides[currentDevice]) currentElementData.responsiveOverrides[currentDevice] = {};
+            currentElementData.responsiveOverrides[currentDevice][property] = value;
+            updateDeviceSyncBadges();
+        }
     }
 
     /**
@@ -1040,8 +1085,16 @@ window.BongkarInspector = (function () {
 
             iframe.contentWindow.postMessage({
                 type: 'BONGKAR_SET_FLEX_LAYOUT',
+                device: currentDevice,
                 ...payload
             }, '*');
+
+            if (currentElementData && currentDevice !== 'desktop') {
+                if (!currentElementData.responsiveOverrides) currentElementData.responsiveOverrides = { mobile: {}, tablet: {} };
+                if (!currentElementData.responsiveOverrides[currentDevice]) currentElementData.responsiveOverrides[currentDevice] = {};
+                Object.assign(currentElementData.responsiveOverrides[currentDevice], payload);
+                updateDeviceSyncBadges();
+            }
 
             if (window.BongkarStudio && window.BongkarStudio.markDirty) {
                 window.BongkarStudio.markDirty(true);
@@ -1959,6 +2012,8 @@ window.BongkarInspector = (function () {
         onElementDeselected: onElementDeselected,
         switchSubTab: switchSubTab,
         focusField: focusField,
+        setDeviceMode: setDeviceMode,
+        getDeviceMode: () => currentDevice,
         getCurrentElementData: () => currentElementData,
         getActiveGoogleFonts: () => Array.from(activeGoogleFonts),
         setActiveGoogleFonts: (fonts) => {

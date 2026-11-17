@@ -125,6 +125,12 @@ $google_fonts_url = Bongkar_Builder_Google_Fonts::build_fonts_url($fonts);
             overflow-x: hidden;
             word-wrap: break-word;
         }
+        #bongkar-canvas-root {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: clip;
+        }
         img, video, iframe, svg { max-width: 100%; height: auto; }
         html { scroll-behavior: smooth; }
 

@@ -190,6 +190,20 @@
                 // Reset any legacy transform scaling to ensure 100% clean rendering
                 viewport.style.transform = '';
                 viewport.style.transformOrigin = '';
+
+                // Broadcast device mode to iframe canvas
+                const iframe = document.getElementById('bongkar-iframe-canvas');
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_SET_DEVICE_MODE',
+                        device: device
+                    }, '*');
+                }
+
+                // Notify Inspector to update responsive controls & badges
+                if (window.BongkarInspector && typeof window.BongkarInspector.setDeviceMode === 'function') {
+                    window.BongkarInspector.setDeviceMode(device);
+                }
             });
         });
 

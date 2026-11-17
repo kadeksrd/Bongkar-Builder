@@ -240,9 +240,12 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
         /* Neutralize Block Themes / Gutenberg intrusive margins on containers */
         #bongkar-page-content, #bongkar-header-wrapper, #bongkar-footer-wrapper {
             width: 100%;
+            max-width: 100%;
             margin: 0;
             padding: 0;
             position: relative;
+            box-sizing: border-box;
+            overflow-x: clip;
         }
 
         /* Modal & Popup Hidden Safeguard (Anti-popup auto jalan tanpa diminta) */
@@ -400,6 +403,75 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
 
         /* Footer Custom CSS */
         <?php echo $footer_css; ?>
+
+        /* ============================================================
+           BONGKAR BUILDER RESPONSIVE ENGINE (Elementor-Grade Frontend Flow)
+           ============================================================ */
+        @media (max-width: 767px) {
+            html, body, #bongkar-page-content {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            .bongkar-section, section {
+                padding-left: clamp(12px, 4vw, 20px) !important;
+                padding-right: clamp(12px, 4vw, 20px) !important;
+            }
+            .bongkar-section > div[style*="display: grid"],
+            .bongkar-section > div[style*="display:grid"],
+            #bongkar-page-content div[style*="grid-template-columns"]:not([data-custom-mobile-layout]),
+            .bongkar-row:not([data-custom-mobile-layout]),
+            .row:not([data-custom-mobile-layout]) {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            .bongkar-column:not([data-custom-mobile-width]),
+            [class*="col-"]:not([data-custom-mobile-width]) {
+                width: 100% !important;
+                max-width: 100% !important;
+                flex: 1 1 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            h1:not([data-custom-mobile-font]), .h1:not([data-custom-mobile-font]) {
+                font-size: clamp(22px, 6vw, 30px) !important;
+                line-height: 1.25 !important;
+                word-break: break-word;
+            }
+            h2:not([data-custom-mobile-font]), .h2:not([data-custom-mobile-font]) {
+                font-size: clamp(19px, 5vw, 25px) !important;
+                line-height: 1.3 !important;
+                word-break: break-word;
+            }
+            h3:not([data-custom-mobile-font]), .h3:not([data-custom-mobile-font]) {
+                font-size: clamp(16px, 4.5vw, 21px) !important;
+                line-height: 1.35 !important;
+                word-break: break-word;
+            }
+            img, video, iframe {
+                max-width: 100% !important;
+                height: auto;
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1024px) {
+            html, body, #bongkar-page-content {
+                overflow-x: hidden !important;
+            }
+            .bongkar-section, section {
+                padding-left: clamp(20px, 3vw, 32px) !important;
+                padding-right: clamp(20px, 3vw, 32px) !important;
+            }
+            div[style*="grid-template-columns: repeat(4"]:not([data-custom-tablet-layout]),
+            div[style*="grid-template-columns: 25% 25% 25% 25%"]:not([data-custom-tablet-layout]) {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 24px !important;
+            }
+            h1:not([data-custom-tablet-font]) {
+                font-size: clamp(26px, 4.5vw, 36px) !important;
+            }
+            h2:not([data-custom-tablet-font]) {
+                font-size: clamp(22px, 3.8vw, 30px) !important;
+            }
+        }
     </style>
 </head>
 <body <?php body_class('bongkar-canvas-body'); ?>>

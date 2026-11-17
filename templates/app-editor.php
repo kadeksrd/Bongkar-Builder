@@ -777,7 +777,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Font Size -->
                                 <div class="form-row">
-                                    <label class="form-label">Ukuran Font (Font Size):</label>
+                                    <label class="form-label">Ukuran Font (Font Size): <span class="device-sync-badge mode-desktop" data-sync-prop="fontSize" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                     <div class="form-slider-row">
                                         <input type="range" id="ctrl-font-size-slider" class="form-slider" min="10" max="100" value="16">
                                         <input type="number" id="ctrl-font-size-num" class="slider-val-box" value="16">
@@ -811,7 +811,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Text Alignment -->
                                 <div class="form-row">
-                                    <label class="form-label">Rata Teks:</label>
+                                    <label class="form-label">Rata Teks: <span class="device-sync-badge mode-desktop" data-sync-prop="textAlign" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                     <div style="display: flex; gap: 4px;">
                                         <button type="button" class="btn-studio-action btn-align" data-align="left" style="flex: 1; justify-content: center;"><i class="fa-solid fa-align-left"></i></button>
                                         <button type="button" class="btn-studio-action btn-align" data-align="center" style="flex: 1; justify-content: center;"><i class="fa-solid fa-align-center"></i></button>
@@ -884,7 +884,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Lebar Elemen (Universal Width) -->
                                 <div class="form-row">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <label class="form-label" style="margin: 0;">Lebar Elemen / Kolom (Width):</label>
+                                        <label class="form-label" style="margin: 0;">Lebar Elemen / Kolom (Width): <span class="device-sync-badge mode-desktop" data-sync-prop="width" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                         <div class="unit-switcher" id="width-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="%">%</button>
                                             <button type="button" class="unit-btn" data-unit="px">PX</button>
@@ -902,7 +902,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Tinggi Elemen (Universal Height) -->
                                 <div class="form-row" style="margin-top: 12px;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <label class="form-label" style="margin: 0;">Tinggi Elemen (Height):</label>
+                                        <label class="form-label" style="margin: 0;">Tinggi Elemen (Height): <span class="device-sync-badge mode-desktop" data-sync-prop="height" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                         <div class="unit-switcher" id="height-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="px">PX</button>
                                             <button type="button" class="unit-btn" data-unit="vh">VH</button>
@@ -963,7 +963,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Arah Susunan: Row vs Column (Elementor Container Direction) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Arah Susunan Elemen (Direction):</label>
+                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Arah Susunan Elemen (Direction): <span class="device-sync-badge mode-desktop" data-sync-prop="flexDirection" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                     <div class="flex-direction-toggle-group">
                                         <button type="button" class="btn-flex-dir" id="btn-flex-dir-row" title="Elemen berjejer ke samping kanan (Row)">
                                             <i class="fa-solid fa-arrows-left-right"></i>
@@ -1018,7 +1018,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Jarak Antar Elemen (Gap) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <label class="form-label" style="margin: 0; font-size: 11px;">Jarak Antar Elemen (Gap):</label>
+                                        <label class="form-label" style="margin: 0; font-size: 11px;">Jarak Antar Elemen (Gap): <span class="device-sync-badge mode-desktop" data-sync-prop="gap" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                         <div class="flex-gap-presets">
                                             <button type="button" class="btn-gap-preset" data-gap="0">0</button>
                                             <button type="button" class="btn-gap-preset" data-gap="8">8px</button>
@@ -1037,7 +1037,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Perataan Sejajar (Align Items) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Perataan Silang (Align Items):</label>
+                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Perataan Silang (Align Items): <span class="device-sync-badge mode-desktop" data-sync-prop="alignItems" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                     <div class="flex-btn-group">
                                         <button type="button" class="btn-flex-opt btn-align-item" data-align="flex-start" title="Rata Awal / Atas">
                                             <i class="fa-solid fa-align-left"></i>
@@ -1056,7 +1056,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Distribusi Konten (Justify Content) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Distribusi Baris (Justify Content):</label>
+                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Distribusi Baris (Justify Content): <span class="device-sync-badge mode-desktop" data-sync-prop="justifyContent" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                     <div class="flex-btn-group">
                                         <button type="button" class="btn-flex-opt btn-justify-item active" data-justify="flex-start" title="Rata Kiri / Depan">
                                             <i class="fa-solid fa-grip-lines-vertical"></i>
@@ -1103,7 +1103,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Padding Section -->
                                 <div class="spacing-control-block">
                                     <div class="spacing-header">
-                                        <label class="form-label spacing-title">Padding</label>
+                                        <label class="form-label spacing-title">Padding <span class="device-sync-badge mode-desktop" data-sync-prop="paddingTop" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                         <div class="unit-switcher" id="pad-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="px">PX</button>
                                             <button type="button" class="unit-btn" data-unit="%">%</button>
@@ -1139,7 +1139,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Margin Section -->
                                 <div class="spacing-control-block" style="margin-top: 14px;">
                                     <div class="spacing-header">
-                                        <label class="form-label spacing-title">Margin</label>
+                                        <label class="form-label spacing-title">Margin <span class="device-sync-badge mode-desktop" data-sync-prop="marginTop" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
                                         <div class="unit-switcher" id="mar-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="px">PX</button>
                                             <button type="button" class="unit-btn" data-unit="%">%</button>

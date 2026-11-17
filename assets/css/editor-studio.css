@@ -38,7 +38,7 @@
 body, html {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: hidden !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--bg-main);
     color: var(--text-primary);
@@ -49,8 +49,11 @@ body, html {
 #bongkar-studio-app {
     display: flex;
     flex-direction: column;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
 }
 
 /* Top Bar */
@@ -66,6 +69,9 @@ body, html {
     user-select: none;
     gap: 8px;
     flex-wrap: nowrap;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .studio-topbar button,
@@ -483,6 +489,9 @@ body, html {
 .studio-workspace {
     display: flex;
     flex: 1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
     position: relative;
 }
@@ -737,6 +746,38 @@ body, html {
     background: var(--primary);
     color: #ffffff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Device Sync Indicator Badges for Responsive Inspector Controls */
+.device-sync-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    font-size: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+    cursor: help;
+}
+
+.device-sync-badge.mode-tablet {
+    background: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+}
+
+.device-sync-badge.mode-mobile {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.device-sync-badge.has-override {
+    box-shadow: 0 0 0 1px currentColor, 0 0 8px currentColor;
+    font-weight: 700;
 }
 
 /* Spacing Control Block (Elementor Style 4-Box Row) */
@@ -1053,6 +1094,8 @@ body, html {
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
     box-sizing: border-box;
+    flex-shrink: 0;
+    align-self: center;
 }
 
 /* In Mobile Mode (Elementor Style: 360px Clean Viewport) */
@@ -1065,6 +1108,8 @@ body, html {
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
     box-sizing: border-box;
+    flex-shrink: 0;
+    align-self: center;
 }
 
 #bongkar-iframe-canvas {
