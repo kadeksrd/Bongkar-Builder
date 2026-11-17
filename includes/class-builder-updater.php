@@ -143,13 +143,21 @@ class Bongkar_Builder_Updater {
             }
         }
 
+        $headers = [
+            'Accept' => 'application/vnd.github.v3+json',
+        ];
+        $token = defined('BONGKAR_BUILDER_GITHUB_TOKEN') 
+            ? BONGKAR_BUILDER_GITHUB_TOKEN 
+            : get_option('bongkar_builder_github_token', '');
+        if (!empty($token)) {
+            $headers['Authorization'] = 'Bearer ' . trim($token);
+        }
+
         $url = 'https://api.github.com/repos/' . $this->github_repo . '/releases/latest';
         $response = wp_remote_get($url, [
             'timeout'    => 10,
             'user-agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url(),
-            'headers'    => [
-                'Accept' => 'application/vnd.github.v3+json',
-            ],
+            'headers'    => $headers,
         ]);
 
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
