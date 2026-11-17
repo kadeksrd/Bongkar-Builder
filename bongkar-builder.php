@@ -69,7 +69,7 @@ function bongkar_builder_init() {
     if (class_exists('Bongkar_Builder_Post_SEO')) {
         Bongkar_Builder_Post_SEO::get_instance();
     }
-    if (is_admin() && class_exists('Bongkar_Builder_Updater')) {
+    if (class_exists('Bongkar_Builder_Updater')) {
         new Bongkar_Builder_Updater();
     }
 }

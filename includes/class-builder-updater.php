@@ -70,6 +70,24 @@ class Bongkar_Builder_Updater {
 
         // Clear cached release info when plugin is updated
         add_action('upgrader_process_complete', [$this, 'purge_cache'], 10, 2);
+
+        // Support WordPress 5.5+ Native Auto-Updates
+        add_filter('auto_update_plugin', [$this, 'maybe_auto_update'], 10, 2);
+    }
+
+    /**
+     * Filter auto-update behavior for Bongkar Builder
+     *
+     * @param bool|null $update
+     * @param object $item
+     * @return bool|null
+     */
+    public function maybe_auto_update($update, $item) {
+        if (isset($item->plugin) && $item->plugin === $this->plugin_basename) {
+            // Respect site admin's auto-update preference
+            return $update;
+        }
+        return $update;
     }
 
     /**
@@ -123,8 +141,26 @@ class Bongkar_Builder_Updater {
             return $transient;
         }
 
+        if (empty($transient->response)) {
+            $transient->response = [];
+        }
+        if (empty($transient->no_update)) {
+            $transient->no_update = [];
+        }
+
         $release = $this->get_remote_release();
         if (!$release) {
+            // Default to no_update so WordPress recognizes the plugin supports updates
+            if (!isset($transient->response[$this->plugin_basename])) {
+                $obj = new stdClass();
+                $obj->id          = 'kadeksrd/Bongkar-Builder';
+                $obj->slug        = $this->plugin_slug;
+                $obj->plugin      = $this->plugin_basename;
+                $obj->new_version = $this->version;
+                $obj->url         = 'https://github.com/' . $this->github_repo;
+                $obj->package     = '';
+                $transient->no_update[$this->plugin_basename] = $obj;
+            }
             return $transient;
         }
 
@@ -137,6 +173,7 @@ class Bongkar_Builder_Updater {
             $download_url = $this->get_release_zip_url($release);
 
             $obj = new stdClass();
+            $obj->id          = 'kadeksrd/Bongkar-Builder';
             $obj->slug        = $this->plugin_slug;
             $obj->plugin      = $this->plugin_basename;
             $obj->new_version = $remote_version;
@@ -147,6 +184,21 @@ class Bongkar_Builder_Updater {
             $obj->requires_php = '7.4';
 
             $transient->response[$this->plugin_basename] = $obj;
+            unset($transient->no_update[$this->plugin_basename]);
+        } else {
+            $obj = new stdClass();
+            $obj->id          = 'kadeksrd/Bongkar-Builder';
+            $obj->slug        = $this->plugin_slug;
+            $obj->plugin      = $this->plugin_basename;
+            $obj->new_version = $this->version;
+            $obj->url         = 'https://github.com/' . $this->github_repo;
+            $obj->package     = '';
+            $obj->tested      = '6.7';
+            $obj->requires    = '5.8';
+            $obj->requires_php = '7.4';
+
+            $transient->no_update[$this->plugin_basename] = $obj;
+            unset($transient->response[$this->plugin_basename]);
         }
 
         return $transient;
