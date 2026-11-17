@@ -31,4 +31,4 @@ Version 1.2.3-beta introduces full dual-language internationalization (Bahasa In
 6. **Elementor-Style Full-Width Canvas & Responsive Viewport Engine:**
    - **100% Fluid Desktop Workspace:** Desktop preview mode now fills 100% of the available workspace edge-to-edge naturally (identical to Elementor's canvas), completely eliminating artificial shrinking and dark empty side bars.
    - **Zero Horizontal Overflow:** Enforced strict `overflow-x: hidden` and `min-width: 0` on `.studio-canvas-area`, guaranteeing that horizontal scrollbars never appear on laptop screens.
-   - **Seamless Device Frames:** Smooth, centered responsive frames for Tablet (768px) and Mobile (390px) without obtrusive zoom widgets.
+   - **Clean Elementor Device Frames:** Sized cleanly to standard Elementor breakpoints: Tablet (768px) and Mobile (360px), without obtrusive bezels, fake notches, or blocking home bars.

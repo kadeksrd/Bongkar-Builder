@@ -202,10 +202,10 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <span data-i18n="topbar.device_tablet">Tablet</span>
                     <span class="device-res-badge">768px</span>
                 </button>
-                <button type="button" class="device-btn" data-device="mobile" title="Mobile View (390px - iPhone & Android Flagship)">
+                <button type="button" class="device-btn" data-device="mobile" title="Mobile View (360px - Elementor Standard)">
                     <i class="fa-solid fa-mobile-screen"></i>
                     <span data-i18n="topbar.device_mobile">Mobile</span>
-                    <span class="device-res-badge">390px</span>
+                    <span class="device-res-badge">360px</span>
                 </button>
             </div>
         </div>
