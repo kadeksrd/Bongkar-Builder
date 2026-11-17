@@ -188,8 +188,8 @@
                 viewport.classList.remove('mode-desktop', 'mode-tablet', 'mode-mobile');
                 viewport.classList.add(`mode-${device}`);
 
-                if (window.BongkarCanvasZoom && typeof window.BongkarCanvasZoom.recalc === 'function') {
-                    window.BongkarCanvasZoom.recalc();
+                if (window.BongkarCanvasZoom && typeof window.BongkarCanvasZoom.apply === 'function') {
+                    window.BongkarCanvasZoom.apply('fit');
                 }
             });
         });
@@ -212,43 +212,35 @@
 
         let currentZoomMode = localStorage.getItem('bongkar_canvas_zoom_mode') || 'fit';
         let currentZoomScale = 1;
-        const BASE_DESKTOP_WIDTH = 1200;
-
-        function calculateFitScale() {
-            if (!canvasArea || !viewport) return 1;
-            
-            let targetWidth = BASE_DESKTOP_WIDTH;
-            if (viewport.classList.contains('mode-tablet')) {
-                targetWidth = 768;
-            } else if (viewport.classList.contains('mode-mobile')) {
-                targetWidth = 390;
-            }
-
-            const areaWidth = canvasArea.clientWidth - 32; // 16px safety padding
-            if (areaWidth <= 0) return 1;
-
-            if (areaWidth < targetWidth) {
-                const fit = Math.floor((areaWidth / targetWidth) * 100) / 100;
-                return Math.max(0.35, Math.min(1, fit));
-            }
-            return 1;
-        }
 
         function applyZoom(modeOrScale, save = true) {
             if (!viewport) return;
             let scale = 1;
             let isFit = false;
 
+            const isDesktop = viewport.classList.contains('mode-desktop');
+            const isTablet = viewport.classList.contains('mode-tablet');
+            const isMobile = viewport.classList.contains('mode-mobile');
+
             if (modeOrScale === 'fit' || modeOrScale === 'auto') {
                 isFit = true;
                 currentZoomMode = 'fit';
-                scale = calculateFitScale();
+                if (isDesktop) {
+                    // On laptop/desktop, Fit means 100% full fluid fit to the canvas workspace without black side gaps
+                    scale = 1;
+                } else if (isTablet) {
+                    const availableWidth = canvasArea.clientWidth - 28;
+                    scale = availableWidth < 768 ? Math.max(0.4, Math.floor((availableWidth / 768) * 100) / 100) : 1;
+                } else if (isMobile) {
+                    const availableWidth = canvasArea.clientWidth - 28;
+                    scale = availableWidth < 390 ? Math.max(0.4, Math.floor((availableWidth / 390) * 100) / 100) : 1;
+                }
             } else {
                 isFit = false;
                 scale = parseFloat(modeOrScale);
                 if (isNaN(scale) || scale <= 0) scale = 1;
                 scale = Math.max(0.35, Math.min(1.5, Math.round(scale * 100) / 100));
-                currentZoomMode = scale.toString();
+                currentZoomMode = scale === 1 ? 'fit' : scale.toString();
             }
 
             currentZoomScale = scale;
@@ -256,31 +248,42 @@
                 localStorage.setItem('bongkar_canvas_zoom_mode', currentZoomMode);
             }
 
-            let baseWidth = BASE_DESKTOP_WIDTH;
-            if (viewport.classList.contains('mode-tablet')) {
-                baseWidth = 768;
-            } else if (viewport.classList.contains('mode-mobile')) {
-                baseWidth = 390;
-            }
-
-            // Apply scale to viewport
-            viewport.style.transform = `scale(${scale})`;
-            viewport.style.transformOrigin = 'top center';
-
-            // Sizing the scaler container so physical layout matches visual scale
-            if (scaler) {
-                scaler.style.width = `${Math.round(baseWidth * scale)}px`;
-                const currentHeight = viewport.offsetHeight || (window.innerHeight - 100);
-                scaler.style.height = `${Math.round(currentHeight * scale)}px`;
+            if (scale === 1) {
+                viewport.style.transform = '';
+                viewport.style.transformOrigin = '';
+                if (scaler) {
+                    if (isDesktop) {
+                        scaler.style.width = '100%';
+                    } else if (isTablet) {
+                        scaler.style.width = '768px';
+                    } else if (isMobile) {
+                        scaler.style.width = '390px';
+                    }
+                    scaler.style.height = '';
+                }
+            } else {
+                viewport.style.transform = `scale(${scale})`;
+                viewport.style.transformOrigin = 'top center';
+                if (scaler) {
+                    if (isDesktop) {
+                        scaler.style.width = `${Math.round(100 * scale)}%`;
+                    } else if (isTablet) {
+                        scaler.style.width = `${Math.round(768 * scale)}px`;
+                    } else if (isMobile) {
+                        scaler.style.width = `${Math.round(390 * scale)}px`;
+                    }
+                    const currentHeight = viewport.offsetHeight || (window.innerHeight - 100);
+                    scaler.style.height = `${Math.round(currentHeight * scale)}px`;
+                }
             }
 
             // Update labels
             const pctText = `${Math.round(scale * 100)}%`;
-            const labelText = isFit ? (scale < 1 ? `Fit (${pctText})` : 'Fit') : pctText;
+            const labelText = isFit ? (scale === 1 ? 'Fit (100%)' : `Fit (${pctText})`) : pctText;
 
             if (zoomDisplay) zoomDisplay.innerText = labelText;
-            if (desktopBadge && viewport.classList.contains('mode-desktop')) {
-                desktopBadge.innerText = isFit ? (scale < 1 ? pctText : 'Fit') : pctText;
+            if (desktopBadge && isDesktop) {
+                desktopBadge.innerText = isFit ? '100%' : pctText;
             }
 
             // Update active class in menu

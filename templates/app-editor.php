@@ -195,7 +195,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                 <button type="button" class="device-btn active" data-device="desktop" title="Desktop View (Fit / Scale)">
                     <i class="fa-solid fa-desktop"></i>
                     <span data-i18n="topbar.device_desktop">Desktop</span>
-                    <span class="device-res-badge" id="badge-device-desktop">Fit</span>
+                    <span class="device-res-badge" id="badge-device-desktop">100%</span>
                 </button>
                 <button type="button" class="device-btn" data-device="tablet" title="Tablet View (768px)">
                     <i class="fa-solid fa-tablet-screen-button"></i>
