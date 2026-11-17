@@ -177,13 +177,13 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
         <div class="topbar-center">
             <!-- Mode Switcher (Desain vs Interaktif) -->
             <div class="mode-switcher-pill">
-                <button type="button" id="btn-mode-design" class="mode-btn active" title="Mode Desain: Edit elemen halaman secara visual">
+                <button type="button" id="btn-mode-design" class="mode-btn active" data-i18n-title="topbar.mode_design_desc" title="Mode Desain: Edit elemen halaman secara visual">
                     <i class="fa-solid fa-paintbrush"></i>
-                    <span>Desain</span>
+                    <span data-i18n="topbar.mode_design">Desain</span>
                 </button>
-                <button type="button" id="btn-mode-interactive" class="mode-btn" title="Mode Interaktif (Live Testing): Jalankan slider, popup & form seperti web asli (Shortcut: Ctrl+I)">
+                <button type="button" id="btn-mode-interactive" class="mode-btn" data-i18n-title="topbar.mode_interactive_desc" title="Mode Interaktif (Live Testing): Jalankan slider, popup & form seperti web asli (Shortcut: Ctrl+I)">
                     <i class="fa-solid fa-bolt"></i>
-                    <span>Interaktif</span>
+                    <span data-i18n="topbar.mode_interactive">Interaktif</span>
                     <span class="mode-live-indicator">LIVE</span>
                 </button>
             </div>
@@ -194,17 +194,17 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
             <div class="device-switcher-pill">
                 <button type="button" class="device-btn active" data-device="desktop" title="Desktop View (100%)">
                     <i class="fa-solid fa-desktop"></i>
-                    <span>Desktop</span>
+                    <span data-i18n="topbar.device_desktop">Desktop</span>
                     <span class="device-res-badge">100%</span>
                 </button>
                 <button type="button" class="device-btn" data-device="tablet" title="Tablet View (768px)">
                     <i class="fa-solid fa-tablet-screen-button"></i>
-                    <span>Tablet</span>
+                    <span data-i18n="topbar.device_tablet">Tablet</span>
                     <span class="device-res-badge">768px</span>
                 </button>
                 <button type="button" class="device-btn" data-device="mobile" title="Mobile View (390px - iPhone & Android Flagship)">
                     <i class="fa-solid fa-mobile-screen"></i>
-                    <span>Mobile</span>
+                    <span data-i18n="topbar.device_mobile">Mobile</span>
                     <span class="device-res-badge">390px</span>
                 </button>
             </div>
@@ -212,39 +212,49 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
         <!-- Topbar Right Actions -->
         <div class="topbar-right">
-            <button type="button" id="btn-undo" class="btn-studio-action" title="Undo (Ctrl+Z)">
+            <button type="button" id="btn-undo" class="btn-studio-action" data-i18n-title="topbar.undo" title="Undo (Ctrl+Z)">
                 <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button type="button" id="btn-redo" class="btn-studio-action" title="Redo (Ctrl+Y)">
+            <button type="button" id="btn-redo" class="btn-studio-action" data-i18n-title="topbar.redo" title="Redo (Ctrl+Y)">
                 <i class="fa-solid fa-rotate-right"></i>
             </button>
 
             <!-- Preview Link -->
-            <a href="<?php echo esc_url($preview_url); ?>" id="btn-preview-link" target="_blank" class="btn-studio-action" title="Lihat Pratinjau Tampilan Live di Tab Baru">
+            <a href="<?php echo esc_url($preview_url); ?>" id="btn-preview-link" target="_blank" class="btn-studio-action" data-i18n-title="topbar.preview_desc" title="Lihat Pratinjau Tampilan Live di Tab Baru">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                <span>Preview</span>
+                <span data-i18n="topbar.preview">Preview</span>
             </a>
 
             <!-- Export HTML Button -->
-            <button type="button" id="btn-open-exporter" class="btn-studio-action" title="Export Halaman ke File HTML Mandiri (.html)">
+            <button type="button" id="btn-open-exporter" class="btn-studio-action" data-i18n-title="topbar.export_html_desc" title="Export Halaman ke File HTML Mandiri (.html)">
                 <i class="fa-solid fa-file-export"></i>
-                <span>Export HTML</span>
+                <span data-i18n="topbar.export_html">Export HTML</span>
             </button>
 
             <!-- Simpan Draft Button -->
-            <button type="button" id="btn-save-draft" class="btn-studio-action" title="Simpan sebagai Draft (Hanya tersimpan di editor, tidak mengubah halaman live pengunjung)">
+            <button type="button" id="btn-save-draft" class="btn-studio-action" data-i18n-title="topbar.save_draft_desc" title="Simpan sebagai Draft (Hanya tersimpan di editor, tidak mengubah halaman live pengunjung)">
                 <i class="fa-solid fa-file-pen"></i>
-                <span>Simpan Draft</span>
+                <span data-i18n="topbar.save_draft">Simpan Draft</span>
             </button>
 
             <!-- Save & Publish Button (Elementor-Style Publish/Perbarui) -->
-            <button type="button" id="btn-save-page" class="btn-studio-action btn-save-publish" title="Publikasikan semua perubahan ke pengunjung live (Ctrl+S)">
+            <button type="button" id="btn-save-page" class="btn-studio-action btn-save-publish" data-i18n-title="topbar.publish_desc" title="Publikasikan semua perubahan ke pengunjung live (Ctrl+S)">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span id="btn-save-page-label"><?php echo ($post_status === 'publish') ? __('Perbarui', 'bongkar-builder') : __('Publish', 'bongkar-builder'); ?></span>
+                <span id="btn-save-page-label" data-is-new="<?php echo ($post_status === 'publish') ? 'false' : 'true'; ?>"><?php echo ($post_status === 'publish') ? __('Perbarui', 'bongkar-builder') : __('Publish', 'bongkar-builder'); ?></span>
             </button>
 
+            <!-- Language Switcher Dropdown (Bilingual ID / EN) -->
+            <div class="studio-lang-dropdown-wrap" data-i18n-title="topbar.lang_switcher" title="Pilih Bahasa Editor">
+                <i class="fa-solid fa-globe lang-icon"></i>
+                <select id="studio-lang-switcher" class="studio-lang-select" aria-label="Editor Language">
+                    <option value="id">ID</option>
+                    <option value="en">EN</option>
+                </select>
+                <i class="fa-solid fa-chevron-down lang-chevron"></i>
+            </div>
+
             <!-- Exit Button -->
-            <a href="<?php echo esc_url(admin_url('admin.php?page=bongkar-builder')); ?>" class="btn-studio-action" title="Keluar ke Dashboard WordPress">
+            <a href="<?php echo esc_url(admin_url('admin.php?page=bongkar-builder')); ?>" class="btn-studio-action" data-i18n-title="topbar.exit" title="Keluar ke Dashboard WordPress">
                 <i class="fa-solid fa-xmark"></i>
             </a>
         </div>
@@ -262,25 +272,25 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
             <!-- Navigation Tabs -->
             <nav class="sidebar-tabs">
-                <button type="button" class="sidebar-tab-btn active" data-tab="inspector" title="Edit Elemen, CSS & Algoritma">
+                <button type="button" class="sidebar-tab-btn active" data-tab="inspector" data-i18n-title="tab.inspector_desc" title="Edit Elemen, CSS & Algoritma">
                     <i class="fa-solid fa-sliders"></i>
-                    <span>Inspector</span>
+                    <span data-i18n="tab.inspector">Inspector</span>
                 </button>
-                <button type="button" class="sidebar-tab-btn" data-tab="elements" title="Tambah Section & Elemen Baru">
+                <button type="button" class="sidebar-tab-btn" data-tab="elements" data-i18n-title="tab.add_desc" title="Tambah Section & Elemen Baru">
                     <i class="fa-solid fa-shapes"></i>
-                    <span>Tambah</span>
+                    <span data-i18n="tab.add">Tambah</span>
                 </button>
-                <button type="button" class="sidebar-tab-btn" data-tab="seo" title="Audit & Pengaturan SEO Standar Google 2026">
+                <button type="button" class="sidebar-tab-btn" data-tab="seo" data-i18n-title="tab.seo_desc" title="Audit & Pengaturan SEO Standar Google 2026">
                     <i class="fa-solid fa-chart-line"></i>
-                    <span>SEO</span>
+                    <span data-i18n="tab.seo">SEO</span>
                 </button>
-                <button type="button" class="sidebar-tab-btn" data-tab="icons" title="Font Awesome 6 Icon Picker">
+                <button type="button" class="sidebar-tab-btn" data-tab="icons" data-i18n-title="tab.icons_desc" title="Font Awesome 6 Icon Picker">
                     <i class="fa-solid fa-icons"></i>
-                    <span>Icons</span>
+                    <span data-i18n="tab.icons">Icons</span>
                 </button>
-                <button type="button" class="sidebar-tab-btn" data-tab="settings" title="Pengaturan Halaman, Tracking & Custom CSS">
+                <button type="button" class="sidebar-tab-btn" data-tab="settings" data-i18n-title="tab.settings_desc" title="Pengaturan Halaman, Tracking & Custom CSS">
                     <i class="fa-solid fa-gear"></i>
-                    <span>Pengaturan</span>
+                    <span data-i18n="tab.settings">Pengaturan</span>
                 </button>
             </nav>
 
@@ -293,12 +303,12 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                         <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(99, 102, 241, 0.12); color: #818cf8; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 14px;">
                             <i class="fa-solid fa-arrow-pointer"></i>
                         </div>
-                        <h4 style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px 0;">Pilih Elemen di Kanvas</h4>
-                        <p style="font-size: 13px; line-height: 1.5; margin: 0 0 16px 0;">
+                        <h4 data-i18n="empty.title" style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 0 0 8px 0;">Pilih Elemen di Kanvas</h4>
+                        <p data-i18n="empty.desc" style="font-size: 13px; line-height: 1.5; margin: 0 0 16px 0;">
                             Klik elemen apa saja di dalam kanvas untuk mengubah teks, font, warna, ukuran, atau gambarnya.
                         </p>
                         <button type="button" class="btn-studio-action btn-go-widgets" style="background: #4f46e5; color: #ffffff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);">
-                            <i class="fa-solid fa-table-cells"></i> Buka Panel Widget
+                            <i class="fa-solid fa-table-cells"></i> <span data-i18n="empty.btn_widgets">Buka Panel Widget</span>
                         </button>
                     </div>
 
@@ -306,8 +316,8 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                         <!-- Sticky Edge-to-Edge Header (Ala Elementor: Action Bar & Subtabs) -->
                         <div class="inspector-sticky-header">
                             <div class="inspector-sticky-header-top">
-                                <button type="button" id="btn-back-to-widgets" class="btn-studio-action btn-back-widgets-header" title="Kembali ke Panel Widget">
-                                    <i class="fa-solid fa-arrow-left"></i> <span>Kembali ke Widget</span>
+                                <button type="button" id="btn-back-to-widgets" class="btn-studio-action btn-back-widgets-header" data-i18n-title="inspector.back_widgets" title="Kembali ke Panel Widget">
+                                    <i class="fa-solid fa-arrow-left"></i> <span data-i18n="inspector.back_widgets">Kembali ke Widget</span>
                                 </button>
                                 <div class="inspector-quick-pill" title="Elemen aktif">
                                     <span id="selected-element-badge-header">--</span>
@@ -317,16 +327,16 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                             <!-- 4 Modern Sub-Tabs (Content, Style, Layout, Logic) -->
                             <div class="inspector-subtabs">
                                 <button type="button" class="inspector-subtab-btn active" data-subtab="content" title="Pengaturan Konten & Teks">
-                                    <i class="fa-solid fa-pen-to-square"></i> <span>Konten</span>
+                                    <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="inspector.subtab_content">Konten</span>
                                 </button>
                                 <button type="button" class="inspector-subtab-btn" data-subtab="style" title="Pengaturan Tipografi, Warna & Gaya">
-                                    <i class="fa-solid fa-palette"></i> <span>Gaya</span>
+                                    <i class="fa-solid fa-palette"></i> <span data-i18n="inspector.subtab_style">Gaya</span>
                                 </button>
                                 <button type="button" class="inspector-subtab-btn" data-subtab="layout" title="Pengaturan Dimensi Lebar, Tinggi & Flexbox">
-                                    <i class="fa-solid fa-cubes"></i> <span>Tata Letak</span>
+                                    <i class="fa-solid fa-cubes"></i> <span data-i18n="inspector.subtab_layout">Tata Letak</span>
                                 </button>
                                 <button type="button" class="inspector-subtab-btn" data-subtab="logic" title="Pengaturan Skrip & Interaktivitas Elemen">
-                                    <i class="fa-solid fa-bolt"></i> <span>Logika</span>
+                                    <i class="fa-solid fa-bolt"></i> <span data-i18n="inspector.subtab_logic">Logika</span>
                                 </button>
                             </div>
                         </div>
@@ -2087,6 +2097,7 @@ window.bongkarStudioConfig = {
 wp_print_media_templates();
 wp_print_footer_scripts(); 
 ?>
+<script src="<?php echo esc_url(BONGKAR_BUILDER_URL . 'assets/js/i18n-studio.js?v=' . BONGKAR_BUILDER_VERSION); ?>"></script>
 <script src="<?php echo esc_url(BONGKAR_BUILDER_URL . 'assets/js/icon-picker.js?v=' . BONGKAR_BUILDER_VERSION); ?>"></script>
 <script src="<?php echo esc_url(BONGKAR_BUILDER_URL . 'assets/js/section-manager.js?v=' . BONGKAR_BUILDER_VERSION); ?>"></script>
 <script src="<?php echo esc_url(BONGKAR_BUILDER_URL . 'assets/js/inspector-typography.js?v=' . BONGKAR_BUILDER_VERSION); ?>"></script>

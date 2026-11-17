@@ -1,6 +1,6 @@
 # Bongkar Canvas Builder (HTML-First Visual Page Builder)
 
-**Version 1.2.2 (Production Release)**  
+**Version 1.2.3-beta (Pre-release / Beta)**  
 A modern, ultra-lightweight, and zero-bloat visual page builder plugin for WordPress. Specifically designed for importing AI-generated layouts (HTML/CSS/JS exported from Claude, v0, ChatGPT, or Figma) and refining them visually on a **Standalone Canvas Studio**—delivering the flexibility of Elementor without the DOM bloat or performance degradation.
 
 ---
@@ -58,6 +58,12 @@ Real-time audit adhering to Google quality guidelines:
 Connects directly to official GitHub repository releases:
 - WordPress automatically notifies administrators when a newer release is published.
 - Updates can be executed with a single click via the standard WordPress **Plugins** screen without requiring manual ZIP downloads.
+- Full support for both stable releases and pre-releases (beta / release candidate tags).
+
+### 9. Dual-Language Studio Mode (Bahasa Indonesia & English)
+- **Instant Translation:** Seamlessly switch between Indonesian (`ID`) and English (`EN`) without reloading the page.
+- **Space-Efficient Topbar Dropdown:** A sleek, compact dropdown switcher positioned on the topbar's right side ensures zero layout crowding or overlap on standard laptop viewports.
+- **Synchronized Canvas Engine:** Real-time event broadcasting updates floating action tooltips, element semantic badges, and notifications across both the parent Studio and iframe canvas simultaneously.
 
 ---
 

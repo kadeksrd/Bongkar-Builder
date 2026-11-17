@@ -15,6 +15,142 @@
     let hoverModalBadge = null;
     let isInteractiveMode = false;
 
+    // Dual-Language Canvas i18n Dictionary
+    let currentCanvasLang = (function () {
+        try {
+            return localStorage.getItem('bongkar_studio_lang') || 'id';
+        } catch (e) {
+            return 'id';
+        }
+    })();
+
+    const canvasI18nDict = {
+        id: {
+            'role.element': 'Elemen',
+            'role.feed': 'Feed Blog',
+            'role.image': 'Gambar',
+            'role.video': 'Video',
+            'role.media': 'Media',
+            'role.button_link': 'Tombol / Link',
+            'role.form_input': 'Input Form',
+            'role.heading': 'Judul',
+            'role.paragraph': 'Paragraf',
+            'role.text': 'Teks',
+            'role.section': 'Section (Div Luar)',
+            'role.column_row': 'Baris Kolom',
+            'role.form': 'Formulir (Form)',
+            'role.form_wrap': 'Pembungkus Form (Card Formulir)',
+            'role.col_left': 'Kolom Kiri (Div Dalam)',
+            'role.col_right': 'Kolom Kanan (Div Dalam)',
+            'role.col_num': 'Kolom {n} (Div Dalam)',
+            'role.col': 'Kolom (Div Dalam)',
+            'role.card': 'Kotak Konten (Card / Box)',
+            'btn.open_modal': 'Buka & Edit Pop-up / Modal Ini',
+            'btn.select_parent': 'Pilih Pembungkus Induk (Parent Container)',
+            'btn.wrap': 'Bungkus Elemen ke Kontainer Baru',
+            'btn.copy': 'Salin / Copy (Ctrl+C)',
+            'btn.cut': 'Potong / Cut (Ctrl+X)',
+            'btn.paste': 'Tempel / Paste (Ctrl+V)',
+            'btn.duplicate': 'Duplikasi (Ctrl+D)',
+            'btn.add_widget': 'Tambah Widget di Sini (+)',
+            'btn.edit_text': 'Edit Teks Langsung',
+            'btn.move_up': 'Geser ke Atas',
+            'btn.move_down': 'Geser ke Bawah',
+            'btn.delete': 'Hapus (Del)',
+            'btn.deselect': 'Batal Pilih / Tutup Toolbar (Esc)',
+            'badge.hover_modal': 'Edit Pop-up',
+            'badge.hover_modal_title': 'Klik untuk membuka dan mengedit pop-up/modal ini',
+            'banner.active': 'Mode Edit Pop-up Aktif (Klik elemen untuk mengedit)',
+            'banner.finish': 'Selesai'
+        },
+        en: {
+            'role.element': 'Element',
+            'role.feed': 'Blog Feed',
+            'role.image': 'Image',
+            'role.video': 'Video',
+            'role.media': 'Media',
+            'role.button_link': 'Button / Link',
+            'role.form_input': 'Form Input',
+            'role.heading': 'Heading',
+            'role.paragraph': 'Paragraph',
+            'role.text': 'Text',
+            'role.section': 'Section (Outer Div)',
+            'role.column_row': 'Column Row',
+            'role.form': 'Form',
+            'role.form_wrap': 'Form Container (Card Box)',
+            'role.col_left': 'Left Column (Inner Div)',
+            'role.col_right': 'Right Column (Inner Div)',
+            'role.col_num': 'Column {n} (Inner Div)',
+            'role.col': 'Column (Inner Div)',
+            'role.card': 'Content Card (Box)',
+            'btn.open_modal': 'Open & Edit This Pop-up / Modal',
+            'btn.select_parent': 'Select Parent Container (Alt+Up)',
+            'btn.wrap': 'Wrap Element in New Container',
+            'btn.copy': 'Copy (Ctrl+C)',
+            'btn.cut': 'Cut (Ctrl+X)',
+            'btn.paste': 'Paste (Ctrl+V)',
+            'btn.duplicate': 'Duplicate (Ctrl+D)',
+            'btn.add_widget': 'Add Widget Here (+)',
+            'btn.edit_text': 'Inline Text Edit',
+            'btn.move_up': 'Move Up',
+            'btn.move_down': 'Move Down',
+            'btn.delete': 'Delete (Del)',
+            'btn.deselect': 'Deselect / Close Toolbar (Esc)',
+            'badge.hover_modal': 'Edit Pop-up',
+            'badge.hover_modal_title': 'Click to open and edit this pop-up/modal',
+            'banner.active': 'Pop-up Edit Mode Active (Click elements to edit)',
+            'banner.finish': 'Done'
+        }
+    };
+
+    function canvasT(key, fallback = '') {
+        const lang = currentCanvasLang === 'en' ? 'en' : 'id';
+        return (canvasI18nDict[lang] && canvasI18nDict[lang][key]) ? canvasI18nDict[lang][key] : (fallback || key);
+    }
+
+    function updateCanvasLanguage() {
+        const map = {
+            'act-open-modal-edit': 'btn.open_modal',
+            'act-select-parent': 'btn.select_parent',
+            'act-wrap-container': 'btn.wrap',
+            'act-copy': 'btn.copy',
+            'act-cut': 'btn.cut',
+            'act-paste': 'btn.paste',
+            'act-duplicate': 'btn.duplicate',
+            'act-add-widget': 'btn.add_widget',
+            'act-edit-text': 'btn.edit_text',
+            'act-move-up': 'btn.move_up',
+            'act-move-down': 'btn.move_down',
+            'act-delete': 'btn.delete',
+            'act-deselect': 'btn.deselect'
+        };
+        for (const [id, key] of Object.entries(map)) {
+            const el = document.getElementById(id);
+            if (el) el.title = canvasT(key);
+        }
+
+        if (hoverModalBadge) {
+            const btn = hoverModalBadge.querySelector('.btn-hover-modal-edit');
+            if (btn) {
+                btn.title = canvasT('badge.hover_modal_title');
+                const span = btn.querySelector('span');
+                if (span) span.textContent = canvasT('badge.hover_modal');
+            }
+        }
+
+        const banner = document.getElementById('bongkar-modal-edit-banner');
+        if (banner) {
+            const span = banner.querySelector('.modal-banner-pill > span');
+            if (span) span.textContent = canvasT('banner.active');
+            const exitBtn = banner.querySelector('#btn-exit-modal-edit');
+            if (exitBtn) exitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${canvasT('banner.finish')}`;
+        }
+
+        if (selectedElement) {
+            updateFloatingPositions(selectedElement);
+        }
+    }
+
     // Initialize Canvas Engine once DOM is ready
     function init() {
         createUIHelpers();
@@ -24,6 +160,7 @@
         injectSectionInsertBars();
         injectColumnDropzones();
         initCanvasDragAndDrop();
+        updateCanvasLanguage();
         notifyParentReady();
     }
 
@@ -898,13 +1035,13 @@
      * - 'feed': Dynamic WordPress post grid (Purple #8b5cf6)
      */
     function getElementSemanticRole(el) {
-        if (!el) return { role: 'layout-inner', label: 'Elemen', icon: 'fa-cube', color: '#0284c7' };
+        if (!el) return { role: 'layout-inner', label: canvasT('role.element'), icon: 'fa-cube', color: '#0284c7' };
 
         // 1. Dynamic Post Grid Feed
         if (el.classList.contains('bongkar-dynamic-posts-grid') || el.closest('.bongkar-dynamic-posts-grid')) {
             return {
                 role: 'feed',
-                label: 'Feed Blog',
+                label: canvasT('role.feed'),
                 icon: 'fa-newspaper',
                 color: '#8b5cf6'
             };
@@ -915,7 +1052,7 @@
         if (tag === 'IMG' || tag === 'PICTURE' || tag === 'SVG' || tag === 'VIDEO' || tag === 'IFRAME' || el.classList.contains('bongkar-video-wrapper') || el.classList.contains('bongkar-image')) {
             return {
                 role: 'media',
-                label: tag === 'IMG' ? 'Gambar' : (tag === 'VIDEO' ? 'Video' : 'Media'),
+                label: tag === 'IMG' ? canvasT('role.image') : (tag === 'VIDEO' ? canvasT('role.video') : canvasT('role.media')),
                 icon: tag === 'IMG' ? 'fa-image' : (tag === 'VIDEO' ? 'fa-film' : 'fa-photo-film'),
                 color: '#ec4899'
             };
@@ -925,7 +1062,7 @@
         if (tag === 'BUTTON' || (tag === 'A' && (el.classList.contains('btn') || el.classList.contains('button') || el.getAttribute('role') === 'button')) || tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') {
             return {
                 role: 'action',
-                label: tag === 'BUTTON' || tag === 'A' ? 'Tombol / Link' : 'Input Form',
+                label: tag === 'BUTTON' || tag === 'A' ? canvasT('role.button_link') : canvasT('role.form_input'),
                 icon: 'fa-hand-pointer',
                 color: '#10b981'
             };
@@ -961,7 +1098,7 @@
         if (isTextLeaf) {
             return {
                 role: 'text',
-                label: isHeading ? `Judul (${tag})` : (tag === 'P' ? 'Paragraf' : (tag === 'DIV' ? 'Teks (DIV)' : `Teks (${tag})`)),
+                label: isHeading ? `${canvasT('role.heading')} (${tag})` : (tag === 'P' ? canvasT('role.paragraph') : `${canvasT('role.text')} (${tag})`),
                 icon: 'fa-font',
                 color: '#f59e0b' // Amber / Warm Orange
             };
@@ -976,7 +1113,7 @@
         if (isExplicitSection) {
             return {
                 role: 'layout-outer',
-                label: tag === 'SECTION' ? 'Section (Div Luar)' : `${tag} (Div Luar)`,
+                label: tag === 'SECTION' ? canvasT('role.section') : `${tag} (${canvasT('role.section')})`,
                 icon: 'fa-layer-group',
                 color: '#6366f1' // Deep Purple / Indigo
             };
@@ -997,7 +1134,7 @@
         if ((isGrid || isRowFlex || isNamedRowOrGrid) && validChildren.length >= 2) {
             return {
                 role: 'layout-row',
-                label: `Baris Kolom (${validChildren.length} Kolom Kanan-Kiri)`,
+                label: `${canvasT('role.column_row')} (${validChildren.length} ${currentCanvasLang === 'en' ? 'Cols' : 'Kolom'})`,
                 icon: 'fa-table-columns',
                 color: '#06b6d4' // Cyan / Teal
             };
@@ -1015,7 +1152,7 @@
         if (isFormCard) {
             return {
                 role: 'layout-form',
-                label: tag === 'FORM' ? 'Formulir (Form)' : 'Pembungkus Form (Card Formulir)',
+                label: tag === 'FORM' ? canvasT('role.form') : canvasT('role.form_wrap'),
                 icon: 'fa-rectangle-list',
                 color: '#10b981' // Emerald
             };
@@ -1036,15 +1173,15 @@
             );
             if ((pIsGrid || pIsRow || pIsNamedRow) && pCols.length >= 2) {
                 const colIdx = pCols.indexOf(el);
-                let colPosLabel = 'Kolom';
+                let colPosLabel = canvasT('role.col');
                 if (pCols.length === 2) {
-                    colPosLabel = (colIdx === 0) ? 'Kolom Kiri' : 'Kolom Kanan';
+                    colPosLabel = (colIdx === 0) ? canvasT('role.col_left') : canvasT('role.col_right');
                 } else if (colIdx >= 0) {
-                    colPosLabel = `Kolom ${colIdx + 1}`;
+                    colPosLabel = canvasT('role.col_num').replace('{n}', colIdx + 1);
                 }
                 return {
                     role: 'layout-col',
-                    label: `${colPosLabel} (Div Dalam)`,
+                    label: colPosLabel,
                     icon: 'fa-columns',
                     color: '#8b5cf6' // Violet
                 };
@@ -2900,6 +3037,13 @@
         if (!data || !data.type) return;
 
         switch (data.type) {
+            case 'BONGKAR_CHANGE_LANG':
+                if (data.lang && (data.lang === 'id' || data.lang === 'en')) {
+                    currentCanvasLang = data.lang;
+                    updateCanvasLanguage();
+                }
+                break;
+
             case 'BONGKAR_APPLY_STYLE':
                 if (selectedElement) {
                     if (data.property === 'width' && data.value && data.value !== 'auto') {

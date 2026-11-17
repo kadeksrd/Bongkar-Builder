@@ -58,7 +58,7 @@ class Bongkar_Builder_Updater {
         $this->plugin_basename = plugin_basename($this->file);
         $dir                   = dirname($this->plugin_basename);
         $this->plugin_slug     = ($dir && $dir !== '.') ? $dir : 'bongkar-builder';
-        $this->version         = defined('BONGKAR_BUILDER_VERSION') ? BONGKAR_BUILDER_VERSION : '1.2.2';
+        $this->version         = defined('BONGKAR_BUILDER_VERSION') ? BONGKAR_BUILDER_VERSION : '1.2.3-beta';
 
         // Check for updates when transient is saved or retrieved
         add_filter('pre_set_site_transient_update_plugins', [$this, 'check_update']);
@@ -156,19 +156,39 @@ class Bongkar_Builder_Updater {
             $headers['Authorization'] = 'Bearer ' . trim($token);
         }
 
-        $url = 'https://api.github.com/repos/' . $this->github_repo . '/releases/latest';
+        // Query releases list first to capture pre-releases (beta / RC) as well as stable releases
+        $url = 'https://api.github.com/repos/' . $this->github_repo . '/releases?per_page=5';
         $response = wp_remote_get($url, [
             'timeout'    => 10,
             'user-agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url(),
             'headers'    => $headers,
         ]);
 
-        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-            return false;
+        $data = null;
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
+            $releases = json_decode(wp_remote_retrieve_body($response), true);
+            if (!empty($releases) && is_array($releases)) {
+                foreach ($releases as $rel) {
+                    if (empty($rel['draft']) && !empty($rel['tag_name'])) {
+                        $data = $rel;
+                        break;
+                    }
+                }
+            }
         }
 
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
+        // Fallback to /releases/latest if releases list didn't yield a valid release
+        if (empty($data)) {
+            $fallback_url = 'https://api.github.com/repos/' . $this->github_repo . '/releases/latest';
+            $fallback_response = wp_remote_get($fallback_url, [
+                'timeout'    => 10,
+                'user-agent' => 'WordPress/' . get_bloginfo('version') . '; ' . home_url(),
+                'headers'    => $headers,
+            ]);
+            if (!is_wp_error($fallback_response) && wp_remote_retrieve_response_code($fallback_response) === 200) {
+                $data = json_decode(wp_remote_retrieve_body($fallback_response), true);
+            }
+        }
 
         if (empty($data) || !is_array($data) || empty($data['tag_name'])) {
             return false;
