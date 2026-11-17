@@ -102,6 +102,9 @@ class Bongkar_Builder_Updater {
                     $args['headers'] = [];
                 }
                 $args['headers']['Authorization'] = 'Bearer ' . trim($token);
+                if (strpos($url, '/releases/assets/') !== false) {
+                    $args['headers']['Accept'] = 'application/octet-stream';
+                }
             }
         }
         return $args;
@@ -214,11 +217,19 @@ class Bongkar_Builder_Updater {
         // Tell WordPress to re-evaluate plugins
         wp_update_plugins();
 
-        $remote_version = $release ? ltrim(trim($release['tag_name']), 'vV') : '';
-        if ($remote_version && version_compare($remote_version, $this->version, '>')) {
-            $status = 'new_available';
+        if (!$release) {
+            $token = defined('BONGKAR_BUILDER_GITHUB_TOKEN') 
+                ? BONGKAR_BUILDER_GITHUB_TOKEN 
+                : get_option('bongkar_builder_github_token', '');
+            $status = empty($token) ? 'auth_required' : 'connection_error';
+            $remote_version = '';
         } else {
-            $status = 'up_to_date';
+            $remote_version = ltrim(trim($release['tag_name']), 'vV');
+            if ($remote_version && version_compare($remote_version, $this->version, '>')) {
+                $status = 'new_available';
+            } else {
+                $status = 'up_to_date';
+            }
         }
 
         wp_safe_redirect(admin_url('plugins.php?bongkar_checked=' . $status . '&remote_ver=' . urlencode($remote_version)));
@@ -240,6 +251,10 @@ class Bongkar_Builder_Updater {
             echo '<div class="notice notice-warning is-dismissible" style="border-left-color: #6366f1;"><p><strong>Bongkar Canvas Builder:</strong> Ditemukan rilis versi baru <strong>v' . esc_html($ver) . '</strong> di GitHub! Silakan klik tautan <em>"update now" (perbarui sekarang)</em> di daftar plugin di bawah.</p></div>';
         } elseif ($status === 'up_to_date') {
             echo '<div class="notice notice-success is-dismissible"><p><strong>Bongkar Canvas Builder:</strong> Plugin sudah menggunakan versi paling baru (v' . esc_html($this->version) . '). Belum ada pembaruan baru dari GitHub.</p></div>';
+        } elseif ($status === 'auth_required') {
+            echo '<div class="notice notice-error is-dismissible" style="border-left-color: #ef4444;"><p><strong>Bongkar Canvas Builder (Repositori Private):</strong> Repositori GitHub belum dapat diakses. Karena repositori bersifat privat, Anda perlu menambahkan GitHub Personal Access Token (scope <code>repo</code>) di <code>wp-config.php</code>: <code>define(\'BONGKAR_BUILDER_GITHUB_TOKEN\', \'ghp_token_anda\');</code> agar WordPress dapat membaca rilis pembaruan.</p></div>';
+        } elseif ($status === 'connection_error') {
+            echo '<div class="notice notice-error is-dismissible" style="border-left-color: #ef4444;"><p><strong>Bongkar Canvas Builder:</strong> Gagal terhubung ke API GitHub. Pastikan koneksi internet server dan token GitHub Anda valid.</p></div>';
         }
     }
 
@@ -408,9 +423,17 @@ class Bongkar_Builder_Updater {
      * @return string
      */
     private function get_release_zip_url($release) {
+        $token = defined('BONGKAR_BUILDER_GITHUB_TOKEN') 
+            ? BONGKAR_BUILDER_GITHUB_TOKEN 
+            : get_option('bongkar_builder_github_token', '');
+
         if (!empty($release['assets']) && is_array($release['assets'])) {
             foreach ($release['assets'] as $asset) {
                 if (isset($asset['name']) && strtolower($asset['name']) === 'bongkar-builder.zip') {
+                    // For private repos with token, use API asset URL which supports Accept: application/octet-stream
+                    if (!empty($token) && !empty($asset['url'])) {
+                        return $asset['url'];
+                    }
                     if (!empty($asset['browser_download_url'])) {
                         return $asset['browser_download_url'];
                     }
