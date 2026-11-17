@@ -1289,7 +1289,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <div class="elements-search-container" style="margin-bottom: 12px;">
                         <div style="position: relative;">
                             <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px;"></i>
-                            <input type="text" id="elements-search-input" class="form-input" placeholder="Cari widget, tombol, video, section..." style="padding-left: 34px; height: 38px; border-radius: 8px;">
+                            <input type="text" id="elements-search-input" class="form-input" data-i18n-placeholder="add.search_placeholder" placeholder="Cari widget, tombol, video, section..." style="padding-left: 34px; height: 38px; border-radius: 8px;">
                             <button type="button" id="btn-clear-elements-search" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                     </div>
@@ -1298,196 +1298,196 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <div id="elements-target-banner" style="display: none; margin-bottom: 14px; padding: 10px 12px; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 8px; font-size: 11px; align-items: center; justify-content: space-between;">
                         <div style="display: flex; align-items: center; gap: 6px; color: #a5b4fc; font-weight: 600;">
                             <i class="fa-solid fa-location-crosshairs"></i>
-                            <span>Menyisipkan ke: <strong id="elements-target-label" style="color: #ffffff;">Kolom</strong></span>
+                            <span><span data-i18n="add.inserting_to">Menyisipkan ke:</span> <strong id="elements-target-label" style="color: #ffffff;">Kolom</strong></span>
                         </div>
-                        <button type="button" id="btn-cancel-target-insert" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 11px; text-decoration: underline;">Batal</button>
+                        <button type="button" id="btn-cancel-target-insert" data-i18n="add.cancel" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 11px; text-decoration: underline;">Batal</button>
                     </div>
 
                     <!-- Quick AI/HTML Importer Option -->
                     <div class="elements-widget-category" style="margin-bottom: 16px; padding: 12px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12)); border: 1px dashed rgba(99, 102, 241, 0.45); border-radius: var(--radius-md); text-align: center;">
                         <div style="font-size: 11px; font-weight: 700; color: #a5b4fc; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Punya Desain AI / HTML?
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="add.have_ai">Punya Desain AI / HTML?</span>
                         </div>
                         <button type="button" class="btn-studio-action btn-trigger-importer" style="width: 100%; justify-content: center; background: #4f46e5; color: #fff; border: none; font-size: 12px; font-weight: 700; padding: 8px 12px; border-radius: 6px; cursor: pointer;">
-                            <i class="fa-solid fa-file-code"></i> Impor AI / Kode HTML
+                            <i class="fa-solid fa-file-code"></i> <span data-i18n="add.import_ai">Impor AI / Kode HTML</span>
                         </button>
                     </div>
 
                     <!-- 1. Column Layouts -->
                     <div class="elements-widget-category">
-                        <div class="elements-category-title"><i class="fa-solid fa-table-columns" style="color: #6366f1; margin-right: 4px;"></i> Struktur Kolom Section</div>
+                        <div class="elements-category-title"><i class="fa-solid fa-table-columns" style="color: #6366f1; margin-right: 4px;"></i> <span data-i18n="add.cat_columns">Struktur Kolom Section</span></div>
                         <div class="elements-grid">
-                            <div class="element-card" draggable="true" data-insert="layout-1col" title="Section 1 kolom penuh lebar">
+                            <div class="element-card" draggable="true" data-insert="layout-1col" data-i18n-title="add.col_1_desc" title="Section 1 kolom penuh lebar">
                                 <i class="fa-solid fa-square"></i>
-                                <span>1 Kolom (100%)</span>
+                                <span data-i18n="add.col_1">1 Kolom (100%)</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="layout-2col" title="Section 2 kolom sejajar (50:50)">
+                            <div class="element-card" draggable="true" data-insert="layout-2col" data-i18n-title="add.col_2_50_desc" title="Section 2 kolom sejajar (50:50)">
                                 <i class="fa-solid fa-table-columns"></i>
-                                <span>2 Kolom (50:50)</span>
+                                <span data-i18n="add.col_2_50">2 Kolom (50:50)</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="layout-2col-asym-left" title="Section 2 kolom asimetris (66:33 Konten + Sidebar)">
+                            <div class="element-card" draggable="true" data-insert="layout-2col-asym-left" data-i18n-title="add.col_2_66_desc" title="Section 2 kolom asimetris (66:33 Konten + Sidebar)">
                                 <i class="fa-solid fa-chart-bar"></i>
-                                <span>2 Kolom (66:33)</span>
+                                <span data-i18n="add.col_2_66">2 Kolom (66:33)</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="layout-2col-asym-right" title="Section 2 kolom asimetris (33:66 Sidebar + Konten)">
+                            <div class="element-card" draggable="true" data-insert="layout-2col-asym-right" data-i18n-title="add.col_2_33_desc" title="Section 2 kolom asimetris (33:66 Sidebar + Konten)">
                                 <i class="fa-solid fa-bars-progress"></i>
-                                <span>2 Kolom (33:66)</span>
+                                <span data-i18n="add.col_2_33">2 Kolom (33:66)</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="layout-3col" title="Section 3 kolom sejajar">
+                            <div class="element-card" draggable="true" data-insert="layout-3col" data-i18n-title="add.col_3_desc" title="Section 3 kolom sejajar">
                                 <i class="fa-solid fa-table-cells"></i>
-                                <span>3 Kolom (33%)</span>
+                                <span data-i18n="add.col_3">3 Kolom (33%)</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="layout-4col" title="Section 4 kolom baris statistik / fitur">
+                            <div class="element-card" draggable="true" data-insert="layout-4col" data-i18n-title="add.col_4_desc" title="Section 4 kolom baris statistik / fitur">
                                 <i class="fa-solid fa-grip"></i>
-                                <span>4 Kolom (25%)</span>
+                                <span data-i18n="add.col_4">4 Kolom (25%)</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- 2. Basic Elements -->
                     <div class="elements-widget-category">
-                        <div class="elements-category-title"><i class="fa-solid fa-cube" style="color: #38bdf8; margin-right: 4px;"></i> Elemen Dasar (Widgets)</div>
+                        <div class="elements-category-title"><i class="fa-solid fa-cube" style="color: #38bdf8; margin-right: 4px;"></i> <span data-i18n="add.cat_widgets">Elemen Dasar (Widgets)</span></div>
                         <div class="elements-grid">
-                            <div class="element-card" draggable="true" data-insert="element-heading" title="Judul teks heading H2">
+                            <div class="element-card" draggable="true" data-insert="element-heading" data-i18n-title="add.widget_heading_desc" title="Judul teks heading H2">
                                 <i class="fa-solid fa-heading"></i>
-                                <span>Heading Judul</span>
+                                <span data-i18n="add.widget_heading">Heading Judul</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-paragraph" title="Paragraf deskripsi teks panjang">
+                            <div class="element-card" draggable="true" data-insert="element-paragraph" data-i18n-title="add.widget_paragraph_desc" title="Paragraf deskripsi teks panjang">
                                 <i class="fa-solid fa-paragraph"></i>
-                                <span>Paragraf Teks</span>
+                                <span data-i18n="add.widget_paragraph">Paragraf Teks</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-button" title="Tombol link / Call to Action">
+                            <div class="element-card" draggable="true" data-insert="element-button" data-i18n-title="add.widget_button_desc" title="Tombol link / Call to Action">
                                 <i class="fa-solid fa-hand-pointer" style="color: #6366f1;"></i>
-                                <span>Tombol / CTA</span>
+                                <span data-i18n="add.widget_button">Tombol / CTA</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-image" title="Gambar responsif dengan media library">
+                            <div class="element-card" draggable="true" data-insert="element-image" data-i18n-title="add.widget_image_desc" title="Gambar responsif dengan media library">
                                 <i class="fa-solid fa-image" style="color: #10b981;"></i>
-                                <span>Gambar / Foto</span>
+                                <span data-i18n="add.widget_image">Gambar / Foto</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-video" title="Player Video 16:9 YouTube / MP4">
+                            <div class="element-card" draggable="true" data-insert="element-video" data-i18n-title="add.widget_video_desc" title="Player Video 16:9 YouTube / MP4">
                                 <i class="fa-brands fa-youtube" style="color: #ef4444;"></i>
-                                <span>Video Player</span>
+                                <span data-i18n="add.widget_video">Video Player</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-icon-box" title="Kotak fitur dengan Icon + Judul + Deskripsi">
+                            <div class="element-card" draggable="true" data-insert="element-icon-box" data-i18n-title="add.widget_icon_box_desc" title="Kotak fitur dengan Icon + Judul + Deskripsi">
                                 <i class="fa-solid fa-box-open" style="color: #8b5cf6;"></i>
-                                <span>Icon Box Fitur</span>
+                                <span data-i18n="add.widget_icon_box">Icon Box Fitur</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-icon" title="Ikon Font Awesome mandiri">
+                            <div class="element-card" draggable="true" data-insert="element-icon" data-i18n-title="add.widget_icon_desc" title="Ikon Font Awesome mandiri">
                                 <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
-                                <span>Icon Mandiri</span>
+                                <span data-i18n="add.widget_icon">Icon Mandiri</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-card" title="Container kartu modern dengan border & bayangan">
+                            <div class="element-card" draggable="true" data-insert="element-card" data-i18n-title="add.widget_card_desc" title="Container kartu modern dengan border & bayangan">
                                 <i class="fa-solid fa-id-card"></i>
-                                <span>Card Container</span>
+                                <span data-i18n="add.widget_card">Card Container</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-rating" title="Rating 5 Bintang & Review ulasan">
+                            <div class="element-card" draggable="true" data-insert="element-rating" data-i18n-title="add.widget_rating_desc" title="Rating 5 Bintang & Review ulasan">
                                 <i class="fa-solid fa-star-half-stroke" style="color: #eab308;"></i>
-                                <span>Star Rating</span>
+                                <span data-i18n="add.widget_rating">Star Rating</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-divider" title="Garis pemisah section estetik">
+                            <div class="element-card" draggable="true" data-insert="element-divider" data-i18n-title="add.widget_divider_desc" title="Garis pemisah section estetik">
                                 <i class="fa-solid fa-minus"></i>
-                                <span>Pemisah Divider</span>
+                                <span data-i18n="add.widget_divider">Pemisah Divider</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-spacer" title="Jarak spasi kosong vertikal antar elemen">
+                            <div class="element-card" draggable="true" data-insert="element-spacer" data-i18n-title="add.widget_spacer_desc" title="Jarak spasi kosong vertikal antar elemen">
                                 <i class="fa-solid fa-arrows-up-down"></i>
-                                <span>Spacer Jarak</span>
+                                <span data-i18n="add.widget_spacer">Spacer Jarak</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- 3. Conversion, Form & Sales Boost -->
                     <div class="elements-widget-category">
-                        <div class="elements-category-title"><i class="fa-solid fa-bolt" style="color: #22c55e; margin-right: 4px;"></i> Konversi &amp; Form Penjualan</div>
+                        <div class="elements-category-title"><i class="fa-solid fa-bolt" style="color: #22c55e; margin-right: 4px;"></i> <span data-i18n="add.cat_conversion">Konversi &amp; Form Penjualan</span></div>
                         <div class="elements-grid">
-                            <div class="element-card" draggable="true" data-insert="form-lead" title="Formulir pesanan lengkap ke WhatsApp & Google Sheets">
+                            <div class="element-card" draggable="true" data-insert="form-lead" data-i18n-title="add.form_lead_desc" title="Formulir pesanan lengkap ke WhatsApp & Google Sheets">
                                 <i class="fa-solid fa-file-invoice" style="color: #22c55e;"></i>
-                                <span>Form Pesanan WA</span>
+                                <span data-i18n="add.form_lead">Form Pesanan WA</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-wa-floating" title="Tombol WhatsApp melayang di pojok kanan bawah">
+                            <div class="element-card" draggable="true" data-insert="element-wa-floating" data-i18n-title="add.floating_wa_desc" title="Tombol WhatsApp melayang di pojok kanan bawah">
                                 <i class="fa-brands fa-whatsapp" style="color: #25d366;"></i>
-                                <span>Floating WhatsApp</span>
+                                <span data-i18n="add.floating_wa">Floating WhatsApp</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-countdown" title="Hitung mundur promo flash sale / urgensi">
+                            <div class="element-card" draggable="true" data-insert="element-countdown" data-i18n-title="add.countdown_desc" title="Hitung mundur promo flash sale / urgensi">
                                 <i class="fa-solid fa-stopwatch" style="color: #f59e0b;"></i>
-                                <span>Countdown Timer</span>
+                                <span data-i18n="add.countdown">Countdown Timer</span>
                             </div>
-                            <div class="element-card" draggable="true" data-insert="element-trust-badges" title="Badges Garansi 100%, Pengiriman Cepat, Produk Original">
+                            <div class="element-card" draggable="true" data-insert="element-trust-badges" data-i18n-title="add.trust_badges_desc" title="Badges Garansi 100%, Pengiriman Cepat, Produk Original">
                                 <i class="fa-solid fa-shield-halved" style="color: #3b82f6;"></i>
-                                <span>Trust Badges</span>
+                                <span data-i18n="add.trust_badges">Trust Badges</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="element-input" title="Input teks formulir">
                                 <i class="fa-solid fa-font"></i>
-                                <span>Input Teks</span>
+                                <span data-i18n="add.input_text">Input Teks</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="element-textarea" title="Textarea catatan formulir">
                                 <i class="fa-solid fa-align-left"></i>
-                                <span>Textarea Catatan</span>
+                                <span data-i18n="add.textarea">Textarea Catatan</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="element-select" title="Dropdown pilihan formulir">
                                 <i class="fa-solid fa-square-caret-down"></i>
-                                <span>Dropdown Opsi</span>
+                                <span data-i18n="add.select">Dropdown Opsi</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="element-submit" title="Tombol submit kirim formulir">
                                 <i class="fa-solid fa-paper-plane" style="color: #4f46e5;"></i>
-                                <span>Tombol Kirim</span>
+                                <span data-i18n="add.submit">Tombol Kirim</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- 4. Prebuilt Clean Components -->
                     <div class="elements-widget-category">
-                        <div class="elements-category-title"><i class="fa-solid fa-layer-group" style="color: #f43f5e; margin-right: 4px;"></i> Template Section Siap Pakai</div>
+                        <div class="elements-category-title"><i class="fa-solid fa-layer-group" style="color: #f43f5e; margin-right: 4px;"></i> <span data-i18n="add.cat_templates">Template Section Siap Pakai</span></div>
                         <div class="elements-grid">
                             <div class="element-card" draggable="true" data-insert="section-hero" title="Section pembuka Hero Banner dengan judul & tombol ganda">
                                 <i class="fa-solid fa-star-of-life" style="color: #6366f1;"></i>
-                                <span>Hero Banner</span>
+                                <span data-i18n="add.template_hero">Hero Banner</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-features" title="Section 3 kartu keunggulan fitur / fasilitas">
                                 <i class="fa-solid fa-list-check" style="color: #06b6d4;"></i>
-                                <span>3 Kartu Fitur</span>
+                                <span data-i18n="add.template_features">3 Kartu Fitur</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-cta" title="Banner ajakan beli / CTA promosi lebar">
                                 <i class="fa-solid fa-bullhorn" style="color: #a855f7;"></i>
-                                <span>CTA Promosi</span>
+                                <span data-i18n="add.template_cta">CTA Promosi</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-gallery" title="Grid galeri foto dan dokumentasi produk">
                                 <i class="fa-solid fa-images" style="color: #10b981;"></i>
-                                <span>Galeri Foto Grid</span>
+                                <span data-i18n="add.template_gallery">Galeri Foto Grid</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-testimonials" title="Section ulasan dan testimoni pembeli puas">
                                 <i class="fa-solid fa-quote-left" style="color: #f59e0b;"></i>
-                                <span>Testimoni Klien</span>
+                                <span data-i18n="add.template_testimonials">Testimoni Klien</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-faq" title="Section tanya jawab FAQ accordion buka-tutup">
                                 <i class="fa-solid fa-circle-question" style="color: #3b82f6;"></i>
-                                <span>FAQ Accordion</span>
+                                <span data-i18n="add.template_faq">FAQ Accordion</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-blog" title="Section Grid Blog / Artikel Dinamis dari WordPress">
                                 <i class="fa-solid fa-newspaper" style="color: #6366f1;"></i>
-                                <span>Blog &amp; Post Grid</span>
+                                <span data-i18n="add.template_blog">Blog &amp; Post Grid</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-pricing" title="Tabel perbandingan harga paket / unit">
                                 <i class="fa-solid fa-tags" style="color: #10b981;"></i>
-                                <span>Tabel Harga</span>
+                                <span data-i18n="add.template_pricing">Tabel Harga</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="section-footer" title="Footer gelap dengan copyright dan link medsos">
                                 <i class="fa-solid fa-shoe-prints"></i>
-                                <span>Footer Bersih</span>
+                                <span data-i18n="add.template_footer">Footer Bersih</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- 5. Custom HTML / Script Embed Widget & Dynamic Feeds -->
                     <div class="elements-widget-category">
-                        <div class="elements-category-title"><i class="fa-solid fa-code" style="color: #a78bfa; margin-right: 4px;"></i> Dinamis &amp; Kode Khusus</div>
+                        <div class="elements-category-title"><i class="fa-solid fa-code" style="color: #a78bfa; margin-right: 4px;"></i> <span data-i18n="add.cat_dynamic">Dinamis &amp; Kode Khusus</span></div>
                         <div class="elements-grid">
                             <div class="element-card" draggable="true" data-insert="element-post-grid" title="Widget Grid Postingan Artikel Dinamis WordPress">
                                 <i class="fa-solid fa-rss" style="color: #f97316;"></i>
-                                <span>Post Grid Feed</span>
+                                <span data-i18n="add.post_grid">Post Grid Feed</span>
                             </div>
                             <div class="element-card" draggable="true" data-insert="element-embed" title="Widget kustom untuk memasukkan kode HTML / iframe Maps">
                                 <i class="fa-solid fa-code" style="color: #a78bfa;"></i>
-                                <span>HTML / Script Embed</span>
+                                <span data-i18n="add.embed">HTML / Script Embed</span>
                             </div>
                         </div>
                     </div>
@@ -1495,7 +1495,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Empty Search State -->
                     <div id="elements-search-empty" style="display: none; text-align: center; padding: 30px 10px; color: var(--text-muted);">
                         <i class="fa-solid fa-box-open" style="font-size: 28px; margin-bottom: 10px; color: #475569;"></i>
-                        <p style="font-size: 13px; margin: 0;">Tidak ada widget yang cocok dengan pencarian.</p>
+                        <p data-i18n="add.search_empty" style="font-size: 13px; margin: 0;">Tidak ada widget yang cocok dengan pencarian.</p>
                     </div>
                 </div>
 
@@ -1521,8 +1521,8 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                             </div>
                         </div>
                         <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
-                            <button type="button" id="btn-rescan-seo" class="btn-studio-action" style="padding: 4px 10px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #fff;" title="Pindai Ulang Seluruh Elemen Kanvas">
-                                <i class="fa-solid fa-arrows-rotate"></i> Pindai Ulang SEO
+                            <button type="button" id="btn-rescan-seo" class="btn-studio-action" data-i18n-title="seo.rescan_title" style="padding: 4px 10px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #fff;" title="Pindai Ulang Seluruh Elemen Kanvas">
+                                <i class="fa-solid fa-arrows-rotate"></i> <span data-i18n="seo.rescan">Pindai Ulang SEO</span>
                             </button>
                         </div>
                     </div>
@@ -1530,14 +1530,14 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Focus Keyword Control -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-solid fa-key"></i> Kata Kunci Target (Focus Keyword)</span>
+                            <span><i class="fa-solid fa-key"></i> <span data-i18n="seo.focus_label">Kata Kunci Target (Focus Keyword)</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
                             <div class="form-row">
-                                <label class="form-label">Keyword Utama Halaman:</label>
-                                <input type="text" id="seo-focus-keyword" class="form-input" placeholder="Contoh: Jasa Landing Page Murah Tangerang" value="<?php echo esc_attr($focus_keyword); ?>">
-                                <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                                <label class="form-label" data-i18n="seo.focus_input_label">Keyword Utama Halaman:</label>
+                                <input type="text" id="seo-focus-keyword" class="form-input" data-i18n-placeholder="seo.focus_placeholder" placeholder="Contoh: Jasa Landing Page Murah Tangerang" value="<?php echo esc_attr($focus_keyword); ?>">
+                                <div data-i18n="seo.focus_hint" style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">
                                     Sistem akan memeriksa kehadiran kata kunci ini di Judul, Deskripsi, H1, dan konten kanvas.
                                 </div>
                             </div>
@@ -1652,8 +1652,8 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                 <!-- 5. TAB: FONT AWESOME 6 ICONS -->
                 <div id="tab-icons" class="sidebar-panel">
-                    <input type="text" id="icon-search-input" class="icon-picker-search" placeholder="Cari ikon Font Awesome (misal: phone, check, star, user)...">
-                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">
+                    <input type="text" id="icon-search-input" class="icon-picker-search" data-i18n-placeholder="icons.search_placeholder" placeholder="Cari ikon Font Awesome (misal: phone, check, star, user)...">
+                    <div data-i18n="icons.hint" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">
                         Klik ikon untuk menyematkan ke elemen terpilih atau memasukkan ikon baru. 100% Font Awesome 6 vektor murni (Anti AI-Slop).
                     </div>
                     <div id="sidebar-icon-grid" class="icon-grid">
@@ -1666,27 +1666,27 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                     <!-- Page Layout & Header Footer Settings (Elementor-Style Theme Builder) -->
                     <div class="control-group">
                         <div class="control-group-header">
-                            <span><i class="fa-solid fa-layer-group" style="color: #6366f1;"></i> Tata Letak &amp; Header Footer</span>
+                            <span><i class="fa-solid fa-layer-group" style="color: #6366f1;"></i> <span data-i18n="settings.layout_header">Tata Letak &amp; Header Footer</span></span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </div>
                         <div class="control-group-body">
-                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
+                            <div data-i18n="settings.layout_desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">
                                 Tentukan tata letak halaman: gunakan kanvas penuh mandiri atau sematkan template Header &amp; Footer kustom.
                             </div>
 
                             <div class="form-row">
-                                <label class="form-label" style="font-size: 11px;">Tata Letak Halaman (Page Layout):</label>
+                                <label class="form-label" data-i18n="settings.page_layout_label" style="font-size: 11px;">Tata Letak Halaman (Page Layout):</label>
                                 <select id="setting-page-layout" class="form-select">
-                                    <option value="canvas" <?php selected($current_page_layout, 'canvas'); ?>>Bongkar Canvas (Halaman Penuh)</option>
-                                    <option value="header_footer" <?php selected($current_page_layout, 'header_footer'); ?>>Bongkar Header &amp; Footer</option>
+                                    <option value="canvas" data-i18n="settings.layout_canvas" <?php selected($current_page_layout, 'canvas'); ?>>Bongkar Canvas (Halaman Penuh)</option>
+                                    <option value="header_footer" data-i18n="settings.layout_hf" <?php selected($current_page_layout, 'header_footer'); ?>>Bongkar Header &amp; Footer</option>
                                 </select>
                             </div>
 
                             <div id="setting-hf-options-wrap" style="display: <?php echo $current_page_layout === 'header_footer' ? 'block' : 'none'; ?>; margin-top: 10px; padding: 10px; background: var(--bg-surface-elevated); border: 1px solid var(--border-light); border-radius: var(--radius-sm);">
                                 <div class="form-row" style="margin-bottom: 8px;">
-                                    <label class="form-label" style="font-size: 11px;">Header Template:</label>
+                                    <label class="form-label" data-i18n="settings.header_label" style="font-size: 11px;">Header Template:</label>
                                     <select id="setting-header-id" class="form-select">
-                                        <option value="0" <?php selected(!$current_header_id); ?>>-- Default Global Header --</option>
+                                        <option value="0" data-i18n="settings.header_default" <?php selected(!$current_header_id); ?>>-- Default Global Header --</option>
                                         <?php foreach ($available_headers as $h): ?>
                                             <option value="<?php echo esc_attr($h->ID); ?>" <?php selected($current_header_id, $h->ID); ?>>
                                                 <?php echo esc_html($h->post_title); ?><?php echo ($global_header_id === $h->ID) ? ' (Global)' : ''; ?>
@@ -1696,9 +1696,9 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 </div>
 
                                 <div class="form-row" style="margin-bottom: 8px;">
-                                    <label class="form-label" style="font-size: 11px;">Footer Template:</label>
+                                    <label class="form-label" data-i18n="settings.footer_label" style="font-size: 11px;">Footer Template:</label>
                                     <select id="setting-footer-id" class="form-select">
-                                        <option value="0" <?php selected(!$current_footer_id); ?>>-- Default Global Footer --</option>
+                                        <option value="0" data-i18n="settings.footer_default" <?php selected(!$current_footer_id); ?>>-- Default Global Footer --</option>
                                         <?php foreach ($available_footers as $f): ?>
                                             <option value="<?php echo esc_attr($f->ID); ?>" <?php selected($current_footer_id, $f->ID); ?>>
                                                 <?php echo esc_html($f->post_title); ?><?php echo ($global_footer_id === $f->ID) ? ' (Global)' : ''; ?>
