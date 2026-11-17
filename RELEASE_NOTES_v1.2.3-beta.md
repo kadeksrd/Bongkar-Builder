@@ -27,3 +27,10 @@ Version 1.2.3-beta introduces full dual-language internationalization (Bahasa In
    - Custom HTML Section Insertion ("Desain HTML Sendiri") in both inline and bottom section pickers.
    - Ergonomic, non-obtrusive floating toolbar positioning in pop-up/modal edit mode.
    - Rock-solid pop-up stability preventing dialogs from auto-closing on click or double-click.
+
+6. **Proportional Canvas Scaling & Auto-Fit Engine (Anti-Kegedean & Anti-Overflow):**
+   - **Smart Auto-Fit on Laptop Screens:** Automatically measures available canvas width with the sidebar open and scales the desktop canvas to fit comfortably without horizontal scrollbars.
+   - **Full Desktop Layout Visibility:** Renders the canvas at a standard 1200px desktop baseline so multi-column layouts (hero 2-columns, contact forms, navbar buttons) display side-by-side with proportional typography.
+   - **Floating Canvas Zoom Pill:** Added a sleek, non-obtrusive floating zoom bar at the bottom-right corner of the canvas (`[ - ] [ Fit (80%) ▾ ] [ + ]`) featuring one-click presets (`Fit to Screen`, `100%`, `90%`, `85%`, `80%`, `75%`, `50%`) and keyboard shortcuts (`Ctrl +`, `Ctrl -`, `Ctrl 0`).
+   - **Dynamic Topbar Device Badge:** The Desktop device switcher pill dynamically reflects the active scale (`Fit`, `85%`, `100%`).
+   - **Persistent Zoom Level:** Automatically saves zoom preference in `localStorage` (`bongkar_canvas_zoom_mode`).

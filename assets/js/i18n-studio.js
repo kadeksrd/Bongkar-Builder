@@ -41,6 +41,14 @@
             'topbar.publish_desc': 'Publikasikan semua perubahan ke pengunjung live (Ctrl+S)',
             'topbar.exit': 'Keluar ke Dashboard WordPress',
             'topbar.lang_switcher': 'Pilih Bahasa Editor',
+            'topbar.zoom_title': 'Skala Pratinjau Kanvas',
+            'topbar.zoom_fit': 'Pas Layar',
+            'zoom.fit': 'Pas Layar (Otomatis)',
+            'zoom.original': '100% (Ukuran Asli)',
+            'zoom.laptop': '85% (Rekomendasi Laptop)',
+            'zoom.compact': '75% (Kompak)',
+            'zoom.in': 'Perbesar Kanvas (Ctrl +)',
+            'zoom.out': 'Perkecil Kanvas (Ctrl -)',
 
             // Sidebar Tabs
             'tab.inspector': 'Inspector',
@@ -412,6 +420,14 @@
             'topbar.publish_desc': 'Publish all changes to live visitors (Ctrl+S)',
             'topbar.exit': 'Exit to WordPress Dashboard',
             'topbar.lang_switcher': 'Select Studio Language',
+            'topbar.zoom_title': 'Canvas Preview Scale',
+            'topbar.zoom_fit': 'Fit to Screen',
+            'zoom.fit': 'Fit to Screen (Auto)',
+            'zoom.original': '100% (Original Size)',
+            'zoom.laptop': '85% (Laptop Optimal)',
+            'zoom.compact': '75% (Compact)',
+            'zoom.in': 'Zoom In (Ctrl +)',
+            'zoom.out': 'Zoom Out (Ctrl -)',
 
             // Sidebar Tabs
             'tab.inspector': 'Inspector',

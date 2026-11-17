@@ -24,6 +24,7 @@
         initIdentityMediaPickers();
         initShortcuts();
         initCanvasContextBridge();
+        initCanvasZoom();
     }
 
     /**
@@ -186,8 +187,193 @@
 
                 viewport.classList.remove('mode-desktop', 'mode-tablet', 'mode-mobile');
                 viewport.classList.add(`mode-${device}`);
+
+                if (window.BongkarCanvasZoom && typeof window.BongkarCanvasZoom.recalc === 'function') {
+                    window.BongkarCanvasZoom.recalc();
+                }
             });
         });
+    }
+
+    /**
+     * Canvas Zoom & Responsive Scale Manager (Auto-Fit & Non-Obtrusive Proportions)
+     */
+    function initCanvasZoom() {
+        const canvasArea = document.getElementById('studio-canvas-area');
+        const scaler = document.getElementById('canvas-scaler');
+        const viewport = document.getElementById('canvas-viewport');
+        const zoomDisplay = document.getElementById('canvas-zoom-display');
+        const desktopBadge = document.getElementById('badge-device-desktop');
+        const btnZoomOut = document.getElementById('btn-zoom-out');
+        const btnZoomIn = document.getElementById('btn-zoom-in');
+        const btnZoomPreset = document.getElementById('btn-zoom-preset');
+        const zoomMenu = document.getElementById('zoom-preset-menu');
+        const zoomMenuItems = document.querySelectorAll('.zoom-menu-item');
+
+        let currentZoomMode = localStorage.getItem('bongkar_canvas_zoom_mode') || 'fit';
+        let currentZoomScale = 1;
+        const BASE_DESKTOP_WIDTH = 1200;
+
+        function calculateFitScale() {
+            if (!canvasArea || !viewport) return 1;
+            
+            let targetWidth = BASE_DESKTOP_WIDTH;
+            if (viewport.classList.contains('mode-tablet')) {
+                targetWidth = 768;
+            } else if (viewport.classList.contains('mode-mobile')) {
+                targetWidth = 390;
+            }
+
+            const areaWidth = canvasArea.clientWidth - 32; // 16px safety padding
+            if (areaWidth <= 0) return 1;
+
+            if (areaWidth < targetWidth) {
+                const fit = Math.floor((areaWidth / targetWidth) * 100) / 100;
+                return Math.max(0.35, Math.min(1, fit));
+            }
+            return 1;
+        }
+
+        function applyZoom(modeOrScale, save = true) {
+            if (!viewport) return;
+            let scale = 1;
+            let isFit = false;
+
+            if (modeOrScale === 'fit' || modeOrScale === 'auto') {
+                isFit = true;
+                currentZoomMode = 'fit';
+                scale = calculateFitScale();
+            } else {
+                isFit = false;
+                scale = parseFloat(modeOrScale);
+                if (isNaN(scale) || scale <= 0) scale = 1;
+                scale = Math.max(0.35, Math.min(1.5, Math.round(scale * 100) / 100));
+                currentZoomMode = scale.toString();
+            }
+
+            currentZoomScale = scale;
+            if (save) {
+                localStorage.setItem('bongkar_canvas_zoom_mode', currentZoomMode);
+            }
+
+            let baseWidth = BASE_DESKTOP_WIDTH;
+            if (viewport.classList.contains('mode-tablet')) {
+                baseWidth = 768;
+            } else if (viewport.classList.contains('mode-mobile')) {
+                baseWidth = 390;
+            }
+
+            // Apply scale to viewport
+            viewport.style.transform = `scale(${scale})`;
+            viewport.style.transformOrigin = 'top center';
+
+            // Sizing the scaler container so physical layout matches visual scale
+            if (scaler) {
+                scaler.style.width = `${Math.round(baseWidth * scale)}px`;
+                const currentHeight = viewport.offsetHeight || (window.innerHeight - 100);
+                scaler.style.height = `${Math.round(currentHeight * scale)}px`;
+            }
+
+            // Update labels
+            const pctText = `${Math.round(scale * 100)}%`;
+            const labelText = isFit ? (scale < 1 ? `Fit (${pctText})` : 'Fit') : pctText;
+
+            if (zoomDisplay) zoomDisplay.innerText = labelText;
+            if (desktopBadge && viewport.classList.contains('mode-desktop')) {
+                desktopBadge.innerText = isFit ? (scale < 1 ? pctText : 'Fit') : pctText;
+            }
+
+            // Update active class in menu
+            zoomMenuItems.forEach(item => {
+                const zVal = item.getAttribute('data-zoom');
+                if (isFit && zVal === 'fit') {
+                    item.classList.add('active');
+                } else if (!isFit && Math.abs(parseFloat(zVal) - scale) < 0.02) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Window resize / Sidebar toggle listener
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (currentZoomMode === 'fit') {
+                    applyZoom('fit', false);
+                }
+            }, 80);
+        });
+
+        // Toggle menu
+        if (btnZoomPreset && zoomMenu) {
+            btnZoomPreset.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = zoomMenu.style.display !== 'none';
+                zoomMenu.style.display = isOpen ? 'none' : 'flex';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!zoomMenu.contains(e.target) && e.target !== btnZoomPreset) {
+                    zoomMenu.style.display = 'none';
+                }
+            });
+        }
+
+        // Menu item clicks
+        zoomMenuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const zVal = item.getAttribute('data-zoom');
+                applyZoom(zVal);
+                if (zoomMenu) zoomMenu.style.display = 'none';
+            });
+        });
+
+        // Zoom in / Zoom out buttons
+        if (btnZoomOut) {
+            btnZoomOut.addEventListener('click', () => {
+                applyZoom(currentZoomScale - 0.1);
+            });
+        }
+
+        if (btnZoomIn) {
+            btnZoomIn.addEventListener('click', () => {
+                applyZoom(currentZoomScale + 0.1);
+            });
+        }
+
+        // Keyboard shortcuts: Ctrl + Plus, Ctrl + Minus, Ctrl + 0
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === '=' || e.key === '+') {
+                    e.preventDefault();
+                    applyZoom(currentZoomScale + 0.1);
+                } else if (e.key === '-' || e.key === '_') {
+                    e.preventDefault();
+                    applyZoom(currentZoomScale - 0.1);
+                } else if (e.key === '0') {
+                    e.preventDefault();
+                    applyZoom('fit');
+                }
+            }
+        });
+
+        // Initialize zoom on startup
+        applyZoom(currentZoomMode, false);
+
+        // Expose zoom controller
+        window.BongkarCanvasZoom = {
+            apply: applyZoom,
+            recalc: () => {
+                if (currentZoomMode === 'fit') {
+                    applyZoom('fit', false);
+                } else {
+                    applyZoom(currentZoomScale, false);
+                }
+            }
+        };
     }
 
     /**
