@@ -37,12 +37,28 @@ jobs:
           cd ..
           ls -lh bongkar-builder.zip
 
+      - name: Select Release Notes
+        run: |
+          TAG="${{ github.ref_name }}"
+          echo "Selecting release notes for tag: $TAG"
+          if [ -f "RELEASE_NOTES_${TAG}.md" ]; then
+            echo "Found tag-specific notes: RELEASE_NOTES_${TAG}.md"
+            cp "RELEASE_NOTES_${TAG}.md" ACTIVE_RELEASE_NOTES.md
+          elif [ -f "RELEASE_NOTES.md" ]; then
+            echo "Using default RELEASE_NOTES.md"
+            cp RELEASE_NOTES.md ACTIVE_RELEASE_NOTES.md
+          else
+            echo "No release notes found, creating fallback"
+            echo "Release $TAG" > ACTIVE_RELEASE_NOTES.md
+          fi
+          head -n 5 ACTIVE_RELEASE_NOTES.md
+
       - name: Upload Zip to Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
         with:
           files: bongkar-builder.zip
-          body_path: RELEASE_NOTES.md
+          body_path: ACTIVE_RELEASE_NOTES.md
           name: Bongkar Canvas Builder ${{ github.ref_name }}
           prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') || contains(github.ref_name, 'alpha') }}
         env:
