@@ -1087,10 +1087,10 @@ body, html {
     flex-direction: column;
 }
 
-/* In Desktop Mode (Standar Asli Desktop 1280px - Tidak Diciutkan, Mendukung Geser Horizontal di Laptop) */
+/* In Desktop Mode (Sweet Spot 1024px: Kolom Desktop Tetap Sejajar Tidak Turun & Pas Rapi di Layar Laptop) */
 .canvas-viewport-wrapper.mode-desktop {
-    width: 1280px;
-    min-width: 1280px;
+    width: 1024px;
+    min-width: 1024px;
     max-width: none;
     margin: 0 auto;
     border-radius: var(--radius-sm, 6px);

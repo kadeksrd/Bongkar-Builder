@@ -29,7 +29,7 @@ Version 1.2.3 is an official stable production release introducing full dual-lan
    - Rock-solid pop-up stability preventing dialogs from auto-closing on click or double-click.
 
 6. **Ergonomic Device Viewport Frames (Desktop, Tablet, & Mobile):**
-   - **Desktop Viewport (1280px Standard):** Fixed at authentic 1280px desktop resolution without being artificially squished or compressed on narrower laptop displays, fully navigable via smooth horizontal scrolling in the studio workspace.
+   - **Desktop Viewport (1024px Sweet Spot):** Fixed at the official desktop boundary of 1024px so desktop column layouts and navbars never break or drop vertically, fitting naturally and neatly on laptop screens without excessive horizontal scrolling.
    - **Tablet Viewport (768px):** Styled as an elegant tablet device frame with 28px rounded corners and a sleek 6px dark bezel (`#0f172a`), perfectly centered in the workspace.
    - **Mobile Viewport (390px):** Modeled with native smartphone proportions featuring a 44px rounded frame, 6px bezel, Dynamic Island pill indicator at top, and Home bar indicator at bottom.
    - **Clean Topbar Device Buttons:** Compact, intuitive pill switcher buttons for Desktop, Tablet, and Mobile without cluttered resolution badges.
