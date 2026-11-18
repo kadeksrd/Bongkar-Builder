@@ -5,7 +5,7 @@
  * for Bongkar Canvas Builder Studio UI and synchronized Canvas components.
  * 
  * @package Bongkar_Builder
- * @version 1.2.3-beta
+ * @version 1.2.3
  */
 
 (function () {

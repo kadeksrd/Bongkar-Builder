@@ -1,10 +1,10 @@
-# Release Notes - Bongkar Canvas Builder v1.2.3-beta (Pre-release / Beta)
+# Release Notes - Bongkar Canvas Builder v1.2.3 (Stable Release)
 
-Version 1.2.3-beta introduces full dual-language internationalization (Bahasa Indonesia & English) across both the Bongkar Studio interface and the iframe canvas engine, powered by an ultra-compact dropdown switcher that preserves the clean topbar layout, along with enhanced GitHub pre-release auto-updater detection, plus all stability and section additions from v1.2.2.
+Version 1.2.3 is an official stable production release introducing full dual-language internationalization (Bahasa Indonesia & English) across both the Bongkar Studio interface and the iframe canvas engine, powered by an ultra-compact dropdown switcher, an Elementor-grade responsive layout engine with device-aware scoped styles, ergonomic device viewports (Desktop, Tablet, Mobile), custom HTML section insertion, non-obtrusive pop-up editing, locked pop-up stability, and automated background update detection.
 
 ---
 
-### Key Enhancements & Additions in v1.2.3-beta:
+### Key Enhancements & Additions in v1.2.3:
 
 1. **Studio-Wide Dual-Language Architecture (i18n):**
    - **Real-Time Client-Side Translation Engine:** Implemented `window.BongkarI18n` in `assets/js/i18n-studio.js`, providing instant translation switching between Indonesian (`id`) and English (`en`) without requiring page reloads.
@@ -20,8 +20,8 @@ Version 1.2.3-beta introduces full dual-language internationalization (Bahasa In
    - **Cross-Frame Event Synchronization:** Dispatches `BONGKAR_CHANGE_LANG` via `postMessage` from the parent Studio to the canvas iframe.
    - **Contextual Canvas Translation:** Dynamically updates semantic role tags ("IMAGE", "TEXT", "BUTTON", "COLUMN", "SECTION"), floating toolbar tooltips (Wrap, Select Parent, Copy, Cut, Paste, Duplicate, Delete), the hover pop-up badge (`Edit Pop-up`), and canvas notification toasts.
 
-4. **GitHub Pre-Release & Beta Auto-Updater Support:**
-   - Enhanced `Bongkar_Builder_Updater` to query `/releases?per_page=5` so that pre-releases (such as `1.2.3-beta`) are detected and eligible for one-click background and manual updates directly within WordPress.
+4. **GitHub Release Auto-Updater Support:**
+   - Enhanced `Bongkar_Builder_Updater` to query `/releases?per_page=5` so that latest releases (such as `1.2.3`) are detected and eligible for one-click background and manual updates directly within WordPress.
 
 5. **All Latest Feature Additions & Fixes from v1.2.2 Included:**
    - Custom HTML Section Insertion ("Desain HTML Sendiri") in both inline and bottom section pickers.
