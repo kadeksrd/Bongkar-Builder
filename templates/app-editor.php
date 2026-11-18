@@ -192,20 +192,17 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
             <!-- Responsive Device Switcher -->
             <div class="device-switcher-pill">
-                <button type="button" class="device-btn active" data-device="desktop" title="Desktop View (100% Fit)">
+                <button type="button" class="device-btn active" data-device="desktop" title="Desktop View">
                     <i class="fa-solid fa-desktop"></i>
                     <span data-i18n="topbar.device_desktop">Desktop</span>
-                    <span class="device-res-badge">100%</span>
                 </button>
-                <button type="button" class="device-btn" data-device="tablet" title="Tablet View (768px)">
+                <button type="button" class="device-btn" data-device="tablet" title="Tablet View">
                     <i class="fa-solid fa-tablet-screen-button"></i>
                     <span data-i18n="topbar.device_tablet">Tablet</span>
-                    <span class="device-res-badge">768px</span>
                 </button>
-                <button type="button" class="device-btn" data-device="mobile" title="Mobile View (360px - Elementor Standard)">
+                <button type="button" class="device-btn" data-device="mobile" title="Mobile View">
                     <i class="fa-solid fa-mobile-screen"></i>
                     <span data-i18n="topbar.device_mobile">Mobile</span>
-                    <span class="device-res-badge">360px</span>
                 </button>
             </div>
         </div>

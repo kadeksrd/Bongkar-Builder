@@ -28,10 +28,11 @@ Version 1.2.3-beta introduces full dual-language internationalization (Bahasa In
    - Ergonomic, non-obtrusive floating toolbar positioning in pop-up/modal edit mode.
    - Rock-solid pop-up stability preventing dialogs from auto-closing on click or double-click.
 
-6. **Elementor-Style Full-Width Canvas & Responsive Viewport Engine:**
-   - **100% Fluid Desktop Workspace:** Desktop preview mode now fills 100% of the available workspace edge-to-edge naturally (identical to Elementor's canvas), completely eliminating artificial shrinking and dark empty side bars.
-   - **Zero Horizontal Overflow:** Enforced strict `overflow-x: hidden` and `min-width: 0` on `.studio-canvas-area`, guaranteeing that horizontal scrollbars never appear on laptop screens.
-   - **Clean Elementor Device Frames:** Sized cleanly to standard Elementor breakpoints: Tablet (768px) and Mobile (360px), without obtrusive bezels, fake notches, or blocking home bars.
+6. **Ergonomic Device Viewport Frames (Desktop, Tablet, & Mobile):**
+   - **Desktop Viewport:** Refined with smooth padding and rounded border (`--radius-sm`), delivering a natural desktop preview with zero horizontal overflow on laptop screens.
+   - **Tablet Viewport (768px):** Styled as an elegant tablet device frame with 28px rounded corners and a sleek 6px dark bezel (`#0f172a`), perfectly centered in the workspace.
+   - **Mobile Viewport (390px):** Modeled with native smartphone proportions featuring a 44px rounded frame, 6px bezel, Dynamic Island pill indicator at top, and Home bar indicator at bottom.
+   - **Clean Topbar Device Buttons:** Compact, intuitive pill switcher buttons for Desktop, Tablet, and Mobile without cluttered resolution badges.
 
 7. **Elementor-Grade Responsive Layout Engine & Device-Aware Inspector:**
    - **Per-Device Scoped Overrides:** Adjustments made in Mobile (360px) or Tablet (768px) modes (font size, column width, flex direction, text alignment, padding, and margin) are automatically saved per-device via dynamic responsive stylesheet compilation (`<style id="bongkar-responsive-styles">`), ensuring mobile refinements never break the desktop layout.
