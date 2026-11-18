@@ -22,7 +22,7 @@ Version 1.2.3 is an official stable release introducing full dual-language inter
    - **Anti-Blocking Canvas Interaction:** Floating toolbar adapts cleanly with edge-clamping, while inline text editing (`contenteditable`) temporarily dims the toolbar so text selection is 100% free and unhindered.
 
 3. **Ergonomic Device Viewports (Desktop, Tablet, & Mobile):**
-   - **Desktop Viewport:** Refined with smooth padding and rounded border (`--radius-sm`), delivering a natural desktop preview with zero horizontal overflow on laptop screens.
+   - **Desktop Viewport (1280px Standard):** Fixed at authentic 1280px desktop resolution without being artificially squished or compressed on narrower laptop displays, fully navigable via smooth horizontal scrolling in the studio workspace.
    - **Tablet Viewport (768px):** Styled as an elegant tablet device frame with 28px rounded corners and a sleek 6px dark bezel (`#0f172a`), perfectly centered in the workspace.
    - **Mobile Viewport (390px):** Modeled with native smartphone proportions featuring a 44px rounded frame, 6px bezel, Dynamic Island pill indicator at top, and Home bar indicator at bottom.
 

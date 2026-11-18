@@ -973,14 +973,30 @@ body, html {
     flex: 1;
     min-width: 0;
     background: #090d16;
-    overflow-x: hidden; /* Strictly prevent horizontal scrollbars on laptop screens */
+    overflow-x: auto; /* Allows smooth horizontal scrolling when workspace is narrower than 1280px desktop */
     overflow-y: auto;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
     padding: 10px 14px 40px;
     position: relative;
     transition: padding 0.25s ease;
+}
+
+/* Slim modern scrollbar for studio canvas workspace */
+.studio-canvas-area::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.studio-canvas-area::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+}
+.studio-canvas-area::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 10px;
+}
+.studio-canvas-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.7);
 }
 
 .device-res-badge {
@@ -1071,14 +1087,15 @@ body, html {
     flex-direction: column;
 }
 
-/* In Desktop Mode (Foto 1: Frame bersih rapi dengan padding & rounded corner) */
+/* In Desktop Mode (Standar Asli Desktop 1280px - Tidak Diciutkan, Mendukung Geser Horizontal di Laptop) */
 .canvas-viewport-wrapper.mode-desktop {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    margin: 0;
+    width: 1280px;
+    min-width: 1280px;
+    max-width: none;
+    margin: 0 auto;
     border-radius: var(--radius-sm, 6px);
     border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    flex-shrink: 0;
 }
 
 .canvas-viewport-wrapper.mode-tablet,
