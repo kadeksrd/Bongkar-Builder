@@ -973,10 +973,10 @@ body, html {
     flex: 1;
     min-width: 0;
     background: #090d16;
-    overflow-x: hidden; /* 100% Bersih: Tanpa scrollbar horizontal pada mode desktop laptop */
+    overflow-x: auto; /* Mengizinkan geser/scroll horizontal halus saat layar laptop lebih sempit dari desktop */
     overflow-y: auto;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
     padding: 10px 14px 40px;
     position: relative;
@@ -1087,11 +1087,11 @@ body, html {
     flex-direction: column;
 }
 
-/* In Desktop Mode (Sweet Spot 1024px: Kolom Desktop Tetap Sejajar Tidak Turun & Pas Rapi di Layar Laptop) */
+/* In Desktop Mode (Standar Asli Desktop 1200px: Lebar Full Utuh & Mendukung Scroll Geser Sedikit di Laptop) */
 .canvas-viewport-wrapper.mode-desktop {
-    width: 1024px;
-    max-width: 100%;
-    min-width: 0;
+    width: 1200px;
+    min-width: 1200px;
+    max-width: none;
     margin: 0 auto;
     border-radius: var(--radius-sm, 6px);
     border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));

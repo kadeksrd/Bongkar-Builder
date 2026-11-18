@@ -210,7 +210,7 @@
         // Clean up legacy zoom preference from localStorage
         try {
             localStorage.removeItem('bongkar_canvas_zoom_mode');
-        } catch (e) {}
+        } catch (e) { }
     }
 
     /**
@@ -600,7 +600,7 @@
 
                 case 'BONGKAR_CLIPBOARD_SYNC':
                     if (data.text && navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(data.text).catch(() => {});
+                        navigator.clipboard.writeText(data.text).catch(() => { });
                     }
                     break;
 
@@ -632,63 +632,9 @@
     }
 
     let pendingCustomHtmlInsertIndex = -1;
-    let isUpdateSectionMode = false;
-    let pendingCustomHtmlTargetSectionId = null;
 
     /**
-     * Helper to sanitize, auto-check, and extract isolated section HTML
-     * Detects and strips full document wrappers (<!DOCTYPE>, <html>, <head>, <body>)
-     * if pasted from AI (Claude, v0, ChatGPT) or Figma.
-     */
-    function sanitizeAndExtractSectionHtml(rawHtml) {
-        if (!rawHtml) return '';
-        let cleaned = rawHtml.trim();
-
-        // 1. Auto-check: Detect full HTML document wrappers
-        if (/<html[\s>]/i.test(cleaned) || /<!DOCTYPE/i.test(cleaned) || /<body[\s>]/i.test(cleaned)) {
-            try {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(cleaned, 'text/html');
-                
-                // If there are explicit section tags inside the document body
-                const sections = doc.body.querySelectorAll('section');
-                if (sections.length > 0) {
-                    cleaned = Array.from(sections).map(s => s.outerHTML).join('\n');
-                } else if (doc.body.children.length > 0) {
-                    // Extract all body children
-                    cleaned = doc.body.innerHTML.trim();
-                }
-            } catch (err) {
-                console.warn('[Bongkar] Failed parsing HTML with DOMParser, falling back to regex clean', err);
-                cleaned = cleaned
-                    .replace(/<!DOCTYPE[^>]*>/gi, '')
-                    .replace(/<\/?html[^>]*>/gi, '')
-                    .replace(/<head[\s\S]*?<\/head>/gi, '')
-                    .replace(/<\/?body[^>]*>/gi, '')
-                    .trim();
-            }
-        }
-
-        // Clean out any leftover html/head/body or doctype tags
-        cleaned = cleaned
-            .replace(/<!DOCTYPE[^>]*>/gi, '')
-            .replace(/<\/?html[^>]*>/gi, '')
-            .replace(/<\/?body[^>]*>/gi, '')
-            .trim();
-
-        // 2. Ensure the snippet is wrapped in a semantic section element
-        const temp = document.createElement('div');
-        temp.innerHTML = cleaned;
-        const first = temp.firstElementChild;
-        if (!first || (first.tagName !== 'SECTION' && !first.classList.contains('bongkar-section'))) {
-            cleaned = `<section class="bongkar-section py-16 px-4" style="position:relative;">\n${cleaned}\n</section>`;
-        }
-
-        return cleaned;
-    }
-
-    /**
-     * Modal handler: Sisipkan / Update Section Desain HTML Sendiri
+     * Modal handler: Sisipkan Section Desain HTML Sendiri
      */
     function initSectionHtmlModal() {
         const modal = document.getElementById('modal-section-html');
@@ -697,24 +643,16 @@
         modal.querySelectorAll('[data-close-modal="section-html"]').forEach(btn => {
             btn.addEventListener('click', () => {
                 modal.classList.remove('active');
-                isUpdateSectionMode = false;
-                pendingCustomHtmlTargetSectionId = null;
-                pendingCustomHtmlInsertIndex = -1;
             });
         });
 
         // Trigger buttons from sidebar panel or other studio locations
         document.querySelectorAll('.btn-trigger-custom-html-section').forEach(btn => {
             btn.addEventListener('click', () => {
-                isUpdateSectionMode = false;
-                pendingCustomHtmlTargetSectionId = null;
                 pendingCustomHtmlInsertIndex = -1;
                 modal.classList.add('active');
                 const textarea = document.getElementById('section-html-textarea');
-                if (textarea) {
-                    textarea.value = '';
-                    setTimeout(() => textarea.focus(), 100);
-                }
+                if (textarea) setTimeout(() => textarea.focus(), 100);
             });
         });
 
@@ -732,30 +670,26 @@
                     return;
                 }
 
-                // Auto-check and extract clean section HTML
-                const finalHtml = sanitizeAndExtractSectionHtml(rawHtml);
+                // Wrap in section if raw snippet isn't already a section or container
+                let finalHtml = rawHtml;
+                const temp = document.createElement('div');
+                temp.innerHTML = rawHtml;
+                const first = temp.firstElementChild;
+                if (!first || (first.tagName !== 'SECTION' && !first.classList.contains('bongkar-section'))) {
+                    finalHtml = `<section class="bongkar-section py-16 px-4" style="position:relative;">\n${rawHtml}\n</section>`;
+                }
 
                 const iframe = document.getElementById('bongkar-iframe-canvas');
                 if (iframe && iframe.contentWindow) {
-                    if (isUpdateSectionMode && pendingCustomHtmlTargetSectionId) {
-                        iframe.contentWindow.postMessage({
-                            type: 'BONGKAR_UPDATE_SECTION_HTML',
-                            sectionId: pendingCustomHtmlTargetSectionId,
-                            html: finalHtml
-                        }, '*');
-                    } else {
-                        iframe.contentWindow.postMessage({
-                            type: 'BONGKAR_INSERT_HTML',
-                            html: finalHtml,
-                            insertIndex: pendingCustomHtmlInsertIndex
-                        }, '*');
-                    }
+                    iframe.contentWindow.postMessage({
+                        type: 'BONGKAR_INSERT_HTML',
+                        html: finalHtml,
+                        insertIndex: pendingCustomHtmlInsertIndex
+                    }, '*');
                 }
 
                 modal.classList.remove('active');
                 textarea.value = '';
-                isUpdateSectionMode = false;
-                pendingCustomHtmlTargetSectionId = null;
                 pendingCustomHtmlInsertIndex = -1;
             });
         }
@@ -1023,12 +957,12 @@
         }
 
         const pageLayoutSelect = document.getElementById('setting-page-layout');
-        const headerIdSelect   = document.getElementById('setting-header-id');
-        const footerIdSelect   = document.getElementById('setting-footer-id');
+        const headerIdSelect = document.getElementById('setting-header-id');
+        const footerIdSelect = document.getElementById('setting-footer-id');
 
         const pageLayout = pageLayoutSelect ? pageLayoutSelect.value : (window.bongkarStudioConfig.initialPageLayout || 'canvas');
-        const headerId   = headerIdSelect ? headerIdSelect.value : (window.bongkarStudioConfig.initialHeaderId || 0);
-        const footerId   = footerIdSelect ? footerIdSelect.value : (window.bongkarStudioConfig.initialFooterId || 0);
+        const headerId = headerIdSelect ? headerIdSelect.value : (window.bongkarStudioConfig.initialHeaderId || 0);
+        const footerId = footerIdSelect ? footerIdSelect.value : (window.bongkarStudioConfig.initialFooterId || 0);
 
         const formData = new FormData();
         formData.append('action', actionName);
@@ -1095,32 +1029,32 @@
             method: 'POST',
             body: formData
         })
-        .then(res => res.json())
-        .then(data => {
-            isSaving = false;
-            if (btnPublish) btnPublish.disabled = false;
+            .then(res => res.json())
+            .then(data => {
+                isSaving = false;
+                if (btnPublish) btnPublish.disabled = false;
 
-            if (data.success) {
-                markDirty(false);
-                if (btnLabel) btnLabel.textContent = 'Perbarui';
-                if (btnPublish) btnPublish.classList.remove('has-unsaved');
+                if (data.success) {
+                    markDirty(false);
+                    if (btnLabel) btnLabel.textContent = 'Perbarui';
+                    if (btnPublish) btnPublish.classList.remove('has-unsaved');
 
-                if (statusEl) {
-                    statusEl.className = 'save-status saved';
-                    statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Terpublikasi (${data.data.updated_at || ''})</span>`;
+                    if (statusEl) {
+                        statusEl.className = 'save-status saved';
+                        statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Terpublikasi (${data.data.updated_at || ''})</span>`;
+                    }
+                } else {
+                    if (btnLabel) btnLabel.textContent = 'Publish';
+                    alert(data.data.message || 'Gagal mempublikasikan halaman.');
                 }
-            } else {
+            })
+            .catch(err => {
+                isSaving = false;
+                if (btnPublish) btnPublish.disabled = false;
                 if (btnLabel) btnLabel.textContent = 'Publish';
-                alert(data.data.message || 'Gagal mempublikasikan halaman.');
-            }
-        })
-        .catch(err => {
-            isSaving = false;
-            if (btnPublish) btnPublish.disabled = false;
-            if (btnLabel) btnLabel.textContent = 'Publish';
-            console.error(err);
-            alert('Terjadi kesalahan koneksi saat mempublikasikan.');
-        });
+                console.error(err);
+                alert('Terjadi kesalahan koneksi saat mempublikasikan.');
+            });
     }
 
     /**
@@ -1150,37 +1084,37 @@
             method: 'POST',
             body: formData
         })
-        .then(res => res.json())
-        .then(data => {
-            isSaving = false;
-            if (manual && btnDraft) {
-                btnDraft.disabled = false;
-                btnDraft.innerHTML = '<i class="fa-solid fa-check" style="color: #22c55e;"></i> <span>Draft Tersimpan!</span>';
-                setTimeout(() => {
+            .then(res => res.json())
+            .then(data => {
+                isSaving = false;
+                if (manual && btnDraft) {
+                    btnDraft.disabled = false;
+                    btnDraft.innerHTML = '<i class="fa-solid fa-check" style="color: #22c55e;"></i> <span>Draft Tersimpan!</span>';
+                    setTimeout(() => {
+                        btnDraft.innerHTML = '<i class="fa-solid fa-file-pen"></i> <span>Simpan Draft</span>';
+                    }, 1500);
+                }
+
+                if (data.success) {
+                    if (statusEl) {
+                        statusEl.className = 'save-status unsaved';
+                        statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Draft tersimpan (${data.data.draft_time || ''})</span>`;
+                    }
+
+                    const btnPublish = document.getElementById('btn-save-page');
+                    if (btnPublish) {
+                        btnPublish.classList.add('has-unsaved');
+                    }
+                }
+            })
+            .catch(err => {
+                isSaving = false;
+                if (manual && btnDraft) {
+                    btnDraft.disabled = false;
                     btnDraft.innerHTML = '<i class="fa-solid fa-file-pen"></i> <span>Simpan Draft</span>';
-                }, 1500);
-            }
-
-            if (data.success) {
-                if (statusEl) {
-                    statusEl.className = 'save-status unsaved';
-                    statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Draft tersimpan (${data.data.draft_time || ''})</span>`;
                 }
-
-                const btnPublish = document.getElementById('btn-save-page');
-                if (btnPublish) {
-                    btnPublish.classList.add('has-unsaved');
-                }
-            }
-        })
-        .catch(err => {
-            isSaving = false;
-            if (manual && btnDraft) {
-                btnDraft.disabled = false;
-                btnDraft.innerHTML = '<i class="fa-solid fa-file-pen"></i> <span>Simpan Draft</span>';
-            }
-            console.warn('[Bongkar Autosave Notice]:', err);
-        });
+                console.warn('[Bongkar Autosave Notice]:', err);
+            });
     }
 
     function markDirty(dirty) {
@@ -1279,8 +1213,8 @@
 
     // Expose Studio API for submodules & exporter
     window.BongkarStudio = {
-        getCanvasHTML: function() { return currentCanvasHTML; },
-        setCanvasHTML: function(html) { currentCanvasHTML = html; },
+        getCanvasHTML: function () { return currentCanvasHTML; },
+        setCanvasHTML: function (html) { currentCanvasHTML = html; },
         publishPage: publishPage,
         saveDraft: saveDraft,
         savePage: publishPage,
