@@ -506,11 +506,182 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
         <script src="<?php echo esc_url($script_url); ?>"></script>
     <?php endforeach; ?>
 
-    <!-- Lightweight Form Submission Engine (WhatsApp & Google Sheets) -->
+    <!-- Lightweight Dynamic Form & WhatsApp Engine (Universal Field Harvesting & Anti-Loss WhatsApp Generator) -->
     <script id="bongkar-forms-engine">
     (function() {
+        /**
+         * Harvest form fields dynamically from any form or container
+         * Supports explicit inputs, selects, textareas, labels, and placeholders
+         */
+        function harvestFormFields(container) {
+            const fields = [];
+            const elements = container.querySelectorAll('input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]), select, textarea');
+
+            elements.forEach(function(el, idx) {
+                if (el.closest('.bongkar-section-insert-bar, #bongkar-floating-toolbar, #bongkar-context-menu')) return;
+
+                // 1. Determine human label
+                let label = '';
+                if (el.id) {
+                    const lbl = container.querySelector('label[for="' + el.id + '"]') || document.querySelector('label[for="' + el.id + '"]');
+                    if (lbl && lbl.innerText && lbl.innerText.trim()) label = lbl.innerText.trim();
+                }
+                if (!label) {
+                    const parentLbl = el.closest('label');
+                    if (parentLbl) {
+                        const clone = parentLbl.cloneNode(true);
+                        clone.querySelectorAll('input, select, textarea').forEach(function(n) { n.remove(); });
+                        if (clone.innerText && clone.innerText.trim()) label = clone.innerText.trim();
+                    }
+                }
+                if (!label) {
+                    let prev = el.previousElementSibling;
+                    while (prev) {
+                        if (prev.matches('label, .form-label, p, span, h4, h5, h6, strong')) {
+                            if (prev.innerText && prev.innerText.trim()) {
+                                label = prev.innerText.trim();
+                                break;
+                            }
+                        }
+                        prev = prev.previousElementSibling;
+                    }
+                }
+                if (!label && el.placeholder) {
+                    label = el.placeholder.replace(/^cth\.\s*/i, '').replace(/^contoh:\s*/i, '').trim();
+                }
+                if (!label && el.name) {
+                    label = el.name.replace(/[-_]/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                }
+                if (!label && el.id) {
+                    label = el.id.replace(/[-_]/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                }
+                if (!label) {
+                    label = 'Data ' + (idx + 1);
+                }
+                label = label.replace(/[:*]+$/, '').trim();
+
+                // 2. Determine value
+                let val = '';
+                if (el.tagName === 'SELECT') {
+                    const opt = el.options[el.selectedIndex];
+                    val = opt ? (opt.text || opt.value).trim() : '';
+                } else if (el.type === 'checkbox') {
+                    val = el.checked ? (el.value && el.value !== 'on' ? el.value : 'Ya') : 'Tidak';
+                } else if (el.type === 'radio') {
+                    if (el.checked) val = el.value || 'Ya';
+                    else return;
+                } else {
+                    val = (el.value || '').trim();
+                }
+
+                const key = (el.name || el.id || label).toLowerCase().replace(/[^a-z0-9]/g, '');
+                const slug = label.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                fields.push({
+                    el: el,
+                    name: el.name || '',
+                    id: el.id || '',
+                    label: label,
+                    value: val,
+                    key: key,
+                    slug: slug
+                });
+            });
+
+            return fields;
+        }
+
+        /**
+         * Build clean WhatsApp message from harvested fields
+         * Auto-replaces placeholders and appends any newly added/unconsumed fields
+         */
+        function buildWhatsAppMessage(fields, template) {
+            if (!fields || !fields.length) return '';
+
+            let messageText = '';
+            const consumedLabels = {};
+
+            if (template && template.trim()) {
+                messageText = template;
+                fields.forEach(function(f) {
+                    if (!f.value) return;
+                    const patterns = [
+                        '[' + f.label + ']',
+                        '[' + f.label.toLowerCase() + ']',
+                        f.name ? '[' + f.name + ']' : null,
+                        f.name ? '[' + f.name.toLowerCase() + ']' : null,
+                        f.id ? '[' + f.id + ']' : null,
+                        '[' + f.key + ']',
+                        '[' + f.slug + ']',
+                        '{' + f.label + '}',
+                        '{' + f.key + '}',
+                        '{{' + f.key + '}}'
+                    ];
+
+                    let matched = false;
+                    patterns.forEach(function(pat) {
+                        if (pat && messageText.indexOf(pat) !== -1) {
+                            messageText = messageText.split(pat).join(f.value);
+                            matched = true;
+                        }
+                    });
+
+                    if (matched) {
+                        consumedLabels[f.label] = true;
+                    }
+                });
+
+                // Dynamically append any newly added / unconsumed fields to prevent data loss
+                const unconsumed = fields.filter(function(f) {
+                    return !consumedLabels[f.label] && f.value;
+                });
+
+                if (unconsumed.length > 0) {
+                    messageText += '\n\n*Informasi Tambahan:*';
+                    unconsumed.forEach(function(f) {
+                        messageText += '\n• *' + f.label + '*: ' + f.value;
+                    });
+                }
+            } else {
+                messageText = 'Halo Admin, saya ingin konsultasi:\n';
+                fields.forEach(function(f) {
+                    if (f.value) {
+                        messageText += '\n• *' + f.label + '*: ' + f.value;
+                    }
+                });
+            }
+
+            return messageText.trim();
+        }
+
+        /**
+         * Extract and sanitize WhatsApp phone number
+         */
+        function extractWhatsAppNumber(container, defaultNum) {
+            let waNumber = defaultNum || '';
+            if (!waNumber && container) {
+                waNumber = container.getAttribute('data-wa-number') || '';
+            }
+            if (!waNumber && container) {
+                const waLink = container.querySelector('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp');
+                const formAct = container.getAttribute('action') || '';
+                const targetStr = (waLink ? waLink.getAttribute('href') : '') + ' ' + formAct;
+                const m = targetStr.match(/(?:wa\.me\/|phone=)([0-9+]+)/i);
+                if (m) {
+                    waNumber = m[1].replace(/[^0-9]/g, '');
+                }
+            }
+            if (waNumber) {
+                let clean = waNumber.replace(/[^0-9]/g, '');
+                if (clean.startsWith('0')) clean = '62' + clean.substring(1);
+                return clean;
+            }
+            return '';
+        }
+
+        // 1. Form submit handler (Universal form support)
         document.addEventListener('submit', function(e) {
-            const form = e.target.closest('form[data-bongkar-form="true"]');
+            const form = e.target.closest('form');
             if (!form) return;
             e.preventDefault();
 
@@ -521,85 +692,71 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
             }
 
-            // Gather fields
+            const fields = harvestFormFields(form);
             const formData = new FormData(form);
-            const fieldValues = {};
-            formData.forEach((value, key) => {
-                fieldValues[key] = value;
+            fields.forEach(function(f) {
+                if (!f.name && f.label && f.value) {
+                    formData.append(f.label, f.value);
+                }
             });
 
-            // Auto-detect WA and GSheet routing if not stamped
             let gsheetUrl = form.getAttribute('data-gsheet-url') || (form.getAttribute('action') && form.getAttribute('action').includes('script.google.com/macros/s') ? form.getAttribute('action') : '');
             let gsheetEnabled = form.getAttribute('data-bongkar-gsheet') === 'true' || !!gsheetUrl;
 
-            let waNumber = form.getAttribute('data-wa-number') || '';
+            let waNumber = extractWhatsAppNumber(form, form.getAttribute('data-wa-number'));
             let waTemplate = form.getAttribute('data-wa-template') || '';
-            let waEnabled = form.getAttribute('data-bongkar-wa') === 'true';
-
-            if (!waNumber) {
-                const waLink = form.querySelector('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp');
-                const formAct = form.getAttribute('action') || '';
-                const targetStr = (waLink ? waLink.getAttribute('href') : '') + ' ' + formAct;
-                const m = targetStr.match(/(?:wa\.me\/|phone=)([0-9+]+)/i);
-                if (m) {
-                    waNumber = m[1].replace(/[^0-9]/g, '');
-                    waEnabled = true;
-                    const tm = targetStr.match(/text=([^"'\s&<>]+)/i);
-                    if (tm && !waTemplate) {
-                        try { waTemplate = decodeURIComponent(tm[1].replace(/\+/g, ' ')); } catch(e) {}
-                    }
-                }
-            }
+            let waEnabled = form.getAttribute('data-bongkar-wa') === 'true' || !!waNumber;
             const successMsg = form.getAttribute('data-success-msg') || 'Terima kasih! Pesanan Anda telah berhasil dikirim.';
 
             const dispatches = [];
-
-            // 1. Google Sheets Webhook Dispatch
             if (gsheetEnabled && gsheetUrl) {
                 const sheetPromise = fetch(gsheetUrl, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: formData
-                }).catch(err => {
+                }).catch(function(err) {
                     console.warn('[Bongkar Form] Google Sheets Webhook Notice:', err);
                 });
                 dispatches.push(sheetPromise);
             }
 
-            // Complete and Route
-            Promise.all(dispatches).finally(() => {
+            Promise.all(dispatches).finally(function() {
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnHtml;
                 }
 
-                // 2. WhatsApp Routing
                 if (waEnabled && waNumber) {
-                    let cleanNumber = waNumber.replace(/[^0-9]/g, '');
-                    if (cleanNumber.startsWith('0')) {
-                        cleanNumber = '62' + cleanNumber.substring(1);
-                    }
-
-                    let messageText = '';
-                    if (!waTemplate) {
-                        messageText = 'Halo Admin, saya ingin konsultasi:\n';
-                        for (const [k, v] of Object.entries(fieldValues)) {
-                            messageText += `*${k}*: ${v}\n`;
-                        }
-                    } else {
-                        messageText = waTemplate;
-                        for (const [k, v] of Object.entries(fieldValues)) {
-                            messageText = messageText.split(`[${k}]`).join(v);
-                        }
-                    }
-
-                    const waUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(messageText)}`;
+                    const messageText = buildWhatsAppMessage(fields, waTemplate);
+                    const waUrl = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(messageText);
                     window.open(waUrl, '_blank');
                 }
 
                 alert(successMsg);
                 form.reset();
             });
+        });
+
+        // 2. Direct WhatsApp button / link clicks inside or adjacent to forms
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp, button.btn-whatsapp');
+            if (!btn) return;
+
+            const container = btn.closest('form, .bongkar-form, .card, [data-bongkar-form="true"]') || btn.parentElement;
+            if (!container) return;
+
+            const fields = harvestFormFields(container);
+            const hasValues = fields.some(function(f) { return !!f.value; });
+            if (hasValues) {
+                const waNumber = extractWhatsAppNumber(container, btn.getAttribute('data-wa-number') || btn.getAttribute('href'));
+                if (waNumber) {
+                    e.preventDefault();
+                    const waTemplate = container.getAttribute('data-wa-template') || '';
+                    const messageText = buildWhatsAppMessage(fields, waTemplate);
+                    const waUrl = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(messageText);
+                    window.open(waUrl, '_blank');
+                }
+            }
         });
     })();
     </script>

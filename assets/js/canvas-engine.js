@@ -628,6 +628,7 @@
             <button type="button" id="act-toggle-flex-dir" title="Ubah Arah Kontainer: Saling Samping / Atas-Bawah" style="display: none;"><i class="fa-solid fa-arrows-left-right"></i></button>
             <button type="button" id="act-add-widget" title="Tambah Widget di Sini (+)"><i class="fa-solid fa-plus"></i></button>
             <button type="button" id="act-edit-text" title="Edit Teks Langsung"><i class="fa-solid fa-pen"></i></button>
+            <button type="button" id="act-edit-section-html" title="Edit / Update HTML Section Ini"><i class="fa-solid fa-code"></i></button>
             <button type="button" id="act-move-up" title="Geser ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
             <button type="button" id="act-move-down" title="Geser ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
             <div class="toolbar-divider"></div>
@@ -826,6 +827,19 @@
             }
         });
 
+        const btnEditSecHtml = document.getElementById('act-edit-section-html');
+        if (btnEditSecHtml) {
+            btnEditSecHtml.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const target = getActiveActionTarget();
+                if (target) {
+                    openSectionHtmlEditor(target);
+                } else {
+                    showCanvasToast('Pilih section yang ingin diedit HTML-nya.', 'warning');
+                }
+            });
+        }
+
         const btnDeselect = document.getElementById('act-deselect');
         if (btnDeselect) {
             btnDeselect.addEventListener('click', (e) => {
@@ -917,6 +931,10 @@
                 <span>Tambah Widget di Sini</span>
                 <kbd>+</kbd>
             </button>
+            <button type="button" class="cmenu-item" id="cmenu-edit-section-html" ${!targetEl ? 'disabled style="opacity:0.4; pointer-events:none;"' : ''}>
+                <i class="fa-solid fa-code"></i>
+                <span>Edit / Update HTML Section</span>
+            </button>
             <div class="cmenu-divider"></div>
             ${(targetEl && targetEl.parentElement && targetEl.parentElement.id !== 'bongkar-canvas-root' && targetEl.parentElement.tagName !== 'BODY') ? `
             <button type="button" class="cmenu-item" id="cmenu-parent">
@@ -981,6 +999,15 @@
                     insertIndex: -1,
                     targetInfo: info
                 }, '*');
+            });
+        }
+
+        const btnCmenuEditSec = contextMenu.querySelector('#cmenu-edit-section-html');
+        if (btnCmenuEditSec) {
+            btnCmenuEditSec.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideContextMenu();
+                if (targetEl) openSectionHtmlEditor(targetEl);
             });
         }
 
@@ -1398,6 +1425,48 @@
         const id = el.id ? `#${el.id}` : '';
         const firstClass = (el.classList.length > 0 && !el.classList[0].startsWith('bongkar-')) ? `.${el.classList[0]}` : '';
         return `${tag}${id || firstClass}`;
+    }
+
+    /**
+     * Helper to get enclosing section element
+     */
+    function getEnclosingSection(el) {
+        if (!el) return null;
+        const root = document.getElementById('bongkar-canvas-root') || document.body;
+        let sec = el.closest('.bongkar-section, section');
+        if (!sec && el.parentElement === root) sec = el;
+        return sec;
+    }
+
+    /**
+     * Open Isolated Section HTML Editor Modal
+     */
+    function openSectionHtmlEditor(el) {
+        const sec = getEnclosingSection(el);
+        if (!sec) {
+            showCanvasToast('Tidak ada section yang terpilih.', 'warning');
+            return;
+        }
+
+        // Ensure unique tracking ID
+        let secId = sec.getAttribute('data-bongkar-el-id');
+        if (!secId) {
+            secId = 'bkr-sec-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 7);
+            sec.setAttribute('data-bongkar-el-id', secId);
+        }
+
+        // Clone section to clean builder artifacts before sending
+        const clone = sec.cloneNode(true);
+        clone.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, #bongkar-hover-modal-badge, #bongkar-modal-edit-banner, .bongkar-modal-edit-banner, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(e => e.remove());
+        clone.classList.remove('bongkar-selected', 'bongkar-hovered');
+
+        const cleanHtml = clone.outerHTML;
+
+        window.parent.postMessage({
+            type: 'BONGKAR_OPEN_UPDATE_SECTION_HTML_MODAL',
+            sectionId: secId,
+            currentHtml: cleanHtml
+        }, '*');
     }
 
     /**
@@ -3872,6 +3941,50 @@
                 injectColumnDropzones();
                 selectElement(newElem);
                 notifyContentChanged();
+                break;
+            }
+
+            case 'BONGKAR_UPDATE_SECTION_HTML': {
+                const root = document.getElementById('bongkar-canvas-root') || document.body;
+                let targetSection = null;
+                if (data.sectionId) {
+                    targetSection = root.querySelector(`[data-bongkar-el-id="${data.sectionId}"]`);
+                }
+                if (!targetSection && selectedElement) {
+                    targetSection = getEnclosingSection(selectedElement);
+                }
+
+                if (!targetSection) {
+                    showCanvasToast('Gagal menemukan section target untuk diperbarui.', 'error');
+                    break;
+                }
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = (data.html || '').trim();
+                const newSection = tempDiv.firstElementChild;
+
+                if (!newSection) {
+                    showCanvasToast('Kode HTML section kosong atau tidak valid.', 'error');
+                    break;
+                }
+
+                if (data.sectionId) {
+                    newSection.setAttribute('data-bongkar-el-id', data.sectionId);
+                }
+
+                // Clean builder UI remnants inside newSection just in case
+                newSection.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, #bongkar-hover-modal-badge, #bongkar-modal-edit-banner, .bongkar-modal-edit-banner, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(e => e.remove());
+
+                // Replace strictly the target section node (Isolated Update!)
+                targetSection.replaceWith(newSection);
+
+                injectSectionInsertBars();
+                injectColumnDropzones();
+                rebuildResponsiveStyles();
+                selectElement(newSection);
+                notifyContentChanged();
+
+                showCanvasToast('Section berhasil diperbarui secara terisolasi!', 'success');
                 break;
             }
 

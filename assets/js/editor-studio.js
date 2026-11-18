@@ -522,13 +522,67 @@
                 }
 
                 case 'BONGKAR_OPEN_CUSTOM_HTML_MODAL': {
+                    isUpdateSectionMode = false;
+                    pendingCustomHtmlTargetSectionId = null;
                     pendingCustomHtmlInsertIndex = (typeof data.insertIndex === 'number') ? data.insertIndex : -1;
                     const modal = document.getElementById('modal-section-html');
                     if (modal) {
+                        const titleEl = document.getElementById('modal-section-html-title');
+                        const descEl = document.getElementById('modal-section-html-desc');
+                        const btnLabel = document.getElementById('btn-submit-section-html-label');
+                        if (titleEl) {
+                            titleEl.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
+                                ? window.BongkarI18n.t('modal_html.title')
+                                : 'Desain HTML Sendiri';
+                        }
+                        if (descEl) {
+                            descEl.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
+                                ? window.BongkarI18n.t('modal_html.desc')
+                                : 'Tempel kode HTML atau komponen UI untuk disisipkan langsung ke posisi section ini.';
+                        }
+                        if (btnLabel) {
+                            btnLabel.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
+                                ? window.BongkarI18n.t('modal_html.insert')
+                                : 'Sisipkan Section';
+                        }
                         modal.classList.add('active');
                         const textarea = document.getElementById('section-html-textarea');
                         if (textarea) {
                             textarea.value = '';
+                            setTimeout(() => textarea.focus(), 80);
+                        }
+                    }
+                    break;
+                }
+
+                case 'BONGKAR_OPEN_UPDATE_SECTION_HTML_MODAL': {
+                    isUpdateSectionMode = true;
+                    pendingCustomHtmlTargetSectionId = data.sectionId || null;
+                    pendingCustomHtmlInsertIndex = -1;
+                    const modal = document.getElementById('modal-section-html');
+                    if (modal) {
+                        const titleEl = document.getElementById('modal-section-html-title');
+                        const descEl = document.getElementById('modal-section-html-desc');
+                        const btnLabel = document.getElementById('btn-submit-section-html-label');
+                        if (titleEl) {
+                            titleEl.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
+                                ? window.BongkarI18n.t('modal_html.update_title')
+                                : 'Edit / Update HTML Section';
+                        }
+                        if (descEl) {
+                            descEl.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
+                                ? window.BongkarI18n.t('modal_html.update_desc')
+                                : 'Ubah kode HTML section ini secara terisolasi tanpa mengubah bagian lain.';
+                        }
+                        if (btnLabel) {
+                            btnLabel.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
+                                ? window.BongkarI18n.t('modal_html.update_btn')
+                                : 'Perbarui Section Ini';
+                        }
+                        modal.classList.add('active');
+                        const textarea = document.getElementById('section-html-textarea');
+                        if (textarea) {
+                            textarea.value = data.currentHtml || '';
                             setTimeout(() => textarea.focus(), 80);
                         }
                     }
@@ -578,9 +632,63 @@
     }
 
     let pendingCustomHtmlInsertIndex = -1;
+    let isUpdateSectionMode = false;
+    let pendingCustomHtmlTargetSectionId = null;
 
     /**
-     * Modal handler: Sisipkan Section Desain HTML Sendiri
+     * Helper to sanitize, auto-check, and extract isolated section HTML
+     * Detects and strips full document wrappers (<!DOCTYPE>, <html>, <head>, <body>)
+     * if pasted from AI (Claude, v0, ChatGPT) or Figma.
+     */
+    function sanitizeAndExtractSectionHtml(rawHtml) {
+        if (!rawHtml) return '';
+        let cleaned = rawHtml.trim();
+
+        // 1. Auto-check: Detect full HTML document wrappers
+        if (/<html[\s>]/i.test(cleaned) || /<!DOCTYPE/i.test(cleaned) || /<body[\s>]/i.test(cleaned)) {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(cleaned, 'text/html');
+                
+                // If there are explicit section tags inside the document body
+                const sections = doc.body.querySelectorAll('section');
+                if (sections.length > 0) {
+                    cleaned = Array.from(sections).map(s => s.outerHTML).join('\n');
+                } else if (doc.body.children.length > 0) {
+                    // Extract all body children
+                    cleaned = doc.body.innerHTML.trim();
+                }
+            } catch (err) {
+                console.warn('[Bongkar] Failed parsing HTML with DOMParser, falling back to regex clean', err);
+                cleaned = cleaned
+                    .replace(/<!DOCTYPE[^>]*>/gi, '')
+                    .replace(/<\/?html[^>]*>/gi, '')
+                    .replace(/<head[\s\S]*?<\/head>/gi, '')
+                    .replace(/<\/?body[^>]*>/gi, '')
+                    .trim();
+            }
+        }
+
+        // Clean out any leftover html/head/body or doctype tags
+        cleaned = cleaned
+            .replace(/<!DOCTYPE[^>]*>/gi, '')
+            .replace(/<\/?html[^>]*>/gi, '')
+            .replace(/<\/?body[^>]*>/gi, '')
+            .trim();
+
+        // 2. Ensure the snippet is wrapped in a semantic section element
+        const temp = document.createElement('div');
+        temp.innerHTML = cleaned;
+        const first = temp.firstElementChild;
+        if (!first || (first.tagName !== 'SECTION' && !first.classList.contains('bongkar-section'))) {
+            cleaned = `<section class="bongkar-section py-16 px-4" style="position:relative;">\n${cleaned}\n</section>`;
+        }
+
+        return cleaned;
+    }
+
+    /**
+     * Modal handler: Sisipkan / Update Section Desain HTML Sendiri
      */
     function initSectionHtmlModal() {
         const modal = document.getElementById('modal-section-html');
@@ -589,16 +697,24 @@
         modal.querySelectorAll('[data-close-modal="section-html"]').forEach(btn => {
             btn.addEventListener('click', () => {
                 modal.classList.remove('active');
+                isUpdateSectionMode = false;
+                pendingCustomHtmlTargetSectionId = null;
+                pendingCustomHtmlInsertIndex = -1;
             });
         });
 
         // Trigger buttons from sidebar panel or other studio locations
         document.querySelectorAll('.btn-trigger-custom-html-section').forEach(btn => {
             btn.addEventListener('click', () => {
+                isUpdateSectionMode = false;
+                pendingCustomHtmlTargetSectionId = null;
                 pendingCustomHtmlInsertIndex = -1;
                 modal.classList.add('active');
                 const textarea = document.getElementById('section-html-textarea');
-                if (textarea) setTimeout(() => textarea.focus(), 100);
+                if (textarea) {
+                    textarea.value = '';
+                    setTimeout(() => textarea.focus(), 100);
+                }
             });
         });
 
@@ -616,26 +732,30 @@
                     return;
                 }
 
-                // Wrap in section if raw snippet isn't already a section or container
-                let finalHtml = rawHtml;
-                const temp = document.createElement('div');
-                temp.innerHTML = rawHtml;
-                const first = temp.firstElementChild;
-                if (!first || (first.tagName !== 'SECTION' && !first.classList.contains('bongkar-section'))) {
-                    finalHtml = `<section class="bongkar-section py-16 px-4" style="position:relative;">\n${rawHtml}\n</section>`;
-                }
+                // Auto-check and extract clean section HTML
+                const finalHtml = sanitizeAndExtractSectionHtml(rawHtml);
 
                 const iframe = document.getElementById('bongkar-iframe-canvas');
                 if (iframe && iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({
-                        type: 'BONGKAR_INSERT_HTML',
-                        html: finalHtml,
-                        insertIndex: pendingCustomHtmlInsertIndex
-                    }, '*');
+                    if (isUpdateSectionMode && pendingCustomHtmlTargetSectionId) {
+                        iframe.contentWindow.postMessage({
+                            type: 'BONGKAR_UPDATE_SECTION_HTML',
+                            sectionId: pendingCustomHtmlTargetSectionId,
+                            html: finalHtml
+                        }, '*');
+                    } else {
+                        iframe.contentWindow.postMessage({
+                            type: 'BONGKAR_INSERT_HTML',
+                            html: finalHtml,
+                            insertIndex: pendingCustomHtmlInsertIndex
+                        }, '*');
+                    }
                 }
 
                 modal.classList.remove('active');
                 textarea.value = '';
+                isUpdateSectionMode = false;
+                pendingCustomHtmlTargetSectionId = null;
                 pendingCustomHtmlInsertIndex = -1;
             });
         }

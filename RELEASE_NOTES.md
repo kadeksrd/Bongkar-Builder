@@ -40,3 +40,15 @@ Version 1.2.3 is an official stable production release introducing full dual-lan
    - **Fluid & Proportional Typography:** Headings automatically scale with fluid clamp formulas on mobile screens, eliminating oversized headlines and awkward word wraps.
    - **Anti-Blocking Canvas Interaction:** Floating toolbar adapts into an ultra-compact mode on narrow screens with edge clamping, while inline text editing (`contenteditable`) temporarily dims the toolbar so text selection and cursor placement are 100% free and unhindered.
    - **Live Device Sync Badges:** Interactive device indicator badges across Inspector controls provide instant visual feedback on which device mode is active and highlight customized property overrides.
+
+8. **Isolated Section HTML Updater with Auto-Check Engine:**
+   - **Dual-Mode Modal Support:** The "Desain HTML Sendiri" modal supports both inserting new sections at any position and updating an existing section in complete isolation.
+   - **Intelligent Auto-Check Engine:** Automatically detects and strips full document wrappers (`<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`) when raw code is pasted from AI tools (Claude, v0, ChatGPT) or Figma, ensuring only clean section code is applied.
+   - **Isolated In-Place Node Replacement:** Replaces strictly the selected section DOM node (`targetSection.replaceWith(newSection)`), guaranteeing that no adjacent sections, scripts, or styles on the page are modified or overwritten.
+   - **Accessible Everywhere:** Accessible directly from the canvas floating toolbar (`<button id="act-edit-section-html">`) and the right-click context menu (`Edit / Update HTML Section`).
+
+9. **Universal Dynamic Form & WhatsApp Engine (Anti-Data-Loss):**
+   - **Dynamic Universal Field Harvesting:** Automatically detects and gathers all form inputs, dropdown selects, textareas, human-friendly labels, and placeholders—even when elements were created without explicit `name` attributes.
+   - **Smart WhatsApp Message Generator:** Intelligently substitutes template tags (`[nama]`, `[wilayah]`, `[proyek]`, etc.) and dynamically appends any newly created or unconsumed form fields under `*Informasi Tambahan:*`, preventing data loss when forms are modified.
+   - **Universal Event Binding:** Automatically intercepts both `<form>` submissions and clicks on WhatsApp buttons or links (`a[href*="wa.me"]`, `a[href*="whatsapp.com"]`, `.btn-whatsapp`).
+   - **Cross-Environment Parity:** Implemented across the live frontend canvas, the Studio editor canvas frame (with full interactive testing in Interactive LIVE mode), and the standalone HTML exporter.

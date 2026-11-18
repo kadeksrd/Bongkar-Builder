@@ -2057,31 +2057,35 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
         </div>
     </div>
 
-    <!-- Modal: Sisipkan Section Desain HTML Sendiri -->
+    <!-- Modal: Sisipkan / Update Section Desain HTML Sendiri -->
     <div id="modal-section-html" class="studio-modal-backdrop">
-        <div class="studio-modal" style="max-width: 640px;">
+        <div class="studio-modal" style="max-width: 680px;">
             <div class="modal-header">
                 <div class="modal-title">
                     <i class="fa-solid fa-code" style="color: #6366f1;"></i>
-                    <span data-i18n="modal_html.title">Desain HTML Sendiri</span>
+                    <span id="modal-section-html-title" data-i18n="modal_html.title">Desain HTML Sendiri</span>
                 </div>
                 <button type="button" class="modal-close" data-close-modal="section-html">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p data-i18n="modal_html.desc" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                <div id="section-html-autocheck-badge" style="display: flex; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.25); color: #c7d2fe; padding: 8px 12px; border-radius: 6px; font-size: 11px; margin-bottom: 12px; line-height: 1.45;">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 13px; color: #818cf8; flex-shrink: 0;"></i>
+                    <span id="section-html-autocheck-text" data-i18n="modal_html.autocheck_desc"><strong>Pemeriksaan Otomatis Aktif:</strong> Paste kode HTML dari AI (Claude, v0, ChatGPT) atau Figma. Sistem otomatis mendeteksi, membuang doctype/body jika ada, dan hanya memperbarui section ini secara terisolasi tanpa mengubah bagian lain.</span>
+                </div>
+                <p id="modal-section-html-desc" data-i18n="modal_html.desc" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.5;">
                     Tempel kode HTML atau komponen UI hasil buatan sendiri / AI (Tailwind, Bootstrap, atau HTML murni) untuk disisipkan langsung ke posisi section ini.
                 </p>
                 <div class="form-row">
-                    <label class="form-label" data-i18n="modal_html.code_label">Kode HTML Section:</label>
-                    <textarea id="section-html-textarea" class="form-input" data-i18n-placeholder="modal_html.placeholder" style="height: 220px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="<section class='py-12 px-4'>&#10;  <div class='container mx-auto'>&#10;    <h2>Judul Section Saya</h2>&#10;    <p>Deskripsi konten...</p>&#10;  </div>&#10;</section>"></textarea>
+                    <label class="form-label" data-i18n="modal_html.code_label">Kode Source HTML Section:</label>
+                    <textarea id="section-html-textarea" class="form-input" data-i18n-placeholder="modal_html.placeholder" style="height: 240px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="<section class='py-12 px-4'>&#10;  <div class='container mx-auto'>&#10;    <h2>Judul Section Saya</h2>&#10;    <p>Deskripsi konten...</p>&#10;  </div>&#10;</section>"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-studio-action" data-close-modal="section-html" data-i18n="modal_html.cancel">Batal</button>
                 <button type="button" id="btn-submit-section-html" class="btn-studio-action btn-save-publish">
-                    <i class="fa-solid fa-plus"></i> <span data-i18n="modal_html.insert">Sisipkan Section</span>
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="btn-submit-section-html-label" data-i18n="modal_html.insert">Sisipkan Section</span>
                 </button>
             </div>
         </div>
