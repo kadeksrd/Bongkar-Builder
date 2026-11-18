@@ -973,12 +973,11 @@ body, html {
     flex: 1;
     min-width: 0;
     background: #090d16;
-    overflow-x: auto; /* Mengizinkan geser/scroll horizontal halus saat layar laptop lebih sempit dari desktop */
-    overflow-y: auto;
+    overflow: auto; /* Scroll geser horizontal halus & presisi persis seperti versi plugin sebelumnya */
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    padding: 10px 14px 40px;
+    padding: 10px 14px;
     position: relative;
     transition: padding 0.25s ease;
 }
@@ -1079,7 +1078,7 @@ body, html {
     transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.25s ease, border 0.25s ease, height 0.25s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
     position: relative;
-    margin: 0 auto;
+    margin: 0;
     height: calc(100vh - var(--topbar-height) - 48px);
     transform-origin: top center;
     flex-shrink: 0;
@@ -1087,12 +1086,12 @@ body, html {
     flex-direction: column;
 }
 
-/* In Desktop Mode (Sweet Spot 1024px: Kolom Desktop Tetap Sejajar, View Luas Pas, & Scroll Pendek Halus di Laptop) */
+/* In Desktop Mode (Standar Desktop Utuh: Pas di Layar & Scroll Sangat Pendek Sesuai Versi Sebelumnya) */
 .canvas-viewport-wrapper.mode-desktop {
-    width: 1024px;
-    min-width: 1024px;
-    max-width: none;
-    margin: 0 auto;
+    width: 100%;
+    min-width: 1024px; /* Menjaga layout desktop tetap utuh tanpa patah & scroll pendek presisi */
+    max-width: 100%;
+    margin: 0;
     border-radius: var(--radius-sm, 6px);
     border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     flex-shrink: 0;
