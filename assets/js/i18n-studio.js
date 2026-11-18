@@ -5,7 +5,7 @@
  * for Bongkar Canvas Builder Studio UI and synchronized Canvas components.
  * 
  * @package Bongkar_Builder
- * @version 1.2.3
+ * @version 1.2.3-beta
  */
 
 (function () {
@@ -364,10 +364,9 @@
 
             // Custom HTML Section Modal
             'modal_html.title': 'Desain HTML Sendiri',
-            'modal_html.desc': 'Tempel kode HTML atau komponen UI hasil buatan sendiri / AI (Tailwind, Bootstrap, atau HTML murni) untuk disisipkan langsung ke posisi section ini.',
             'modal_html.update_title': 'Edit / Update HTML Section',
-            'modal_html.update_desc': 'Ubah kode HTML section ini secara terisolasi tanpa mengubah bagian lain.',
-            'modal_html.autocheck_desc': 'Pemeriksaan Otomatis Aktif: Paste kode HTML dari AI (Claude, v0, ChatGPT) atau Figma. Sistem otomatis mendeteksi, membuang doctype/body jika ada, dan hanya memperbarui section ini secara terisolasi tanpa mengubah bagian lain.',
+            'modal_html.desc': 'Tempel kode HTML atau komponen UI hasil buatan sendiri / AI (Tailwind, Bootstrap, atau HTML murni) untuk disisipkan langsung ke posisi section ini.',
+            'modal_html.update_desc': 'Perbarui kode HTML khusus untuk section ini saja. Halaman lain tidak akan terpengaruh. Tag dokumen lengkap otomatis dibersihkan jika ada.',
             'modal_html.code_label': 'Kode HTML Section:',
             'modal_html.placeholder': '<section class="py-12 px-4">\n  <div class="container mx-auto">\n    <h2>Judul Section Saya</h2>\n    <p>Deskripsi konten...</p>\n  </div>\n</section>',
             'modal_html.cancel': 'Batal',
@@ -739,10 +738,9 @@
 
             // Custom HTML Section Modal
             'modal_html.title': 'Custom HTML Design',
-            'modal_html.desc': 'Paste your custom or AI-generated HTML/UI components (Tailwind, Bootstrap, or pure HTML) to insert right at this section position.',
             'modal_html.update_title': 'Edit / Update Section HTML',
-            'modal_html.update_desc': 'Update the HTML code for this section in isolation without touching other sections.',
-            'modal_html.autocheck_desc': 'Auto-Check Active: Paste HTML from AI (Claude, v0, ChatGPT) or Figma. The system automatically detects, strips doctype/body if present, and updates only this section in isolation.',
+            'modal_html.desc': 'Paste your custom or AI-generated HTML/UI components (Tailwind, Bootstrap, or pure HTML) to insert right at this section position.',
+            'modal_html.update_desc': 'Update HTML code specifically for this section. Other sections remain untouched. Document tags are stripped automatically.',
             'modal_html.code_label': 'Section HTML Code:',
             'modal_html.placeholder': '<section class="py-12 px-4">\n  <div class="container mx-auto">\n    <h2>My Custom Section</h2>\n    <p>Content description...</p>\n  </div>\n</section>',
             'modal_html.cancel': 'Cancel',

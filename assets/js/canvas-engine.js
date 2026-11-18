@@ -14,7 +14,6 @@
     let toastTimeout = null;
     let hoverModalBadge = null;
     let isInteractiveMode = false;
-    let currentDeviceMode = 'desktop'; // 'desktop' | 'tablet' | 'mobile'
 
     // Dual-Language Canvas i18n Dictionary
     let currentCanvasLang = (function () {
@@ -168,153 +167,8 @@
         }
     }
 
-    /**
-     * Unique Element Identifier for Responsive Styles Scoping
-     */
-    function getOrAssignElementId(el) {
-        if (!el || typeof el.getAttribute !== 'function') return '';
-        let id = el.getAttribute('data-bongkar-el-id');
-        if (!id) {
-            id = 'bkr-' + Math.random().toString(36).substring(2, 9);
-            el.setAttribute('data-bongkar-el-id', id);
-        }
-        return id;
-    }
-
-    /**
-     * CSS Property Formatter for Responsive Style Engine
-     */
-    function formatPropertyToCss(prop, val) {
-        if (val === undefined || val === null || val === '') return '';
-        const kebab = prop.replace(/([A-Z])/g, '-$1').toLowerCase();
-        if (prop === 'width') {
-            if (val === '100%') {
-                return 'width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; ';
-            }
-            return `width: ${val} !important; max-width: 100% !important; flex: 0 0 ${val} !important; `;
-        }
-        if (prop === 'flexDirection') {
-            return `flex-direction: ${val} !important; display: flex !important; `;
-        }
-        if (prop === 'gap') {
-            const gapVal = (typeof val === 'number' || !isNaN(val)) ? `${val}px` : val;
-            return `gap: ${gapVal} !important; `;
-        }
-        return `${kebab}: ${val} !important; `;
-    }
-
-    /**
-     * Rebuild dynamic responsive stylesheet inside canvas (<style id="bongkar-responsive-styles">)
-     */
-    function rebuildResponsiveStyles() {
-        let styleTag = document.getElementById('bongkar-responsive-styles');
-        if (!styleTag) {
-            styleTag = document.createElement('style');
-            styleTag.id = 'bongkar-responsive-styles';
-            (document.head || document.body).appendChild(styleTag);
-        }
-
-        const root = document.getElementById('bongkar-canvas-root') || document.body;
-        const mobileElements = root.querySelectorAll('[data-bkr-style-mobile]');
-        const tabletElements = root.querySelectorAll('[data-bkr-style-tablet]');
-
-        let mobileCss = '';
-        let tabletCss = '';
-
-        mobileElements.forEach(el => {
-            const elId = getOrAssignElementId(el);
-            if (!elId) return;
-            try {
-                const styles = JSON.parse(el.getAttribute('data-bkr-style-mobile') || '{}');
-                let rules = '';
-                for (const [prop, val] of Object.entries(styles)) {
-                    rules += formatPropertyToCss(prop, val);
-                }
-                if (rules) {
-                    mobileCss += `    [data-bongkar-el-id="${elId}"] { ${rules}}\n`;
-                }
-            } catch (e) {}
-        });
-
-        tabletElements.forEach(el => {
-            const elId = getOrAssignElementId(el);
-            if (!elId) return;
-            try {
-                const styles = JSON.parse(el.getAttribute('data-bkr-style-tablet') || '{}');
-                let rules = '';
-                for (const [prop, val] of Object.entries(styles)) {
-                    rules += formatPropertyToCss(prop, val);
-                }
-                if (rules) {
-                    tabletCss += `    [data-bongkar-el-id="${elId}"] { ${rules}}\n`;
-                }
-            } catch (e) {}
-        });
-
-        let finalCss = '';
-        if (tabletCss) {
-            finalCss += `@media (min-width: 768px) and (max-width: 1024px) {\n${tabletCss}}\n`;
-        }
-        if (mobileCss) {
-            finalCss += `@media (max-width: 767px) {\n${mobileCss}}\n`;
-        }
-
-        styleTag.textContent = finalCss;
-    }
-
-    /**
-     * Apply a responsive style override for tablet or mobile
-     */
-    function applyResponsiveStyle(device, property, value) {
-        if (!selectedElement || !device || device === 'desktop') return;
-        getOrAssignElementId(selectedElement);
-        const attrName = `data-bkr-style-${device}`;
-        let currentStyles = {};
-        try {
-            currentStyles = JSON.parse(selectedElement.getAttribute(attrName) || '{}');
-        } catch (e) {
-            currentStyles = {};
-        }
-
-        if (value === null || value === undefined || value === '') {
-            delete currentStyles[property];
-        } else {
-            currentStyles[property] = value;
-        }
-
-        if (Object.keys(currentStyles).length === 0) {
-            selectedElement.removeAttribute(attrName);
-            if (property === 'fontSize') {
-                selectedElement.removeAttribute(`data-custom-${device}-font`);
-            }
-            if (property === 'width') {
-                selectedElement.removeAttribute(`data-custom-${device}-width`);
-            }
-            if (property === 'flexDirection') {
-                selectedElement.removeAttribute(`data-custom-${device}-layout`);
-            }
-        } else {
-            selectedElement.setAttribute(attrName, JSON.stringify(currentStyles));
-            if (property === 'fontSize') {
-                selectedElement.setAttribute(`data-custom-${device}-font`, 'true');
-            }
-            if (property === 'width') {
-                selectedElement.setAttribute(`data-custom-${device}-width`, 'true');
-            }
-            if (property === 'flexDirection') {
-                selectedElement.setAttribute(`data-custom-${device}-layout`, 'true');
-            }
-        }
-
-        rebuildResponsiveStyles();
-        updateFloatingPositions(selectedElement);
-        notifyContentChanged();
-        sendElementInfoToParent(selectedElement);
-    }
-
     // Initialize Canvas Engine once DOM is ready
     function init() {
-        rebuildResponsiveStyles();
         createUIHelpers();
         createContextMenu();
         attachEventListeners();
@@ -628,7 +482,7 @@
             <button type="button" id="act-toggle-flex-dir" title="Ubah Arah Kontainer: Saling Samping / Atas-Bawah" style="display: none;"><i class="fa-solid fa-arrows-left-right"></i></button>
             <button type="button" id="act-add-widget" title="Tambah Widget di Sini (+)"><i class="fa-solid fa-plus"></i></button>
             <button type="button" id="act-edit-text" title="Edit Teks Langsung"><i class="fa-solid fa-pen"></i></button>
-            <button type="button" id="act-edit-section-html" title="Edit / Update HTML Section Ini"><i class="fa-solid fa-code"></i></button>
+            <button type="button" id="act-edit-section-html" title="Edit / Update HTML Section"><i class="fa-solid fa-code"></i></button>
             <button type="button" id="act-move-up" title="Geser ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
             <button type="button" id="act-move-down" title="Geser ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
             <div class="toolbar-divider"></div>
@@ -744,29 +598,23 @@
                 const currentComputed = window.getComputedStyle(target);
                 const isRow = (target.style.flexDirection === 'row') || (currentComputed.display === 'flex' && currentComputed.flexDirection === 'row');
 
-                if (currentDeviceMode !== 'desktop') {
-                    const newDir = isRow ? 'column' : 'row';
-                    applyResponsiveStyle(currentDeviceMode, 'flexDirection', newDir);
-                    showCanvasToast(`Arah Kontainer (${currentDeviceMode}): ${newDir === 'column' ? 'Atas - Bawah' : 'Saling Samping'}`, 'info');
+                if (isRow) {
+                    target.style.display = 'flex';
+                    target.style.flexDirection = 'column';
+                    showCanvasToast('Arah Kontainer: Atas - Bawah (Menumpuk)', 'info');
                 } else {
-                    if (isRow) {
-                        target.style.display = 'flex';
-                        target.style.flexDirection = 'column';
-                        showCanvasToast('Arah Kontainer: Atas - Bawah (Menumpuk)', 'info');
-                    } else {
-                        target.style.display = 'flex';
-                        target.style.flexDirection = 'row';
-                        target.style.flexWrap = 'wrap';
-                        if (!target.style.gap && currentComputed.gap === 'normal') {
-                            target.style.gap = '16px';
-                        }
-                        showCanvasToast('Arah Kontainer: Saling Samping (Kanan - Kiri)', 'info');
+                    target.style.display = 'flex';
+                    target.style.flexDirection = 'row';
+                    target.style.flexWrap = 'wrap';
+                    if (!target.style.gap && currentComputed.gap === 'normal') {
+                        target.style.gap = '16px';
                     }
-
-                    updateFloatingPositions(target);
-                    notifyContentChanged();
-                    sendElementInfoToParent(target);
+                    showCanvasToast('Arah Kontainer: Saling Samping (Kanan - Kiri)', 'info');
                 }
+
+                updateFloatingPositions(target);
+                notifyContentChanged();
+                sendElementInfoToParent(target);
             });
         }
 
@@ -827,15 +675,27 @@
             }
         });
 
-        const btnEditSecHtml = document.getElementById('act-edit-section-html');
-        if (btnEditSecHtml) {
-            btnEditSecHtml.addEventListener('click', (e) => {
+        const btnEditSecHtmlAct = document.getElementById('act-edit-section-html');
+        if (btnEditSecHtmlAct) {
+            btnEditSecHtmlAct.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const target = getActiveActionTarget();
-                if (target) {
-                    openSectionHtmlEditor(target);
+                if (!target) return;
+                const root = document.getElementById('bongkar-canvas-root') || document.body;
+                const parentSection = target.closest('.bongkar-section, section') || (target.parentElement === root ? target : null);
+                if (parentSection) {
+                    let secId = parentSection.getAttribute('data-bongkar-section-id');
+                    if (!secId) {
+                        secId = 'bongkar-sec-' + Math.random().toString(36).substr(2, 9);
+                        parentSection.setAttribute('data-bongkar-section-id', secId);
+                    }
+                    window.parent.postMessage({
+                        type: 'BONGKAR_OPEN_UPDATE_SECTION_HTML_MODAL',
+                        sectionId: secId,
+                        html: parentSection.outerHTML
+                    }, '*');
                 } else {
-                    showCanvasToast('Pilih section yang ingin diedit HTML-nya.', 'warning');
+                    showCanvasToast('Tidak ada section yang terkait dengan elemen ini.', 'warning');
                 }
             });
         }
@@ -912,6 +772,8 @@
         if (!contextMenu) createContextMenu();
         menuOpenTimestamp = Date.now();
 
+        const root = document.getElementById('bongkar-canvas-root') || document.body;
+        const parentSection = targetEl ? (targetEl.closest('.bongkar-section, section') || (targetEl.parentElement === root ? targetEl : null)) : null;
         const isEditable = targetEl && isTextEditable(targetEl);
         const label = targetEl ? getFriendlyElementLabel(targetEl) : 'Kanvas';
 
@@ -931,10 +793,11 @@
                 <span>Tambah Widget di Sini</span>
                 <kbd>+</kbd>
             </button>
-            <button type="button" class="cmenu-item" id="cmenu-edit-section-html" ${!targetEl ? 'disabled style="opacity:0.4; pointer-events:none;"' : ''}>
+            ${parentSection ? `
+            <button type="button" class="cmenu-item" id="cmenu-edit-section-html">
                 <i class="fa-solid fa-code"></i>
-                <span>Edit / Update HTML Section</span>
-            </button>
+                <span>Edit HTML Section Ini</span>
+            </button>` : ''}
             <div class="cmenu-divider"></div>
             ${(targetEl && targetEl.parentElement && targetEl.parentElement.id !== 'bongkar-canvas-root' && targetEl.parentElement.tagName !== 'BODY') ? `
             <button type="button" class="cmenu-item" id="cmenu-parent">
@@ -1002,12 +865,21 @@
             });
         }
 
-        const btnCmenuEditSec = contextMenu.querySelector('#cmenu-edit-section-html');
-        if (btnCmenuEditSec) {
-            btnCmenuEditSec.addEventListener('click', (e) => {
+        const btnEditSecHtml = contextMenu.querySelector('#cmenu-edit-section-html');
+        if (btnEditSecHtml && parentSection) {
+            btnEditSecHtml.addEventListener('click', (e) => {
                 e.stopPropagation();
                 hideContextMenu();
-                if (targetEl) openSectionHtmlEditor(targetEl);
+                let secId = parentSection.getAttribute('data-bongkar-section-id');
+                if (!secId) {
+                    secId = 'bongkar-sec-' + Math.random().toString(36).substr(2, 9);
+                    parentSection.setAttribute('data-bongkar-section-id', secId);
+                }
+                window.parent.postMessage({
+                    type: 'BONGKAR_OPEN_UPDATE_SECTION_HTML_MODAL',
+                    sectionId: secId,
+                    html: parentSection.outerHTML
+                }, '*');
             });
         }
 
@@ -1425,48 +1297,6 @@
         const id = el.id ? `#${el.id}` : '';
         const firstClass = (el.classList.length > 0 && !el.classList[0].startsWith('bongkar-')) ? `.${el.classList[0]}` : '';
         return `${tag}${id || firstClass}`;
-    }
-
-    /**
-     * Helper to get enclosing section element
-     */
-    function getEnclosingSection(el) {
-        if (!el) return null;
-        const root = document.getElementById('bongkar-canvas-root') || document.body;
-        let sec = el.closest('.bongkar-section, section');
-        if (!sec && el.parentElement === root) sec = el;
-        return sec;
-    }
-
-    /**
-     * Open Isolated Section HTML Editor Modal
-     */
-    function openSectionHtmlEditor(el) {
-        const sec = getEnclosingSection(el);
-        if (!sec) {
-            showCanvasToast('Tidak ada section yang terpilih.', 'warning');
-            return;
-        }
-
-        // Ensure unique tracking ID
-        let secId = sec.getAttribute('data-bongkar-el-id');
-        if (!secId) {
-            secId = 'bkr-sec-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 7);
-            sec.setAttribute('data-bongkar-el-id', secId);
-        }
-
-        // Clone section to clean builder artifacts before sending
-        const clone = sec.cloneNode(true);
-        clone.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, #bongkar-hover-modal-badge, #bongkar-modal-edit-banner, .bongkar-modal-edit-banner, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(e => e.remove());
-        clone.classList.remove('bongkar-selected', 'bongkar-hovered');
-
-        const cleanHtml = clone.outerHTML;
-
-        window.parent.postMessage({
-            type: 'BONGKAR_OPEN_UPDATE_SECTION_HTML_MODAL',
-            sectionId: secId,
-            currentHtml: cleanHtml
-        }, '*');
     }
 
     /**
@@ -2201,18 +2031,9 @@
         el.setAttribute('contenteditable', 'true');
         el.focus();
 
-        if (floatingToolbar) {
-            floatingToolbar.style.opacity = '0.2';
-            floatingToolbar.style.pointerEvents = 'none';
-        }
-
         const onBlur = () => {
             el.removeAttribute('contenteditable');
             el.removeEventListener('blur', onBlur);
-            if (floatingToolbar) {
-                floatingToolbar.style.opacity = '';
-                floatingToolbar.style.pointerEvents = '';
-            }
             notifyContentChanged();
             if (selectedElement === el) {
                 sendElementInfoToParent(el);
@@ -2374,11 +2195,10 @@
         floatingToolbar.style.display = 'flex';
         floatingToolbar.classList.toggle('is-hover-state', !!isHoverMode);
 
-        const isMobileScreen = (currentDeviceMode === 'mobile') || (viewportWidth <= 500);
-        const toolbarWidth = floatingToolbar.offsetWidth || (isMobileScreen ? 270 : 370);
+        const toolbarWidth = floatingToolbar.offsetWidth || 370;
         const toolbarHeight = floatingToolbar.offsetHeight || 36;
-        const maxToolbarLeft = Math.max(6, viewportWidth - toolbarWidth - 8);
-        const safeToolbarLeft = Math.max(6, Math.min(rect.left + scrollX, maxToolbarLeft));
+        const maxToolbarLeft = Math.max(4, viewportWidth - toolbarWidth - 8);
+        const safeToolbarLeft = Math.max(4, Math.min(rect.left + scrollX, maxToolbarLeft));
         floatingToolbar.style.left = `${safeToolbarLeft}px`;
 
         // Modal protection: if element is inside a modal / pop-up, dock toolbar safely ABOVE the modal dialog
@@ -2432,9 +2252,9 @@
             const addWidgetBtn = document.getElementById('act-add-widget');
             if (addWidgetBtn) addWidgetBtn.style.display = 'inline-flex';
             const moveUpBtn = document.getElementById('act-move-up');
-            if (moveUpBtn) moveUpBtn.style.display = isMobileScreen ? 'none' : 'inline-flex';
+            if (moveUpBtn) moveUpBtn.style.display = 'inline-flex';
             const moveDownBtn = document.getElementById('act-move-down');
-            if (moveDownBtn) moveDownBtn.style.display = isMobileScreen ? 'none' : 'inline-flex';
+            if (moveDownBtn) moveDownBtn.style.display = 'inline-flex';
         }
 
         // Smart Vertical Positioning:
@@ -2759,16 +2579,6 @@
 
         const data = {
             type: 'BONGKAR_ELEMENT_SELECTED',
-            elementId: getOrAssignElementId(el),
-            currentDeviceMode: currentDeviceMode,
-            responsiveOverrides: {
-                mobile: (function() {
-                    try { return JSON.parse(el.getAttribute('data-bkr-style-mobile') || '{}'); } catch(e) { return {}; }
-                })(),
-                tablet: (function() {
-                    try { return JSON.parse(el.getAttribute('data-bkr-style-tablet') || '{}'); } catch(e) { return {}; }
-                })()
-            },
             focusField: focusField || '',
             tag: tag,
             id: el.id || '',
@@ -3295,7 +3105,6 @@
      * Get clean HTML without editor helper classes/elements
      */
     function getCleanHTML() {
-        rebuildResponsiveStyles();
         const root = document.getElementById('bongkar-canvas-root') || document.body;
         const clone = root.cloneNode(true);
 
@@ -3311,16 +3120,6 @@
             if (el.getAttribute('class') === '') el.removeAttribute('class');
         });
         clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-
-        // Embed compiled responsive CSS rules into saved HTML
-        const respStyleTag = document.getElementById('bongkar-responsive-styles');
-        if (respStyleTag && respStyleTag.textContent.trim()) {
-            clone.querySelectorAll('#bongkar-responsive-styles').forEach(el => el.remove());
-            const savedResp = document.createElement('style');
-            savedResp.id = 'bongkar-responsive-styles';
-            savedResp.textContent = '\n' + respStyleTag.textContent.trim() + '\n';
-            clone.insertBefore(savedResp, clone.firstChild);
-        }
 
         return clone.innerHTML.trim();
     }
@@ -3476,22 +3275,6 @@
         if (!data || !data.type) return;
 
         switch (data.type) {
-            case 'BONGKAR_SET_DEVICE_MODE':
-                currentDeviceMode = data.device || 'desktop';
-                document.body.classList.remove('bongkar-mode-desktop', 'bongkar-mode-tablet', 'bongkar-mode-mobile');
-                document.body.classList.add(`bongkar-mode-${currentDeviceMode}`);
-                if (selectedElement) {
-                    updateFloatingPositions(selectedElement);
-                    sendElementInfoToParent(selectedElement);
-                }
-                break;
-
-            case 'BONGKAR_APPLY_RESPONSIVE_STYLE':
-                if (selectedElement && data.device && data.property) {
-                    applyResponsiveStyle(data.device, data.property, data.value);
-                }
-                break;
-
             case 'BONGKAR_CHANGE_LANG':
                 if (data.lang && (data.lang === 'id' || data.lang === 'en')) {
                     currentCanvasLang = data.lang;
@@ -3501,32 +3284,27 @@
 
             case 'BONGKAR_APPLY_STYLE':
                 if (selectedElement) {
-                    const activeDev = data.device || currentDeviceMode;
-                    if (activeDev && activeDev !== 'desktop') {
-                        applyResponsiveStyle(activeDev, data.property, data.value);
-                    } else {
-                        if (data.property === 'width' && data.value && data.value !== 'auto') {
-                            const comp = window.getComputedStyle(selectedElement);
-                            if (comp.display === 'inline') {
-                                selectedElement.style.display = 'inline-block';
-                            }
-                            selectedElement.style.maxWidth = '100%';
-                            selectedElement.style.boxSizing = 'border-box';
+                    if (data.property === 'width' && data.value && data.value !== 'auto') {
+                        const comp = window.getComputedStyle(selectedElement);
+                        if (comp.display === 'inline') {
+                            selectedElement.style.display = 'inline-block';
                         }
-                        if ((data.property === 'height' || data.property === 'minHeight') && data.value && data.value !== 'auto') {
-                            const comp = window.getComputedStyle(selectedElement);
-                            if (comp.display === 'inline') {
-                                selectedElement.style.display = 'inline-block';
-                            }
-                            selectedElement.style.boxSizing = 'border-box';
-                        }
-                        selectedElement.style[data.property] = data.value;
-                        if (data.property === 'width' && selectedElement.classList.contains('bongkar-column')) {
-                            selectedElement.style.flex = data.value ? `0 0 ${data.value}` : '';
-                        }
-                        updateFloatingPositions(selectedElement);
-                        notifyContentChanged();
+                        selectedElement.style.maxWidth = '100%';
+                        selectedElement.style.boxSizing = 'border-box';
                     }
+                    if ((data.property === 'height' || data.property === 'minHeight') && data.value && data.value !== 'auto') {
+                        const comp = window.getComputedStyle(selectedElement);
+                        if (comp.display === 'inline') {
+                            selectedElement.style.display = 'inline-block';
+                        }
+                        selectedElement.style.boxSizing = 'border-box';
+                    }
+                    selectedElement.style[data.property] = data.value;
+                    if (data.property === 'width' && selectedElement.classList.contains('bongkar-column')) {
+                        selectedElement.style.flex = data.value ? `0 0 ${data.value}` : '';
+                    }
+                    updateFloatingPositions(selectedElement);
+                    notifyContentChanged();
                 }
                 break;
 
@@ -3540,44 +3318,35 @@
 
             case 'BONGKAR_SET_FLEX_LAYOUT':
                 if (selectedElement) {
-                    const activeDev = data.device || currentDeviceMode;
-                    if (activeDev && activeDev !== 'desktop') {
-                        if (data.direction) applyResponsiveStyle(activeDev, 'flexDirection', data.direction);
-                        if (data.wrap !== undefined) applyResponsiveStyle(activeDev, 'flexWrap', data.wrap ? 'wrap' : 'nowrap');
-                        if (data.gap !== undefined) applyResponsiveStyle(activeDev, 'gap', data.gap);
-                        if (data.alignItems) applyResponsiveStyle(activeDev, 'alignItems', data.alignItems);
-                        if (data.justifyContent) applyResponsiveStyle(activeDev, 'justifyContent', data.justifyContent);
-                    } else {
-                        selectedElement.style.display = 'flex';
-                        if (data.direction) {
-                            selectedElement.style.flexDirection = data.direction;
-                            if (data.direction === 'row') {
-                                selectedElement.style.flexWrap = (data.wrap !== undefined) ? (data.wrap ? 'wrap' : 'nowrap') : 'wrap';
-                            } else {
-                                // Column direction (Atas - Bawah): ensure items stack vertically without multi-column wrap
-                                selectedElement.style.flexWrap = data.wrap ? 'wrap' : 'nowrap';
-                                Array.from(selectedElement.children).forEach(child => {
-                                    if (child.style.flex && child.style.flex.startsWith('0 0 ')) {
-                                        child.style.flex = '';
-                                    }
-                                    if (child.style.width === '50%' || (child.style.width && child.style.width.includes('calc('))) {
-                                        child.style.width = '100%';
-                                    }
-                                });
-                            }
-                        }
-                        if (data.gap !== undefined) {
-                            selectedElement.style.gap = `${data.gap}px`;
-                        }
-                        if (data.alignItems) {
-                            selectedElement.style.alignItems = data.alignItems;
-                        }
-                        if (data.justifyContent) {
-                            selectedElement.style.justifyContent = data.justifyContent;
-                        }
-                        if (data.wrap !== undefined) {
+                    selectedElement.style.display = 'flex';
+                    if (data.direction) {
+                        selectedElement.style.flexDirection = data.direction;
+                        if (data.direction === 'row') {
+                            selectedElement.style.flexWrap = (data.wrap !== undefined) ? (data.wrap ? 'wrap' : 'nowrap') : 'wrap';
+                        } else {
+                            // Column direction (Atas - Bawah): ensure items stack vertically without multi-column wrap
                             selectedElement.style.flexWrap = data.wrap ? 'wrap' : 'nowrap';
+                            Array.from(selectedElement.children).forEach(child => {
+                                if (child.style.flex && child.style.flex.startsWith('0 0 ')) {
+                                    child.style.flex = '';
+                                }
+                                if (child.style.width === '50%' || (child.style.width && child.style.width.includes('calc('))) {
+                                    child.style.width = '100%';
+                                }
+                            });
                         }
+                    }
+                    if (data.gap !== undefined) {
+                        selectedElement.style.gap = `${data.gap}px`;
+                    }
+                    if (data.alignItems) {
+                        selectedElement.style.alignItems = data.alignItems;
+                    }
+                    if (data.justifyContent) {
+                        selectedElement.style.justifyContent = data.justifyContent;
+                    }
+                    if (data.wrap !== undefined) {
+                        selectedElement.style.flexWrap = data.wrap ? 'wrap' : 'nowrap';
                     }
                     updateFloatingPositions(selectedElement);
                     notifyContentChanged();
@@ -3946,45 +3715,32 @@
 
             case 'BONGKAR_UPDATE_SECTION_HTML': {
                 const root = document.getElementById('bongkar-canvas-root') || document.body;
-                let targetSection = null;
+                let targetSec = null;
                 if (data.sectionId) {
-                    targetSection = root.querySelector(`[data-bongkar-el-id="${data.sectionId}"]`);
+                    targetSec = root.querySelector(`[data-bongkar-section-id="${data.sectionId}"]`) || document.getElementById(data.sectionId);
                 }
-                if (!targetSection && selectedElement) {
-                    targetSection = getEnclosingSection(selectedElement);
-                }
-
-                if (!targetSection) {
-                    showCanvasToast('Gagal menemukan section target untuk diperbarui.', 'error');
-                    break;
+                if (!targetSec && selectedElement) {
+                    targetSec = selectedElement.closest('.bongkar-section, section') || (selectedElement.parentElement === root ? selectedElement : null);
                 }
 
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = (data.html || '').trim();
-                const newSection = tempDiv.firstElementChild;
+                if (targetSec && targetSec.parentNode) {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = (data.html || '').trim();
+                    const newElem = tempDiv.firstElementChild || tempDiv;
 
-                if (!newSection) {
-                    showCanvasToast('Kode HTML section kosong atau tidak valid.', 'error');
-                    break;
+                    if (data.sectionId) {
+                        newElem.setAttribute('data-bongkar-section-id', data.sectionId);
+                    }
+
+                    targetSec.parentNode.replaceChild(newElem, targetSec);
+                    injectSectionInsertBars();
+                    injectColumnDropzones();
+                    selectElement(newElem);
+                    notifyContentChanged();
+                    showCanvasToast('HTML Section berhasil diperbarui!', 'success');
+                } else {
+                    showCanvasToast('Target section tidak ditemukan.', 'error');
                 }
-
-                if (data.sectionId) {
-                    newSection.setAttribute('data-bongkar-el-id', data.sectionId);
-                }
-
-                // Clean builder UI remnants inside newSection just in case
-                newSection.querySelectorAll('#bongkar-canvas-badge, #bongkar-floating-toolbar, #bongkar-context-menu, #bongkar-canvas-toast, #bongkar-hover-modal-badge, #bongkar-modal-edit-banner, .bongkar-modal-edit-banner, .bongkar-section-insert-bar, .bongkar-bottom-add-zone, .bongkar-column-dropzone').forEach(e => e.remove());
-
-                // Replace strictly the target section node (Isolated Update!)
-                targetSection.replaceWith(newSection);
-
-                injectSectionInsertBars();
-                injectColumnDropzones();
-                rebuildResponsiveStyles();
-                selectElement(newSection);
-                notifyContentChanged();
-
-                showCanvasToast('Section berhasil diperbarui secara terisolasi!', 'success');
                 break;
             }
 

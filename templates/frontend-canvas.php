@@ -240,12 +240,9 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
         /* Neutralize Block Themes / Gutenberg intrusive margins on containers */
         #bongkar-page-content, #bongkar-header-wrapper, #bongkar-footer-wrapper {
             width: 100%;
-            max-width: 100%;
             margin: 0;
             padding: 0;
             position: relative;
-            box-sizing: border-box;
-            overflow-x: clip;
         }
 
         /* Modal & Popup Hidden Safeguard (Anti-popup auto jalan tanpa diminta) */
@@ -403,75 +400,6 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
 
         /* Footer Custom CSS */
         <?php echo $footer_css; ?>
-
-        /* ============================================================
-           BONGKAR BUILDER RESPONSIVE ENGINE (Elementor-Grade Frontend Flow)
-           ============================================================ */
-        @media (max-width: 767px) {
-            html, body, #bongkar-page-content {
-                overflow-x: hidden !important;
-                max-width: 100vw !important;
-            }
-            .bongkar-section, section {
-                padding-left: clamp(12px, 4vw, 20px) !important;
-                padding-right: clamp(12px, 4vw, 20px) !important;
-            }
-            .bongkar-section > div[style*="display: grid"],
-            .bongkar-section > div[style*="display:grid"],
-            #bongkar-page-content div[style*="grid-template-columns"]:not([data-custom-mobile-layout]),
-            .bongkar-row:not([data-custom-mobile-layout]),
-            .row:not([data-custom-mobile-layout]) {
-                grid-template-columns: 1fr !important;
-                gap: 20px !important;
-            }
-            .bongkar-column:not([data-custom-mobile-width]),
-            [class*="col-"]:not([data-custom-mobile-width]) {
-                width: 100% !important;
-                max-width: 100% !important;
-                flex: 1 1 100% !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-            h1:not([data-custom-mobile-font]), .h1:not([data-custom-mobile-font]) {
-                font-size: clamp(22px, 6vw, 30px) !important;
-                line-height: 1.25 !important;
-                word-break: break-word;
-            }
-            h2:not([data-custom-mobile-font]), .h2:not([data-custom-mobile-font]) {
-                font-size: clamp(19px, 5vw, 25px) !important;
-                line-height: 1.3 !important;
-                word-break: break-word;
-            }
-            h3:not([data-custom-mobile-font]), .h3:not([data-custom-mobile-font]) {
-                font-size: clamp(16px, 4.5vw, 21px) !important;
-                line-height: 1.35 !important;
-                word-break: break-word;
-            }
-            img, video, iframe {
-                max-width: 100% !important;
-                height: auto;
-            }
-        }
-        @media (min-width: 768px) and (max-width: 1024px) {
-            html, body, #bongkar-page-content {
-                overflow-x: hidden !important;
-            }
-            .bongkar-section, section {
-                padding-left: clamp(20px, 3vw, 32px) !important;
-                padding-right: clamp(20px, 3vw, 32px) !important;
-            }
-            div[style*="grid-template-columns: repeat(4"]:not([data-custom-tablet-layout]),
-            div[style*="grid-template-columns: 25% 25% 25% 25%"]:not([data-custom-tablet-layout]) {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 24px !important;
-            }
-            h1:not([data-custom-tablet-font]) {
-                font-size: clamp(26px, 4.5vw, 36px) !important;
-            }
-            h2:not([data-custom-tablet-font]) {
-                font-size: clamp(22px, 3.8vw, 30px) !important;
-            }
-        }
     </style>
 </head>
 <body <?php body_class('bongkar-canvas-body'); ?>>
@@ -510,81 +438,53 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
     <script id="bongkar-forms-engine">
     (function() {
         /**
-         * Harvest form fields dynamically from any form or container
-         * Supports explicit inputs, selects, textareas, labels, and placeholders
+         * Harvest form fields dynamically from any form
+         * Extracts human-readable labels and values even if name attribute is missing or custom
          */
-        function harvestFormFields(container) {
+        function harvestFormFields(form) {
             const fields = [];
-            const elements = container.querySelectorAll('input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]), select, textarea');
+            const inputs = form.querySelectorAll('input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]), select, textarea');
 
-            elements.forEach(function(el, idx) {
-                if (el.closest('.bongkar-section-insert-bar, #bongkar-floating-toolbar, #bongkar-context-menu')) return;
-
-                // 1. Determine human label
-                let label = '';
-                if (el.id) {
-                    const lbl = container.querySelector('label[for="' + el.id + '"]') || document.querySelector('label[for="' + el.id + '"]');
-                    if (lbl && lbl.innerText && lbl.innerText.trim()) label = lbl.innerText.trim();
-                }
-                if (!label) {
-                    const parentLbl = el.closest('label');
-                    if (parentLbl) {
-                        const clone = parentLbl.cloneNode(true);
-                        clone.querySelectorAll('input, select, textarea').forEach(function(n) { n.remove(); });
-                        if (clone.innerText && clone.innerText.trim()) label = clone.innerText.trim();
-                    }
-                }
-                if (!label) {
-                    let prev = el.previousElementSibling;
-                    while (prev) {
-                        if (prev.matches('label, .form-label, p, span, h4, h5, h6, strong')) {
-                            if (prev.innerText && prev.innerText.trim()) {
-                                label = prev.innerText.trim();
-                                break;
-                            }
-                        }
-                        prev = prev.previousElementSibling;
-                    }
-                }
-                if (!label && el.placeholder) {
-                    label = el.placeholder.replace(/^cth\.\s*/i, '').replace(/^contoh:\s*/i, '').trim();
-                }
-                if (!label && el.name) {
-                    label = el.name.replace(/[-_]/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-                }
-                if (!label && el.id) {
-                    label = el.id.replace(/[-_]/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-                }
-                if (!label) {
-                    label = 'Data ' + (idx + 1);
-                }
-                label = label.replace(/[:*]+$/, '').trim();
-
-                // 2. Determine value
+            inputs.forEach(function(input, index) {
                 let val = '';
-                if (el.tagName === 'SELECT') {
-                    const opt = el.options[el.selectedIndex];
-                    val = opt ? (opt.text || opt.value).trim() : '';
-                } else if (el.type === 'checkbox') {
-                    val = el.checked ? (el.value && el.value !== 'on' ? el.value : 'Ya') : 'Tidak';
-                } else if (el.type === 'radio') {
-                    if (el.checked) val = el.value || 'Ya';
-                    else return;
+                if (input.tagName === 'SELECT') {
+                    const opt = input.options[input.selectedIndex];
+                    val = opt ? (opt.text.trim() || opt.value.trim()) : '';
+                    if (opt && opt.disabled && !opt.value) val = '';
+                } else if (input.type === 'checkbox' || input.type === 'radio') {
+                    if (input.checked) val = input.value.trim() || 'Ya';
                 } else {
-                    val = (el.value || '').trim();
+                    val = input.value.trim();
                 }
 
-                const key = (el.name || el.id || label).toLowerCase().replace(/[^a-z0-9]/g, '');
-                const slug = label.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (!val) return;
+
+                // Determine human-friendly label
+                let label = '';
+                if (input.id) {
+                    const labelEl = form.querySelector('label[for="' + input.id + '"]');
+                    if (labelEl) label = labelEl.textContent.trim().replace(/\s*[*:]\s*$/, '');
+                }
+                if (!label) {
+                    const parentLabel = input.closest('label');
+                    if (parentLabel) {
+                        const clone = parentLabel.cloneNode(true);
+                        clone.querySelectorAll('input, select, textarea').forEach(function(el) { el.remove(); });
+                        label = clone.textContent.trim().replace(/\s*[*:]\s*$/, '');
+                    }
+                }
+                if (!label && input.parentElement) {
+                    const siblingLabel = input.parentElement.querySelector('label');
+                    if (siblingLabel) label = siblingLabel.textContent.trim().replace(/\s*[*:]\s*$/, '');
+                }
+                if (!label) {
+                    label = input.getAttribute('placeholder') || input.name || ('Input ' + (index + 1));
+                }
 
                 fields.push({
-                    el: el,
-                    name: el.name || '',
-                    id: el.id || '',
+                    name: input.name || ('field_' + index),
                     label: label,
-                    value: val,
-                    key: key,
-                    slug: slug
+                    value: val
                 });
             });
 
@@ -592,100 +492,68 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
         }
 
         /**
-         * Build clean WhatsApp message from harvested fields
-         * Auto-replaces placeholders and appends any newly added/unconsumed fields
+         * Extract WhatsApp destination number from form attributes, action, or nested wa links
          */
-        function buildWhatsAppMessage(fields, template) {
-            if (!fields || !fields.length) return '';
-
-            let messageText = '';
-            const consumedLabels = {};
-
-            if (template && template.trim()) {
-                messageText = template;
-                fields.forEach(function(f) {
-                    if (!f.value) return;
-                    const patterns = [
-                        '[' + f.label + ']',
-                        '[' + f.label.toLowerCase() + ']',
-                        f.name ? '[' + f.name + ']' : null,
-                        f.name ? '[' + f.name.toLowerCase() + ']' : null,
-                        f.id ? '[' + f.id + ']' : null,
-                        '[' + f.key + ']',
-                        '[' + f.slug + ']',
-                        '{' + f.label + '}',
-                        '{' + f.key + '}',
-                        '{{' + f.key + '}}'
-                    ];
-
-                    let matched = false;
-                    patterns.forEach(function(pat) {
-                        if (pat && messageText.indexOf(pat) !== -1) {
-                            messageText = messageText.split(pat).join(f.value);
-                            matched = true;
-                        }
-                    });
-
-                    if (matched) {
-                        consumedLabels[f.label] = true;
-                    }
-                });
-
-                // Dynamically append any newly added / unconsumed fields to prevent data loss
-                const unconsumed = fields.filter(function(f) {
-                    return !consumedLabels[f.label] && f.value;
-                });
-
-                if (unconsumed.length > 0) {
-                    messageText += '\n\n*Informasi Tambahan:*';
-                    unconsumed.forEach(function(f) {
-                        messageText += '\n• *' + f.label + '*: ' + f.value;
-                    });
-                }
-            } else {
-                messageText = 'Halo Admin, saya ingin konsultasi:\n';
-                fields.forEach(function(f) {
-                    if (f.value) {
-                        messageText += '\n• *' + f.label + '*: ' + f.value;
-                    }
-                });
+        function extractWhatsAppNumber(form) {
+            let num = form.getAttribute('data-wa-number') || '';
+            if (!num) {
+                const waLink = form.querySelector('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp, button.btn-whatsapp');
+                const formAct = form.getAttribute('action') || '';
+                const targetStr = (waLink ? (waLink.getAttribute('href') || waLink.getAttribute('data-wa-number') || '') : '') + ' ' + formAct;
+                const m = targetStr.match(/(?:wa\.me\/|phone=)([0-9+]+)/i);
+                if (m) num = m[1];
             }
-
-            return messageText.trim();
+            if (num) {
+                num = num.replace(/[^0-9]/g, '');
+                if (num.startsWith('0')) num = '62' + num.substring(1);
+            }
+            return num;
         }
 
         /**
-         * Extract and sanitize WhatsApp phone number
+         * Build clean WhatsApp message from dynamic form fields and optional template
          */
-        function extractWhatsAppNumber(container, defaultNum) {
-            let waNumber = defaultNum || '';
-            if (!waNumber && container) {
-                waNumber = container.getAttribute('data-wa-number') || '';
+        function buildWhatsAppMessage(fields, template) {
+            if (!template) {
+                let msg = 'Halo Admin, saya ingin konsultasi:\n\n';
+                fields.forEach(function(f) {
+                    msg += '*' + f.label + '*: ' + f.value + '\n';
+                });
+                return msg;
             }
-            if (!waNumber && container) {
-                const waLink = container.querySelector('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp');
-                const formAct = container.getAttribute('action') || '';
-                const targetStr = (waLink ? waLink.getAttribute('href') : '') + ' ' + formAct;
-                const m = targetStr.match(/(?:wa\.me\/|phone=)([0-9+]+)/i);
-                if (m) {
-                    waNumber = m[1].replace(/[^0-9]/g, '');
+
+            let msg = template;
+            const replaced = {};
+            fields.forEach(function(f) {
+                if (f.name && msg.includes('[' + f.name + ']')) {
+                    msg = msg.split('[' + f.name + ']').join(f.value);
+                    replaced[f.name] = true;
                 }
+                if (f.label && msg.includes('[' + f.label + ']')) {
+                    msg = msg.split('[' + f.label + ']').join(f.value);
+                    replaced[f.label] = true;
+                }
+            });
+
+            // Append additional fields not in template so data is never lost
+            const extra = fields.filter(function(f) { return !replaced[f.name] && !replaced[f.label]; });
+            if (extra.length > 0) {
+                msg += '\n\n*Informasi Tambahan:*\n';
+                extra.forEach(function(f) {
+                    msg += '*' + f.label + '*: ' + f.value + '\n';
+                });
             }
-            if (waNumber) {
-                let clean = waNumber.replace(/[^0-9]/g, '');
-                if (clean.startsWith('0')) clean = '62' + clean.substring(1);
-                return clean;
-            }
-            return '';
+
+            return msg;
         }
 
-        // 1. Form submit handler (Universal form support)
+        // Form submit handler: Dynamic harvesting & WhatsApp/Google Sheets dispatch
         document.addEventListener('submit', function(e) {
             const form = e.target.closest('form');
             if (!form) return;
             e.preventDefault();
 
-            const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+            const submitBtn = form.querySelector('button[type="submit"], input[type="submit"], .btn-submit');
             const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -695,20 +563,22 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
             const fields = harvestFormFields(form);
             const formData = new FormData(form);
             fields.forEach(function(f) {
-                if (!f.name && f.label && f.value) {
-                    formData.append(f.label, f.value);
+                if (f.name && !formData.has(f.name)) {
+                    formData.append(f.name, f.value);
                 }
             });
 
-            let gsheetUrl = form.getAttribute('data-gsheet-url') || (form.getAttribute('action') && form.getAttribute('action').includes('script.google.com/macros/s') ? form.getAttribute('action') : '');
-            let gsheetEnabled = form.getAttribute('data-bongkar-gsheet') === 'true' || !!gsheetUrl;
+            const gsheetUrl = form.getAttribute('data-gsheet-url') || (form.getAttribute('action') && form.getAttribute('action').includes('script.google.com/macros/s') ? form.getAttribute('action') : '');
+            const gsheetEnabled = form.getAttribute('data-bongkar-gsheet') === 'true' || !!gsheetUrl;
 
-            let waNumber = extractWhatsAppNumber(form, form.getAttribute('data-wa-number'));
-            let waTemplate = form.getAttribute('data-wa-template') || '';
-            let waEnabled = form.getAttribute('data-bongkar-wa') === 'true' || !!waNumber;
+            const waNumber = extractWhatsAppNumber(form);
+            const waTemplate = form.getAttribute('data-wa-template') || '';
+            const waEnabled = form.getAttribute('data-bongkar-wa') === 'true' || !!waNumber;
             const successMsg = form.getAttribute('data-success-msg') || 'Terima kasih! Pesanan Anda telah berhasil dikirim.';
 
             const dispatches = [];
+
+            // 1. Google Sheets Webhook Dispatch
             if (gsheetEnabled && gsheetUrl) {
                 const sheetPromise = fetch(gsheetUrl, {
                     method: 'POST',
@@ -720,6 +590,7 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
                 dispatches.push(sheetPromise);
             }
 
+            // 2. Complete and Route
             Promise.all(dispatches).finally(function() {
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -735,28 +606,6 @@ $og_image_url = !empty($settings['og_image_url']) ? $settings['og_image_url'] : 
                 alert(successMsg);
                 form.reset();
             });
-        });
-
-        // 2. Direct WhatsApp button / link clicks inside or adjacent to forms
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp, button.btn-whatsapp');
-            if (!btn) return;
-
-            const container = btn.closest('form, .bongkar-form, .card, [data-bongkar-form="true"]') || btn.parentElement;
-            if (!container) return;
-
-            const fields = harvestFormFields(container);
-            const hasValues = fields.some(function(f) { return !!f.value; });
-            if (hasValues) {
-                const waNumber = extractWhatsAppNumber(container, btn.getAttribute('data-wa-number') || btn.getAttribute('href'));
-                if (waNumber) {
-                    e.preventDefault();
-                    const waTemplate = container.getAttribute('data-wa-template') || '';
-                    const messageText = buildWhatsAppMessage(fields, waTemplate);
-                    const waUrl = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(messageText);
-                    window.open(waUrl, '_blank');
-                }
-            }
         });
     })();
     </script>

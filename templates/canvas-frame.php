@@ -125,12 +125,6 @@ $google_fonts_url = Bongkar_Builder_Google_Fonts::build_fonts_url($fonts);
             overflow-x: hidden;
             word-wrap: break-word;
         }
-        #bongkar-canvas-root {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            overflow-x: clip;
-        }
         img, video, iframe, svg { max-width: 100%; height: auto; }
         html { scroll-behavior: smooth; }
 
@@ -445,225 +439,36 @@ $google_fonts_url = Bongkar_Builder_Google_Fonts::build_fonts_url($fonts);
         }, 100);
     });
 
-    // Form test submit & WhatsApp simulation interceptor for canvas editor mode
-    (function() {
-        function harvestFormFields(container) {
-            const fields = [];
-            const elements = container.querySelectorAll('input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="hidden"]), select, textarea');
+    // Form test submit interceptor for canvas editor mode
+    document.addEventListener('submit', function(e) {
+        const form = e.target.closest('form');
+        if (!form) return;
+        e.preventDefault();
 
-            elements.forEach(function(el, idx) {
-                if (el.closest('.bongkar-section-insert-bar, #bongkar-floating-toolbar, #bongkar-context-menu')) return;
+        let gsheetUrl = form.getAttribute('data-gsheet-url') || (form.getAttribute('action') && form.getAttribute('action').includes('script.google.com/macros/s') ? form.getAttribute('action') : '');
+        let gsheetEnabled = form.getAttribute('data-bongkar-gsheet') === 'true' || !!gsheetUrl;
 
-                let label = '';
-                if (el.id) {
-                    const lbl = container.querySelector('label[for="' + el.id + '"]') || document.querySelector('label[for="' + el.id + '"]');
-                    if (lbl && lbl.innerText && lbl.innerText.trim()) label = lbl.innerText.trim();
-                }
-                if (!label) {
-                    const parentLbl = el.closest('label');
-                    if (parentLbl) {
-                        const clone = parentLbl.cloneNode(true);
-                        clone.querySelectorAll('input, select, textarea').forEach(function(n) { n.remove(); });
-                        if (clone.innerText && clone.innerText.trim()) label = clone.innerText.trim();
-                    }
-                }
-                if (!label) {
-                    let prev = el.previousElementSibling;
-                    while (prev) {
-                        if (prev.matches('label, .form-label, p, span, h4, h5, h6, strong')) {
-                            if (prev.innerText && prev.innerText.trim()) {
-                                label = prev.innerText.trim();
-                                break;
-                            }
-                        }
-                        prev = prev.previousElementSibling;
-                    }
-                }
-                if (!label && el.placeholder) {
-                    label = el.placeholder.replace(/^cth\.\s*/i, '').replace(/^contoh:\s*/i, '').trim();
-                }
-                if (!label && el.name) {
-                    label = el.name.replace(/[-_]/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-                }
-                if (!label && el.id) {
-                    label = el.id.replace(/[-_]/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-                }
-                if (!label) {
-                    label = 'Data ' + (idx + 1);
-                }
-                label = label.replace(/[:*]+$/, '').trim();
+        let waNumber = form.getAttribute('data-wa-number') || '';
+        let waTemplate = form.getAttribute('data-wa-template') || '';
+        let waEnabled = form.getAttribute('data-bongkar-wa') === 'true';
 
-                let val = '';
-                if (el.tagName === 'SELECT') {
-                    const opt = el.options[el.selectedIndex];
-                    val = opt ? (opt.text || opt.value).trim() : '';
-                } else if (el.type === 'checkbox') {
-                    val = el.checked ? (el.value && el.value !== 'on' ? el.value : 'Ya') : 'Tidak';
-                } else if (el.type === 'radio') {
-                    if (el.checked) val = el.value || 'Ya';
-                    else return;
-                } else {
-                    val = (el.value || '').trim();
-                }
-
-                const key = (el.name || el.id || label).toLowerCase().replace(/[^a-z0-9]/g, '');
-                const slug = label.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-                fields.push({
-                    el: el,
-                    name: el.name || '',
-                    id: el.id || '',
-                    label: label,
-                    value: val,
-                    key: key,
-                    slug: slug
-                });
-            });
-
-            return fields;
+        if (!waNumber) {
+            const waLink = form.querySelector('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp');
+            const formAct = form.getAttribute('action') || '';
+            const targetStr = (waLink ? waLink.getAttribute('href') : '') + ' ' + formAct;
+            const m = targetStr.match(/(?:wa\.me\/|phone=)([0-9+]+)/i);
+            if (m) {
+                waNumber = m[1].replace(/[^0-9]/g, '');
+                waEnabled = true;
+            }
         }
-
-        function buildWhatsAppMessage(fields, template) {
-            if (!fields || !fields.length) return '';
-
-            let messageText = '';
-            const consumedLabels = {};
-
-            if (template && template.trim()) {
-                messageText = template;
-                fields.forEach(function(f) {
-                    if (!f.value) return;
-                    const patterns = [
-                        '[' + f.label + ']',
-                        '[' + f.label.toLowerCase() + ']',
-                        f.name ? '[' + f.name + ']' : null,
-                        f.name ? '[' + f.name.toLowerCase() + ']' : null,
-                        f.id ? '[' + f.id + ']' : null,
-                        '[' + f.key + ']',
-                        '[' + f.slug + ']',
-                        '{' + f.label + '}',
-                        '{' + f.key + '}',
-                        '{{' + f.key + '}}'
-                    ];
-
-                    let matched = false;
-                    patterns.forEach(function(pat) {
-                        if (pat && messageText.indexOf(pat) !== -1) {
-                            messageText = messageText.split(pat).join(f.value);
-                            matched = true;
-                        }
-                    });
-
-                    if (matched) {
-                        consumedLabels[f.label] = true;
-                    }
-                });
-
-                const unconsumed = fields.filter(function(f) {
-                    return !consumedLabels[f.label] && f.value;
-                });
-
-                if (unconsumed.length > 0) {
-                    messageText += '\n\n*Informasi Tambahan:*';
-                    unconsumed.forEach(function(f) {
-                        messageText += '\n• *' + f.label + '*: ' + f.value;
-                    });
-                }
-            } else {
-                messageText = 'Halo Admin, saya ingin konsultasi:\n';
-                fields.forEach(function(f) {
-                    if (f.value) {
-                        messageText += '\n• *' + f.label + '*: ' + f.value;
-                    }
-                });
-            }
-
-            return messageText.trim();
-        }
-
-        function extractWhatsAppNumber(container, defaultNum) {
-            let waNumber = defaultNum || '';
-            if (!waNumber && container) {
-                waNumber = container.getAttribute('data-wa-number') || '';
-            }
-            if (!waNumber && container) {
-                const waLink = container.querySelector('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp');
-                const formAct = container.getAttribute('action') || '';
-                const targetStr = (waLink ? waLink.getAttribute('href') : '') + ' ' + formAct;
-                const m = targetStr.match(/(?:wa\.me\/|phone=)([0-9+]+)/i);
-                if (m) {
-                    waNumber = m[1].replace(/[^0-9]/g, '');
-                }
-            }
-            if (waNumber) {
-                let clean = waNumber.replace(/[^0-9]/g, '');
-                if (clean.startsWith('0')) clean = '62' + clean.substring(1);
-                return clean;
-            }
-            return '';
-        }
-
-        document.addEventListener('submit', function(e) {
-            const form = e.target.closest('form');
-            if (!form) return;
-            e.preventDefault();
-
-            const fields = harvestFormFields(form);
-            let gsheetUrl = form.getAttribute('data-gsheet-url') || (form.getAttribute('action') && form.getAttribute('action').includes('script.google.com/macros/s') ? form.getAttribute('action') : '');
-            let gsheetEnabled = form.getAttribute('data-bongkar-gsheet') === 'true' || !!gsheetUrl;
-
-            let waNumber = extractWhatsAppNumber(form, form.getAttribute('data-wa-number'));
-            let waTemplate = form.getAttribute('data-wa-template') || '';
-            let waEnabled = form.getAttribute('data-bongkar-wa') === 'true' || !!waNumber;
-
-            const messageText = buildWhatsAppMessage(fields, waTemplate);
-
-            let msg = '[Bongkar Canvas Preview] Simulasi Pengiriman Formulir:\n\n';
-            if (waEnabled) {
-                msg += '[Aktif] WhatsApp: ' + (waNumber || 'Nomor belum diisi') + '\n';
-                msg += '[Hasil Pesan WA]:\n' + messageText + '\n\n';
-            }
-            if (gsheetEnabled) {
-                msg += '[Aktif] Google Sheets: ' + (gsheetUrl || 'URL webhook belum diisi') + '\n\n';
-            }
-            if (!waEnabled && !gsheetEnabled) {
-                msg += '[Info] Belum ada integrasi aktif (Atur di Inspector tab Formulir).\n\n';
-                msg += '[Pratinjau Data Input]:\n' + messageText;
-            }
-
-            alert(msg);
-
-            // If in Interactive LIVE mode and WhatsApp is configured, open in new tab
-            if (document.body.classList.contains('bongkar-interactive-mode-active') && waEnabled && waNumber) {
-                const waUrl = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(messageText);
-                window.open(waUrl, '_blank');
-            }
-        });
-
-        // Direct WhatsApp button click simulation in canvas
-        document.addEventListener('click', function(e) {
-            if (!document.body.classList.contains('bongkar-interactive-mode-active')) return;
-
-            const btn = e.target.closest('a[href*="wa.me"], a[href*="whatsapp.com"], a.btn-whatsapp, button.btn-whatsapp');
-            if (!btn) return;
-
-            const container = btn.closest('form, .bongkar-form, .card, [data-bongkar-form="true"]') || btn.parentElement;
-            if (!container) return;
-
-            const fields = harvestFormFields(container);
-            const hasValues = fields.some(function(f) { return !!f.value; });
-            if (hasValues) {
-                const waNumber = extractWhatsAppNumber(container, btn.getAttribute('data-wa-number') || btn.getAttribute('href'));
-                if (waNumber) {
-                    e.preventDefault();
-                    const waTemplate = container.getAttribute('data-wa-template') || '';
-                    const messageText = buildWhatsAppMessage(fields, waTemplate);
-                    const waUrl = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(messageText);
-                    window.open(waUrl, '_blank');
-                }
-            }
-        });
-    })();
+        
+        let msg = '[Bongkar Canvas Preview] Simulasi Pengiriman Formulir:\n';
+        if (waEnabled) msg += '[Aktif] Rute WhatsApp: ' + (waNumber || 'Nomor belum diisi') + '\n';
+        if (gsheetEnabled) msg += '[Aktif] Rute Google Sheets: ' + (gsheetUrl || 'URL webhook belum diisi') + '\n';
+        if (!waEnabled && !gsheetEnabled) msg += '[Info] Belum ada integrasi aktif (Aktifkan centang WhatsApp atau Google Sheets di tab Inspector).\n';
+        alert(msg);
+    });
     </script>
 
     <!-- Canvas Engine Script (Interactions, Inline editing, Hover highlights, Quick Actions) -->

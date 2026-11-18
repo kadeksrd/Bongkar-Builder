@@ -192,17 +192,20 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
             <!-- Responsive Device Switcher -->
             <div class="device-switcher-pill">
-                <button type="button" class="device-btn active" data-device="desktop" title="Desktop View">
+                <button type="button" class="device-btn active" data-device="desktop" title="Desktop View (100%)">
                     <i class="fa-solid fa-desktop"></i>
                     <span data-i18n="topbar.device_desktop">Desktop</span>
+                    <span class="device-res-badge">100%</span>
                 </button>
-                <button type="button" class="device-btn" data-device="tablet" title="Tablet View">
+                <button type="button" class="device-btn" data-device="tablet" title="Tablet View (768px)">
                     <i class="fa-solid fa-tablet-screen-button"></i>
                     <span data-i18n="topbar.device_tablet">Tablet</span>
+                    <span class="device-res-badge">768px</span>
                 </button>
-                <button type="button" class="device-btn" data-device="mobile" title="Mobile View">
+                <button type="button" class="device-btn" data-device="mobile" title="Mobile View (390px - iPhone & Android Flagship)">
                     <i class="fa-solid fa-mobile-screen"></i>
                     <span data-i18n="topbar.device_mobile">Mobile</span>
+                    <span class="device-res-badge">390px</span>
                 </button>
             </div>
         </div>
@@ -774,7 +777,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Font Size -->
                                 <div class="form-row">
-                                    <label class="form-label">Ukuran Font (Font Size): <span class="device-sync-badge mode-desktop" data-sync-prop="fontSize" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                    <label class="form-label">Ukuran Font (Font Size):</label>
                                     <div class="form-slider-row">
                                         <input type="range" id="ctrl-font-size-slider" class="form-slider" min="10" max="100" value="16">
                                         <input type="number" id="ctrl-font-size-num" class="slider-val-box" value="16">
@@ -808,7 +811,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Text Alignment -->
                                 <div class="form-row">
-                                    <label class="form-label">Rata Teks: <span class="device-sync-badge mode-desktop" data-sync-prop="textAlign" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                    <label class="form-label">Rata Teks:</label>
                                     <div style="display: flex; gap: 4px;">
                                         <button type="button" class="btn-studio-action btn-align" data-align="left" style="flex: 1; justify-content: center;"><i class="fa-solid fa-align-left"></i></button>
                                         <button type="button" class="btn-studio-action btn-align" data-align="center" style="flex: 1; justify-content: center;"><i class="fa-solid fa-align-center"></i></button>
@@ -881,7 +884,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Lebar Elemen (Universal Width) -->
                                 <div class="form-row">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <label class="form-label" style="margin: 0;">Lebar Elemen / Kolom (Width): <span class="device-sync-badge mode-desktop" data-sync-prop="width" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                        <label class="form-label" style="margin: 0;">Lebar Elemen / Kolom (Width):</label>
                                         <div class="unit-switcher" id="width-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="%">%</button>
                                             <button type="button" class="unit-btn" data-unit="px">PX</button>
@@ -899,7 +902,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Tinggi Elemen (Universal Height) -->
                                 <div class="form-row" style="margin-top: 12px;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <label class="form-label" style="margin: 0;">Tinggi Elemen (Height): <span class="device-sync-badge mode-desktop" data-sync-prop="height" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                        <label class="form-label" style="margin: 0;">Tinggi Elemen (Height):</label>
                                         <div class="unit-switcher" id="height-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="px">PX</button>
                                             <button type="button" class="unit-btn" data-unit="vh">VH</button>
@@ -960,7 +963,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Arah Susunan: Row vs Column (Elementor Container Direction) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Arah Susunan Elemen (Direction): <span class="device-sync-badge mode-desktop" data-sync-prop="flexDirection" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Arah Susunan Elemen (Direction):</label>
                                     <div class="flex-direction-toggle-group">
                                         <button type="button" class="btn-flex-dir" id="btn-flex-dir-row" title="Elemen berjejer ke samping kanan (Row)">
                                             <i class="fa-solid fa-arrows-left-right"></i>
@@ -1015,7 +1018,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Jarak Antar Elemen (Gap) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <label class="form-label" style="margin: 0; font-size: 11px;">Jarak Antar Elemen (Gap): <span class="device-sync-badge mode-desktop" data-sync-prop="gap" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                        <label class="form-label" style="margin: 0; font-size: 11px;">Jarak Antar Elemen (Gap):</label>
                                         <div class="flex-gap-presets">
                                             <button type="button" class="btn-gap-preset" data-gap="0">0</button>
                                             <button type="button" class="btn-gap-preset" data-gap="8">8px</button>
@@ -1034,7 +1037,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Perataan Sejajar (Align Items) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Perataan Silang (Align Items): <span class="device-sync-badge mode-desktop" data-sync-prop="alignItems" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Perataan Silang (Align Items):</label>
                                     <div class="flex-btn-group">
                                         <button type="button" class="btn-flex-opt btn-align-item" data-align="flex-start" title="Rata Awal / Atas">
                                             <i class="fa-solid fa-align-left"></i>
@@ -1053,7 +1056,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
                                 <!-- Distribusi Konten (Justify Content) -->
                                 <div class="form-row" style="margin-bottom: 12px;">
-                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Distribusi Baris (Justify Content): <span class="device-sync-badge mode-desktop" data-sync-prop="justifyContent" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                    <label class="form-label" style="font-size: 11px; margin-bottom: 6px;">Distribusi Baris (Justify Content):</label>
                                     <div class="flex-btn-group">
                                         <button type="button" class="btn-flex-opt btn-justify-item active" data-justify="flex-start" title="Rata Kiri / Depan">
                                             <i class="fa-solid fa-grip-lines-vertical"></i>
@@ -1100,7 +1103,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Padding Section -->
                                 <div class="spacing-control-block">
                                     <div class="spacing-header">
-                                        <label class="form-label spacing-title">Padding <span class="device-sync-badge mode-desktop" data-sync-prop="paddingTop" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                        <label class="form-label spacing-title">Padding</label>
                                         <div class="unit-switcher" id="pad-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="px">PX</button>
                                             <button type="button" class="unit-btn" data-unit="%">%</button>
@@ -1136,7 +1139,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                                 <!-- Margin Section -->
                                 <div class="spacing-control-block" style="margin-top: 14px;">
                                     <div class="spacing-header">
-                                        <label class="form-label spacing-title">Margin <span class="device-sync-badge mode-desktop" data-sync-prop="marginTop" title="Mode Layar Aktif"><i class="fa-solid fa-desktop"></i></span></label>
+                                        <label class="form-label spacing-title">Margin</label>
                                         <div class="unit-switcher" id="mar-unit-switcher">
                                             <button type="button" class="unit-btn active" data-unit="px">PX</button>
                                             <button type="button" class="unit-btn" data-unit="%">%</button>
@@ -2059,7 +2062,7 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
 
     <!-- Modal: Sisipkan / Update Section Desain HTML Sendiri -->
     <div id="modal-section-html" class="studio-modal-backdrop">
-        <div class="studio-modal" style="max-width: 680px;">
+        <div class="studio-modal" style="max-width: 640px;">
             <div class="modal-header">
                 <div class="modal-title">
                     <i class="fa-solid fa-code" style="color: #6366f1;"></i>
@@ -2070,22 +2073,22 @@ $preview_url = add_query_arg(['preview' => 'true', 'bongkar_preview' => '1'], $p
                 </button>
             </div>
             <div class="modal-body">
-                <div id="section-html-autocheck-badge" style="display: flex; align-items: center; gap: 8px; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.25); color: #c7d2fe; padding: 8px 12px; border-radius: 6px; font-size: 11px; margin-bottom: 12px; line-height: 1.45;">
-                    <i class="fa-solid fa-shield-halved" style="font-size: 13px; color: #818cf8; flex-shrink: 0;"></i>
-                    <span id="section-html-autocheck-text" data-i18n="modal_html.autocheck_desc"><strong>Pemeriksaan Otomatis Aktif:</strong> Paste kode HTML dari AI (Claude, v0, ChatGPT) atau Figma. Sistem otomatis mendeteksi, membuang doctype/body jika ada, dan hanya memperbarui section ini secara terisolasi tanpa mengubah bagian lain.</span>
-                </div>
-                <p id="modal-section-html-desc" data-i18n="modal_html.desc" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.5;">
+                <p id="modal-section-html-desc" data-i18n="modal_html.desc" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
                     Tempel kode HTML atau komponen UI hasil buatan sendiri / AI (Tailwind, Bootstrap, atau HTML murni) untuk disisipkan langsung ke posisi section ini.
                 </p>
+                <div id="modal-section-html-autocheck-hint" style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #818cf8; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span><strong>Auto-Check Aktif:</strong> Hanya bagian section yang diperbarui. Tag dokumen (doctype, html, head, body) otomatis dibersihkan jika ada.</span>
+                </div>
                 <div class="form-row">
-                    <label class="form-label" data-i18n="modal_html.code_label">Kode Source HTML Section:</label>
-                    <textarea id="section-html-textarea" class="form-input" data-i18n-placeholder="modal_html.placeholder" style="height: 240px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="<section class='py-12 px-4'>&#10;  <div class='container mx-auto'>&#10;    <h2>Judul Section Saya</h2>&#10;    <p>Deskripsi konten...</p>&#10;  </div>&#10;</section>"></textarea>
+                    <label class="form-label" data-i18n="modal_html.code_label">Kode HTML Section:</label>
+                    <textarea id="section-html-textarea" class="form-input" data-i18n-placeholder="modal_html.placeholder" style="height: 220px; font-family: monospace; font-size: 12px; resize: vertical;" placeholder="<section class='py-12 px-4'>&#10;  <div class='container mx-auto'>&#10;    <h2>Judul Section Saya</h2>&#10;    <p>Deskripsi konten...</p>&#10;  </div>&#10;</section>"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-studio-action" data-close-modal="section-html" data-i18n="modal_html.cancel">Batal</button>
                 <button type="button" id="btn-submit-section-html" class="btn-studio-action btn-save-publish">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="btn-submit-section-html-label" data-i18n="modal_html.insert">Sisipkan Section</span>
+                    <i class="fa-solid fa-plus" id="btn-submit-section-html-icon"></i> <span id="btn-submit-section-html-label" data-i18n="modal_html.insert">Sisipkan Section</span>
                 </button>
             </div>
         </div>

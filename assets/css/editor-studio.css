@@ -38,7 +38,7 @@
 body, html {
     width: 100%;
     height: 100%;
-    overflow: hidden !important;
+    overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--bg-main);
     color: var(--text-primary);
@@ -49,11 +49,8 @@ body, html {
 #bongkar-studio-app {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
 }
 
 /* Top Bar */
@@ -69,9 +66,6 @@ body, html {
     user-select: none;
     gap: 8px;
     flex-wrap: nowrap;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
 }
 
 .studio-topbar button,
@@ -489,9 +483,6 @@ body, html {
 .studio-workspace {
     display: flex;
     flex: 1;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
     overflow: hidden;
     position: relative;
 }
@@ -748,38 +739,6 @@ body, html {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Device Sync Indicator Badges for Responsive Inspector Controls */
-.device-sync-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    background: rgba(99, 102, 241, 0.15);
-    color: #818cf8;
-    font-size: 10px;
-    margin-left: 6px;
-    vertical-align: middle;
-    transition: all 0.2s ease;
-    cursor: help;
-}
-
-.device-sync-badge.mode-tablet {
-    background: rgba(14, 165, 233, 0.2);
-    color: #38bdf8;
-}
-
-.device-sync-badge.mode-mobile {
-    background: rgba(245, 158, 11, 0.2);
-    color: #fbbf24;
-}
-
-.device-sync-badge.has-override {
-    box-shadow: 0 0 0 1px currentColor, 0 0 8px currentColor;
-    font-weight: 700;
-}
-
 /* Spacing Control Block (Elementor Style 4-Box Row) */
 .spacing-control-block {
     background: var(--bg-main);
@@ -973,29 +932,13 @@ body, html {
     flex: 1;
     min-width: 0;
     background: #090d16;
-    overflow: auto; /* Scroll geser horizontal halus & presisi persis seperti versi plugin sebelumnya */
+    overflow: auto;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     padding: 10px 14px;
     position: relative;
     transition: padding 0.25s ease;
-}
-
-/* Slim modern scrollbar for studio canvas workspace */
-.studio-canvas-area::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-.studio-canvas-area::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.6);
-}
-.studio-canvas-area::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.35);
-    border-radius: 10px;
-}
-.studio-canvas-area::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.7);
 }
 
 .device-res-badge {
@@ -1075,26 +1018,20 @@ body, html {
 .canvas-viewport-wrapper {
     background: #ffffff;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
-    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.25s ease, border 0.25s ease, height 0.25s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.3s ease, border 0.3s ease, height 0.3s ease;
     overflow: hidden;
     position: relative;
     margin: 0;
     height: calc(100vh - var(--topbar-height) - 48px);
-    transform-origin: top center;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
 }
 
-/* In Desktop Mode (Standar Desktop Utuh: Pas di Layar & Scroll Sangat Pendek Sesuai Versi Sebelumnya) */
 .canvas-viewport-wrapper.mode-desktop {
     width: 100%;
-    min-width: 1024px; /* Menjaga layout desktop tetap utuh tanpa patah & scroll pendek presisi */
+    min-width: 1024px; /* Guarantees desktop layout (> 992px) without tablet collapse */
     max-width: 100%;
     margin: 0;
-    border-radius: var(--radius-sm, 6px);
-    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
-    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
 }
 
 .canvas-viewport-wrapper.mode-tablet,
@@ -1102,10 +1039,8 @@ body, html {
     margin: 0 auto;
 }
 
-/* In Tablet Mode (Foto 2: 768px Device Frame dengan 28px Radius & 6px Bezel Elegan) */
 .canvas-viewport-wrapper.mode-tablet {
     width: 768px;
-    max-width: 95%;
     box-sizing: content-box;
     height: calc(100vh - var(--topbar-height) - 36px);
     border-radius: 28px;
@@ -1114,10 +1049,8 @@ body, html {
     box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-/* In Mobile Mode (Foto 3: 390px Mobile Frame dengan 44px Radius, 6px Bezel, Dynamic Island & Home Bar) */
 .canvas-viewport-wrapper.mode-mobile {
     width: 390px;
-    max-width: 95%;
     box-sizing: content-box;
     height: calc(100vh - var(--topbar-height) - 36px);
     min-height: 660px;

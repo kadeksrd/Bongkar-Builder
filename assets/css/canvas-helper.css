@@ -364,11 +364,6 @@
     justify-content: center;
     opacity: 0;
     transition: opacity 0.2s ease;
-    pointer-events: none; /* Anti-blocking: never swallow clicks intended for sections underneath */
-}
-
-.bongkar-section-insert-bar > * {
-    pointer-events: auto;
 }
 
 .bongkar-section-insert-bar:hover,
@@ -1164,127 +1159,6 @@ body.bongkar-interactive-mode-active .bongkar-column-dropzone {
 #bongkar-floating-toolbar #act-open-modal-edit:hover {
     background: #4338ca !important;
     box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
-}
-
-/* ============================================================
-   BONGKAR BUILDER RESPONSIVE ENGINE (Elementor-Grade Flow)
-   ============================================================ */
-
-/* 1. Floating Toolbar Responsive Adaptations (Anti-Blocking on Mobile) */
-@media (max-width: 500px), (max-device-width: 500px) {
-    #bongkar-floating-toolbar,
-    body.bongkar-mode-mobile #bongkar-floating-toolbar {
-        max-width: calc(100vw - 12px) !important;
-        padding: 2px 4px !important;
-        gap: 2px !important;
-        flex-wrap: wrap !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
-    }
-
-    #bongkar-floating-toolbar .toolbar-elem-tag,
-    body.bongkar-mode-mobile #bongkar-floating-toolbar .toolbar-elem-tag {
-        max-width: 85px !important;
-        padding: 2px 5px !important;
-        font-size: 9px !important;
-    }
-
-    #bongkar-floating-toolbar button,
-    body.bongkar-mode-mobile #bongkar-floating-toolbar button {
-        width: 25px !important;
-        height: 25px !important;
-        font-size: 11px !important;
-    }
-
-    #bongkar-floating-toolbar .toolbar-divider,
-    body.bongkar-mode-mobile #bongkar-floating-toolbar .toolbar-divider {
-        height: 14px !important;
-        margin: 0 1px !important;
-    }
-}
-
-/* 2. Mobile Viewport Layout & Typography (Max Width 767px) */
-@media (max-width: 767px) {
-    /* Prevent all horizontal overflow across canvas */
-    html, body, #bongkar-canvas-root {
-        overflow-x: hidden !important;
-        max-width: 100vw !important;
-    }
-
-    /* Constrain outer section padding so content isn't squished by huge desktop padding */
-    .bongkar-section, section {
-        padding-left: clamp(12px, 4vw, 20px) !important;
-        padding-right: clamp(12px, 4vw, 20px) !important;
-    }
-
-    /* Auto-stacking for multi-column grid layouts */
-    .bongkar-section > div[style*="display: grid"],
-    .bongkar-section > div[style*="display:grid"],
-    #bongkar-canvas-root div[style*="grid-template-columns"]:not([data-custom-mobile-layout]),
-    .bongkar-row:not([data-custom-mobile-layout]),
-    .row:not([data-custom-mobile-layout]) {
-        grid-template-columns: 1fr !important;
-        gap: 20px !important;
-    }
-
-    /* Multi-column flex containers stack unless explicitly overridden */
-    .bongkar-column:not([data-custom-mobile-width]),
-    [class*="col-"]:not([data-custom-mobile-width]) {
-        width: 100% !important;
-        max-width: 100% !important;
-        flex: 1 1 100% !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
-
-    /* Proportional fluid typography for headlines (Anti-Kegedean on mobile) */
-    h1:not([data-custom-mobile-font]), .h1:not([data-custom-mobile-font]) {
-        font-size: clamp(22px, 6vw, 30px) !important;
-        line-height: 1.25 !important;
-        word-break: break-word;
-    }
-    h2:not([data-custom-mobile-font]), .h2:not([data-custom-mobile-font]) {
-        font-size: clamp(19px, 5vw, 25px) !important;
-        line-height: 1.3 !important;
-        word-break: break-word;
-    }
-    h3:not([data-custom-mobile-font]), .h3:not([data-custom-mobile-font]) {
-        font-size: clamp(16px, 4.5vw, 21px) !important;
-        line-height: 1.35 !important;
-        word-break: break-word;
-    }
-
-    /* Responsive images and media */
-    img, video, iframe {
-        max-width: 100% !important;
-        height: auto;
-    }
-}
-
-/* 3. Tablet Viewport Layout & Typography (768px - 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-    html, body, #bongkar-canvas-root {
-        overflow-x: hidden !important;
-    }
-
-    .bongkar-section, section {
-        padding-left: clamp(20px, 3vw, 32px) !important;
-        padding-right: clamp(20px, 3vw, 32px) !important;
-    }
-
-    /* 4-column grids adapt to 2-columns on tablet */
-    div[style*="grid-template-columns: repeat(4"]:not([data-custom-tablet-layout]),
-    div[style*="grid-template-columns: 25% 25% 25% 25%"]:not([data-custom-tablet-layout]) {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 24px !important;
-    }
-
-    /* Tablet proportional headings */
-    h1:not([data-custom-tablet-font]) {
-        font-size: clamp(26px, 4.5vw, 36px) !important;
-    }
-    h2:not([data-custom-tablet-font]) {
-        font-size: clamp(22px, 3.8vw, 30px) !important;
-    }
 }
 
 

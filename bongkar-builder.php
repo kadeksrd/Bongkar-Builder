@@ -3,7 +3,7 @@
  * Plugin Name:       Bongkar Canvas Builder
  * Plugin URI:        https://bongkar.id/builder
  * Description:       Ultra-lightweight, HTML-first Visual Page Builder for WordPress. Designed for importing AI-generated designs (HTML/CSS/JS/Figma) and editing them on a standalone canvas without Elementor bloat.
- * Version:           1.2.3
+ * Version:           1.2.4
  * Author:            Bongkar WP Team
  * Author URI:        https://bongkar.id
  * Text Domain:       bongkar-builder
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-define('BONGKAR_BUILDER_VERSION', '1.2.3');
+define('BONGKAR_BUILDER_VERSION', '1.2.4');
 define('BONGKAR_BUILDER_FILE', __FILE__);
 define('BONGKAR_BUILDER_PATH', plugin_dir_path(__FILE__));
 define('BONGKAR_BUILDER_URL', plugin_dir_url(__FILE__));

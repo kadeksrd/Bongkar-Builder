@@ -172,7 +172,7 @@
     }
 
     /**
-     * Device switcher (Desktop, Tablet, Mobile) - Elementor Style
+     * Device switcher (Desktop, Tablet, Mobile)
      */
     function initDeviceSwitcher() {
         const deviceButtons = document.querySelectorAll('.device-btn');
@@ -186,31 +186,8 @@
 
                 viewport.classList.remove('mode-desktop', 'mode-tablet', 'mode-mobile');
                 viewport.classList.add(`mode-${device}`);
-
-                // Reset any legacy transform scaling to ensure 100% clean rendering
-                viewport.style.transform = '';
-                viewport.style.transformOrigin = '';
-
-                // Broadcast device mode to iframe canvas
-                const iframe = document.getElementById('bongkar-iframe-canvas');
-                if (iframe && iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({
-                        type: 'BONGKAR_SET_DEVICE_MODE',
-                        device: device
-                    }, '*');
-                }
-
-                // Notify Inspector to update responsive controls & badges
-                if (window.BongkarInspector && typeof window.BongkarInspector.setDeviceMode === 'function') {
-                    window.BongkarInspector.setDeviceMode(device);
-                }
             });
         });
-
-        // Clean up legacy zoom preference from localStorage
-        try {
-            localStorage.removeItem('bongkar_canvas_zoom_mode');
-        } catch (e) { }
     }
 
     /**
@@ -523,13 +500,14 @@
 
                 case 'BONGKAR_OPEN_CUSTOM_HTML_MODAL': {
                     isUpdateSectionMode = false;
-                    pendingCustomHtmlTargetSectionId = null;
+                    pendingUpdateSectionId = null;
                     pendingCustomHtmlInsertIndex = (typeof data.insertIndex === 'number') ? data.insertIndex : -1;
                     const modal = document.getElementById('modal-section-html');
                     if (modal) {
                         const titleEl = document.getElementById('modal-section-html-title');
                         const descEl = document.getElementById('modal-section-html-desc');
                         const btnLabel = document.getElementById('btn-submit-section-html-label');
+                        const btnIcon = document.getElementById('btn-submit-section-html-icon');
                         if (titleEl) {
                             titleEl.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
                                 ? window.BongkarI18n.t('modal_html.title')
@@ -545,6 +523,7 @@
                                 ? window.BongkarI18n.t('modal_html.insert')
                                 : 'Sisipkan Section';
                         }
+                        if (btnIcon) btnIcon.className = 'fa-solid fa-plus';
                         modal.classList.add('active');
                         const textarea = document.getElementById('section-html-textarea');
                         if (textarea) {
@@ -557,13 +536,14 @@
 
                 case 'BONGKAR_OPEN_UPDATE_SECTION_HTML_MODAL': {
                     isUpdateSectionMode = true;
-                    pendingCustomHtmlTargetSectionId = data.sectionId || null;
+                    pendingUpdateSectionId = data.sectionId || null;
                     pendingCustomHtmlInsertIndex = -1;
                     const modal = document.getElementById('modal-section-html');
                     if (modal) {
                         const titleEl = document.getElementById('modal-section-html-title');
                         const descEl = document.getElementById('modal-section-html-desc');
                         const btnLabel = document.getElementById('btn-submit-section-html-label');
+                        const btnIcon = document.getElementById('btn-submit-section-html-icon');
                         if (titleEl) {
                             titleEl.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
                                 ? window.BongkarI18n.t('modal_html.update_title')
@@ -572,17 +552,18 @@
                         if (descEl) {
                             descEl.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
                                 ? window.BongkarI18n.t('modal_html.update_desc')
-                                : 'Ubah kode HTML section ini secara terisolasi tanpa mengubah bagian lain.';
+                                : 'Perbarui kode HTML khusus untuk section ini saja. Halaman lain tidak akan terpengaruh. Tag dokumen lengkap otomatis dibersihkan jika ada.';
                         }
                         if (btnLabel) {
                             btnLabel.textContent = (window.BongkarI18n && typeof window.BongkarI18n.t === 'function')
                                 ? window.BongkarI18n.t('modal_html.update_btn')
                                 : 'Perbarui Section Ini';
                         }
+                        if (btnIcon) btnIcon.className = 'fa-solid fa-check';
                         modal.classList.add('active');
                         const textarea = document.getElementById('section-html-textarea');
                         if (textarea) {
-                            textarea.value = data.currentHtml || '';
+                            textarea.value = data.html || '';
                             setTimeout(() => textarea.focus(), 80);
                         }
                     }
@@ -600,7 +581,7 @@
 
                 case 'BONGKAR_CLIPBOARD_SYNC':
                     if (data.text && navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(data.text).catch(() => { });
+                        navigator.clipboard.writeText(data.text).catch(() => {});
                     }
                     break;
 
@@ -632,9 +613,52 @@
     }
 
     let pendingCustomHtmlInsertIndex = -1;
+    let isUpdateSectionMode = false;
+    let pendingUpdateSectionId = null;
 
     /**
-     * Modal handler: Sisipkan Section Desain HTML Sendiri
+     * Auto-check & Sanitize Section HTML Snippet
+     * Extracts only the section and styles, removing doctype/html/body wrapper tags if present.
+     */
+    function sanitizeSectionHtmlSnippet(rawHtml) {
+        let str = (rawHtml || '').trim();
+        if (!str) return '';
+
+        // Auto-check: Detect full document tags
+        if (/<!DOCTYPE|<html|<head|<body/i.test(str)) {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(str, 'text/html');
+
+                // Preserve any <style> tags
+                let stylesText = '';
+                doc.querySelectorAll('style').forEach(st => {
+                    stylesText += st.outerHTML + '\n';
+                });
+
+                // Extract section or primary container from body
+                const body = doc.body;
+                let targetEl = body ? (body.querySelector('section, .bongkar-section') || body.firstElementChild) : null;
+                let extracted = targetEl ? targetEl.outerHTML : (body ? body.innerHTML.trim() : str);
+                str = (stylesText ? stylesText + '\n' : '') + extracted;
+            } catch (e) {
+                console.warn('[Bongkar] Auto-check sanitize notice:', e);
+            }
+        }
+
+        // Ensure wrapped in section if bare snippet
+        const temp = document.createElement('div');
+        temp.innerHTML = str;
+        const first = temp.firstElementChild;
+        if (!first || (first.tagName !== 'SECTION' && !first.classList.contains('bongkar-section'))) {
+            str = `<section class="bongkar-section py-16 px-4" style="position:relative;">\n${str}\n</section>`;
+        }
+
+        return str;
+    }
+
+    /**
+     * Modal handler: Sisipkan / Update Section Desain HTML Sendiri
      */
     function initSectionHtmlModal() {
         const modal = document.getElementById('modal-section-html');
@@ -643,13 +667,25 @@
         modal.querySelectorAll('[data-close-modal="section-html"]').forEach(btn => {
             btn.addEventListener('click', () => {
                 modal.classList.remove('active');
+                isUpdateSectionMode = false;
+                pendingUpdateSectionId = null;
             });
         });
 
         // Trigger buttons from sidebar panel or other studio locations
         document.querySelectorAll('.btn-trigger-custom-html-section').forEach(btn => {
             btn.addEventListener('click', () => {
+                isUpdateSectionMode = false;
+                pendingUpdateSectionId = null;
                 pendingCustomHtmlInsertIndex = -1;
+                const titleEl = document.getElementById('modal-section-html-title');
+                const descEl = document.getElementById('modal-section-html-desc');
+                const btnLabel = document.getElementById('btn-submit-section-html-label');
+                const btnIcon = document.getElementById('btn-submit-section-html-icon');
+                if (titleEl) titleEl.textContent = 'Desain HTML Sendiri';
+                if (descEl) descEl.textContent = 'Tempel kode HTML atau komponen UI untuk disisipkan langsung ke posisi section ini.';
+                if (btnLabel) btnLabel.textContent = 'Sisipkan Section';
+                if (btnIcon) btnIcon.className = 'fa-solid fa-plus';
                 modal.classList.add('active');
                 const textarea = document.getElementById('section-html-textarea');
                 if (textarea) setTimeout(() => textarea.focus(), 100);
@@ -670,26 +706,31 @@
                     return;
                 }
 
-                // Wrap in section if raw snippet isn't already a section or container
-                let finalHtml = rawHtml;
-                const temp = document.createElement('div');
-                temp.innerHTML = rawHtml;
-                const first = temp.firstElementChild;
-                if (!first || (first.tagName !== 'SECTION' && !first.classList.contains('bongkar-section'))) {
-                    finalHtml = `<section class="bongkar-section py-16 px-4" style="position:relative;">\n${rawHtml}\n</section>`;
-                }
-
+                const finalHtml = sanitizeSectionHtmlSnippet(rawHtml);
                 const iframe = document.getElementById('bongkar-iframe-canvas');
-                if (iframe && iframe.contentWindow) {
-                    iframe.contentWindow.postMessage({
-                        type: 'BONGKAR_INSERT_HTML',
-                        html: finalHtml,
-                        insertIndex: pendingCustomHtmlInsertIndex
-                    }, '*');
+
+                if (isUpdateSectionMode && pendingUpdateSectionId) {
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({
+                            type: 'BONGKAR_UPDATE_SECTION_HTML',
+                            sectionId: pendingUpdateSectionId,
+                            html: finalHtml
+                        }, '*');
+                    }
+                } else {
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({
+                            type: 'BONGKAR_INSERT_HTML',
+                            html: finalHtml,
+                            insertIndex: pendingCustomHtmlInsertIndex
+                        }, '*');
+                    }
                 }
 
                 modal.classList.remove('active');
                 textarea.value = '';
+                isUpdateSectionMode = false;
+                pendingUpdateSectionId = null;
                 pendingCustomHtmlInsertIndex = -1;
             });
         }
@@ -957,12 +998,12 @@
         }
 
         const pageLayoutSelect = document.getElementById('setting-page-layout');
-        const headerIdSelect = document.getElementById('setting-header-id');
-        const footerIdSelect = document.getElementById('setting-footer-id');
+        const headerIdSelect   = document.getElementById('setting-header-id');
+        const footerIdSelect   = document.getElementById('setting-footer-id');
 
         const pageLayout = pageLayoutSelect ? pageLayoutSelect.value : (window.bongkarStudioConfig.initialPageLayout || 'canvas');
-        const headerId = headerIdSelect ? headerIdSelect.value : (window.bongkarStudioConfig.initialHeaderId || 0);
-        const footerId = footerIdSelect ? footerIdSelect.value : (window.bongkarStudioConfig.initialFooterId || 0);
+        const headerId   = headerIdSelect ? headerIdSelect.value : (window.bongkarStudioConfig.initialHeaderId || 0);
+        const footerId   = footerIdSelect ? footerIdSelect.value : (window.bongkarStudioConfig.initialFooterId || 0);
 
         const formData = new FormData();
         formData.append('action', actionName);
@@ -1029,32 +1070,32 @@
             method: 'POST',
             body: formData
         })
-            .then(res => res.json())
-            .then(data => {
-                isSaving = false;
-                if (btnPublish) btnPublish.disabled = false;
+        .then(res => res.json())
+        .then(data => {
+            isSaving = false;
+            if (btnPublish) btnPublish.disabled = false;
 
-                if (data.success) {
-                    markDirty(false);
-                    if (btnLabel) btnLabel.textContent = 'Perbarui';
-                    if (btnPublish) btnPublish.classList.remove('has-unsaved');
+            if (data.success) {
+                markDirty(false);
+                if (btnLabel) btnLabel.textContent = 'Perbarui';
+                if (btnPublish) btnPublish.classList.remove('has-unsaved');
 
-                    if (statusEl) {
-                        statusEl.className = 'save-status saved';
-                        statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Terpublikasi (${data.data.updated_at || ''})</span>`;
-                    }
-                } else {
-                    if (btnLabel) btnLabel.textContent = 'Publish';
-                    alert(data.data.message || 'Gagal mempublikasikan halaman.');
+                if (statusEl) {
+                    statusEl.className = 'save-status saved';
+                    statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Terpublikasi (${data.data.updated_at || ''})</span>`;
                 }
-            })
-            .catch(err => {
-                isSaving = false;
-                if (btnPublish) btnPublish.disabled = false;
+            } else {
                 if (btnLabel) btnLabel.textContent = 'Publish';
-                console.error(err);
-                alert('Terjadi kesalahan koneksi saat mempublikasikan.');
-            });
+                alert(data.data.message || 'Gagal mempublikasikan halaman.');
+            }
+        })
+        .catch(err => {
+            isSaving = false;
+            if (btnPublish) btnPublish.disabled = false;
+            if (btnLabel) btnLabel.textContent = 'Publish';
+            console.error(err);
+            alert('Terjadi kesalahan koneksi saat mempublikasikan.');
+        });
     }
 
     /**
@@ -1084,37 +1125,37 @@
             method: 'POST',
             body: formData
         })
-            .then(res => res.json())
-            .then(data => {
-                isSaving = false;
-                if (manual && btnDraft) {
-                    btnDraft.disabled = false;
-                    btnDraft.innerHTML = '<i class="fa-solid fa-check" style="color: #22c55e;"></i> <span>Draft Tersimpan!</span>';
-                    setTimeout(() => {
-                        btnDraft.innerHTML = '<i class="fa-solid fa-file-pen"></i> <span>Simpan Draft</span>';
-                    }, 1500);
-                }
-
-                if (data.success) {
-                    if (statusEl) {
-                        statusEl.className = 'save-status unsaved';
-                        statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Draft tersimpan (${data.data.draft_time || ''})</span>`;
-                    }
-
-                    const btnPublish = document.getElementById('btn-save-page');
-                    if (btnPublish) {
-                        btnPublish.classList.add('has-unsaved');
-                    }
-                }
-            })
-            .catch(err => {
-                isSaving = false;
-                if (manual && btnDraft) {
-                    btnDraft.disabled = false;
+        .then(res => res.json())
+        .then(data => {
+            isSaving = false;
+            if (manual && btnDraft) {
+                btnDraft.disabled = false;
+                btnDraft.innerHTML = '<i class="fa-solid fa-check" style="color: #22c55e;"></i> <span>Draft Tersimpan!</span>';
+                setTimeout(() => {
                     btnDraft.innerHTML = '<i class="fa-solid fa-file-pen"></i> <span>Simpan Draft</span>';
+                }, 1500);
+            }
+
+            if (data.success) {
+                if (statusEl) {
+                    statusEl.className = 'save-status unsaved';
+                    statusEl.innerHTML = `<span class="status-dot"></span> <span class="status-text">Draft tersimpan (${data.data.draft_time || ''})</span>`;
                 }
-                console.warn('[Bongkar Autosave Notice]:', err);
-            });
+
+                const btnPublish = document.getElementById('btn-save-page');
+                if (btnPublish) {
+                    btnPublish.classList.add('has-unsaved');
+                }
+            }
+        })
+        .catch(err => {
+            isSaving = false;
+            if (manual && btnDraft) {
+                btnDraft.disabled = false;
+                btnDraft.innerHTML = '<i class="fa-solid fa-file-pen"></i> <span>Simpan Draft</span>';
+            }
+            console.warn('[Bongkar Autosave Notice]:', err);
+        });
     }
 
     function markDirty(dirty) {
@@ -1213,8 +1254,8 @@
 
     // Expose Studio API for submodules & exporter
     window.BongkarStudio = {
-        getCanvasHTML: function () { return currentCanvasHTML; },
-        setCanvasHTML: function (html) { currentCanvasHTML = html; },
+        getCanvasHTML: function() { return currentCanvasHTML; },
+        setCanvasHTML: function(html) { currentCanvasHTML = html; },
         publishPage: publishPage,
         saveDraft: saveDraft,
         savePage: publishPage,
