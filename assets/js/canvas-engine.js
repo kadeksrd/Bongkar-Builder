@@ -167,6 +167,31 @@
         }
     }
 
+    /**
+     * Strict Architectural Boundary:
+     * Returns true if the element is part of the Editor Canvas Controls (Builder UI).
+     * Builder controls must NEVER be selected, hovered, or edited as webpage content.
+     */
+    function isBuilderControl(el) {
+        if (!el) return false;
+        return !!(
+            el.closest('.bongkar-bottom-add-zone') ||
+            el.closest('.bongkar-section-insert-bar') ||
+            el.closest('.bongkar-inline-section-picker') ||
+            el.closest('.bongkar-column-dropzone') ||
+            el.closest('#bongkar-floating-toolbar') ||
+            el.closest('#bongkar-context-menu') ||
+            el.closest('.bongkar-modal-edit-banner') ||
+            el.closest('#bongkar-hover-modal-badge') ||
+            el.closest('#bongkar-canvas-toast') ||
+            el.closest('#bongkar-drop-line-indicator') ||
+            el.closest('#bongkar-canvas-badge') ||
+            el.hasAttribute('data-bongkar-builder-control') ||
+            el.closest('[data-bongkar-builder-control="true"]') ||
+            (el.id && el.id.startsWith('bongkar-') && !el.classList.contains('bongkar-section') && !el.classList.contains('bongkar-column'))
+        );
+    }
+
     // Initialize Canvas Engine once DOM is ready
     function init() {
         createUIHelpers();
@@ -1760,8 +1785,21 @@
         // Hover effect: highlight hovered element cleanly without blocking cursor
         root.addEventListener('mouseover', (e) => {
             if (isInteractiveMode) return;
+
+            // Architectural Boundary: Never hover or highlight builder controls
+            if (isBuilderControl(e.target)) {
+                if (hoveredElement) {
+                    hoveredElement.classList.remove(
+                        'bongkar-hover-target',
+                        'bongkar-hover-layout-outer', 'bongkar-hover-layout-inner', 'bongkar-hover-layout', 'bongkar-hover-text', 'bongkar-hover-action', 'bongkar-hover-media', 'bongkar-hover-feed'
+                    );
+                    hoveredElement = null;
+                }
+                return;
+            }
+
             const target = e.target.closest('#bongkar-canvas-root *');
-            if (!target || target === floatingToolbar || target.closest('#bongkar-floating-toolbar') || target === tagBadge || target === contextMenu || target.closest('#bongkar-context-menu')) return;
+            if (!target || isBuilderControl(target) || target === floatingToolbar || target.closest('#bongkar-floating-toolbar') || target === tagBadge || target === contextMenu || target.closest('#bongkar-context-menu')) return;
 
             if (hoverHideTimeout) {
                 clearTimeout(hoverHideTimeout);
@@ -1889,13 +1927,10 @@
                 return;
             }
 
-            // Allow clicks inside editor helper UI elements
-            if (e.target.closest('#bongkar-floating-toolbar') || 
-                e.target.closest('#bongkar-context-menu') || 
-                e.target.closest('.bongkar-section-insert-bar') ||
-                e.target.closest('.bongkar-modal-edit-banner') ||
-                e.target.closest('#bongkar-hover-modal-badge') ||
-                e.target.closest('#bongkar-canvas-toast')) {
+            // Architectural Boundary:
+            // Allow all editor helper UI / builder controls (structure pickers, add section buttons, dropzones, toolbars)
+            // to execute their native/bound click actions freely without click cancellation or selection!
+            if (isBuilderControl(e.target)) {
                 return;
             }
 
@@ -1920,7 +1955,7 @@
             // If Modal Edit Mode is active, clicks inside modal select target element
             if (isModalEditActive) {
                 const target = e.target.closest('.bongkar-modal-edit-active *') || (e.target.classList.contains('bongkar-modal-edit-active') ? e.target : null);
-                if (target && target !== root && target !== document.body) {
+                if (target && target !== root && target !== document.body && !isBuilderControl(target)) {
                     selectElement(target);
                 } else {
                     deselectElement();
@@ -1939,7 +1974,7 @@
 
             // If clicking inside canvas, select the target!
             const target = e.target.closest('#bongkar-canvas-root *') || (e.target.closest('.bongkar-modal-edit-active') ? e.target : null);
-            if (target && target !== root && target !== document.body) {
+            if (target && target !== root && target !== document.body && !isBuilderControl(target)) {
                 selectElement(target);
             } else {
                 deselectElement();
@@ -1948,7 +1983,7 @@
 
         // Right-click context menu (Elementor Style)
         document.addEventListener('contextmenu', (e) => {
-            if (isInteractiveMode) return;
+            if (isInteractiveMode || isBuilderControl(e.target)) return;
 
             // Allow native right-click inside editable text
             if (document.activeElement && (document.activeElement.isContentEditable || ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName))) {
@@ -1959,29 +1994,20 @@
             e.stopPropagation();
 
             const target = e.target.closest('#bongkar-canvas-root *') || hoveredElement || selectedElement;
-            if (target && target !== floatingToolbar && !target.closest('#bongkar-floating-toolbar') && target !== tagBadge) {
+            if (target && !isBuilderControl(target) && target !== floatingToolbar && !target.closest('#bongkar-floating-toolbar') && target !== tagBadge) {
                 selectElement(target);
                 showContextMenu(e.clientX, e.clientY, target);
             } else {
-                showContextMenu(e.clientX, e.clientY, selectedElement || null);
+                showContextMenu(e.clientX, e.clientY, (selectedElement && !isBuilderControl(selectedElement)) ? selectedElement : null);
             }
         }, true);
 
         // Double click: image opens media picker, text enables inline edit (Document-level capture)
         document.addEventListener('dblclick', (e) => {
-            if (isInteractiveMode) return;
-
-            // Allow clicks inside editor helper UI elements
-            if (e.target.closest('#bongkar-floating-toolbar') || 
-                e.target.closest('#bongkar-context-menu') || 
-                e.target.closest('.bongkar-modal-edit-banner') ||
-                e.target.closest('#bongkar-hover-modal-badge') ||
-                e.target.closest('#bongkar-canvas-toast')) {
-                return;
-            }
+            if (isInteractiveMode || isBuilderControl(e.target)) return;
 
             const target = e.target.closest('#bongkar-canvas-root *') || (isModalEditActive && e.target.closest('.bongkar-modal-edit-active') ? e.target : null);
-            if (!target) return;
+            if (!target || isBuilderControl(target)) return;
 
             e.preventDefault();
             e.stopPropagation();
@@ -2047,6 +2073,8 @@
      * Select an element in the canvas
      */
     function selectElement(el, focusField = null) {
+        if (!el || isBuilderControl(el)) return;
+
         if (selectedElement && selectedElement !== el) {
             selectedElement.classList.remove(
                 'bongkar-selected-target',
@@ -2772,6 +2800,7 @@
     function createInlineStructurePicker(insertIndex, targetChild, parentBar) {
         const picker = document.createElement('div');
         picker.className = 'bongkar-inline-section-picker';
+        picker.setAttribute('data-bongkar-builder-control', 'true');
         picker.innerHTML = `
             <div class="bongkar-inline-picker-header">
                 <div class="inline-picker-title">
@@ -2896,6 +2925,7 @@
 
             const bar = document.createElement('div');
             bar.className = 'bongkar-section-insert-bar';
+            bar.setAttribute('data-bongkar-builder-control', 'true');
             bar.innerHTML = `<button type="button" class="btn-add-section" data-insert-index="${index}"><i class="fa-solid fa-plus"></i> Tambah Section</button>`;
 
             bar.querySelector('.btn-add-section').addEventListener('click', (e) => {
@@ -2919,6 +2949,7 @@
         const isCanvasEmpty = children.filter(c => !c.classList.contains('bongkar-section-insert-bar') && !c.classList.contains('bongkar-bottom-add-zone')).length === 0;
         const bottomZone = document.createElement('div');
         bottomZone.className = 'bongkar-bottom-add-zone' + (isCanvasEmpty ? ' is-empty-canvas' : '');
+        bottomZone.setAttribute('data-bongkar-builder-control', 'true');
 
         let zoneContent = '';
         if (isCanvasEmpty) {
@@ -3060,6 +3091,7 @@
                 if (!existingDropzone) {
                     const dropzone = document.createElement('div');
                     dropzone.className = 'bongkar-column-dropzone';
+                    dropzone.setAttribute('data-bongkar-builder-control', 'true');
                     dropzone.innerHTML = `
                         <div class="column-dropzone-inner">
                             <i class="fa-solid fa-circle-plus"></i>
